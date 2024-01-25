@@ -1,6 +1,7 @@
 # CondoManagement
 
-### ** This project uses pnpm, which can be installed using npm: npm install -g pnpm **
+#### ** This project uses pnpm, which can be installed using npm: npm install -g pnpm **
+#### ** Use pnpm as if its npm **
 
 ## How to run the application
 
