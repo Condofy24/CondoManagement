@@ -16,6 +16,7 @@ npm command --filter = directory
 - No pushing directly to master
 - Ensure there are no linting errors
 - All tests (if avail) should pass
+- Branch name: issue-'number'-description
 
 ## Frontend Standards
 To be specified 
