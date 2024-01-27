@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { response } from 'express';
 import { Token, UserProfile } from './user.model';
@@ -36,7 +36,7 @@ export class UserService {
   }
 
   public async findOne(userEmail: string): Promise<User | undefined | null> {
-    return this.userModel.findOne({ email: userEmail });
+    return this.userModel.findById(userEmail);
   }
 
   public async getProfile(token: Token): Promise<UserProfile> {
@@ -82,10 +82,9 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserDto> {
     const { name, email, newPassword } = updateUserDto;
-
-    // Find the user by email
+    console.log('here', updateUserDto, id);
+    // Find the user by id
     const user = await this.userModel.findById(id);
-    console.log(user);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },
