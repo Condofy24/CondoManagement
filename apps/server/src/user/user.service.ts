@@ -82,7 +82,7 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserDto> {
     const { name, email, newPassword } = updateUserDto;
-    console.log('here', updateUserDto, id);
+
     // Find the user by id
     const user = await this.userModel.findById(id);
     if (!user) {
