@@ -18,6 +18,7 @@ pnpm command --filter = directory
 - Ensure there are no linting errors
 - All tests (if avail) should pass
 - Branch name: CN-'number'-description
+- Use [conventional atomic commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## Frontend Standards
 
