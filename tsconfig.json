@@ -12,7 +12,8 @@
     "noFallthroughCasesInSwitch": true,
     "paths": {
       "@server/*": ["./apps/server/src/*"],
-      "@web/*": ["./apps/client/*"],
+      "@client/*": ["./apps/client/*"],
+      "@/*": ["./apps/client/*"],
     },
   },
 }
