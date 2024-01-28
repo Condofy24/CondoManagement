@@ -36,7 +36,7 @@ export class UserService {
   }
 
   public async findOne(userEmail: string): Promise<User | undefined | null> {
-    return this.userModel.findById(userEmail);
+    return this.userModel.findOne({ email: userEmail });
   }
 
   public async getProfile(token: Token): Promise<UserProfile> {

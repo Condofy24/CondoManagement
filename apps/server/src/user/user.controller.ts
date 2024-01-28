@@ -46,7 +46,6 @@ export class UserController {
     return this.userService.remove(id);
   }
 
-  // @UseGuards(AuthGuard) -- Comment for testing
   @Patch(':id')
   updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
