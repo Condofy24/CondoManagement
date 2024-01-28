@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CompanySchema, Company } from './entities/company.entity';
+import { Company } from './entities/company.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { response } from 'express';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @Injectable()
-export class UserService {
+export class CompanyService {
   constructor(
-    @InjectModel('CompanySchema')
+    @InjectModel('Company')
     private readonly companyModel: Model<Company>,
   ) {}
 
@@ -23,14 +23,14 @@ export class UserService {
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
-    return response.status(HttpStatus.CREATED);
+    return { id: result._id, name, location };
   }
 
-  public async updateCompany(updateCompanyDto: UpdateCompanyDto) {
+  public async updateCompany(id: string, updateCompanyDto: UpdateCompanyDto) {
     const { name, location } = updateCompanyDto;
 
     // Find company
-    const company = new this.companyModel({ name, location });
+    const company = await this.companyModel.findById(id);
     if (!company) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },
@@ -43,6 +43,18 @@ export class UserService {
 
     return {
       id: company.id,
+      name: company.name,
+      location: company.location,
+    };
+  }
+
+  public async findOne(id: string) {
+    const company = await this.companyModel.findById(id);
+    if (!company) {
+      throw new HttpException(' ', HttpStatus.NOT_FOUND);
+    }
+    return {
+      id: company._id,
       name: company.name,
       location: company.location,
     };
