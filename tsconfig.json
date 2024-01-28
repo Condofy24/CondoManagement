@@ -13,7 +13,6 @@
     "paths": {
       "@server/*": ["./apps/server/src/*"],
       "@client/*": ["./apps/client/*"],
-      "@/*": ["./apps/client/*"],
     },
   },
 }
