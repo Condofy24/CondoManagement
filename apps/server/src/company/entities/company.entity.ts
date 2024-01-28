@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 
 export const CompanySchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     location: { type: String, required: true },
   },
   {

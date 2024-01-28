@@ -16,6 +16,14 @@ export class CompanyService {
   public async createCompany(createCompanyDto: CreateCompanyDto) {
     const { name, location } = createCompanyDto;
 
+    const company = await this.companyModel.findOne({ name });
+    if (company) {
+      throw new HttpException(
+        { error: 'Company already exists', status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     // Create company
     const newCompany = new this.companyModel({ name, location });
 
@@ -33,7 +41,7 @@ export class CompanyService {
     const company = await this.companyModel.findById(id);
     if (!company) {
       throw new HttpException(
-        { error: 'User not found', status: HttpStatus.NOT_FOUND },
+        { error: 'Company not found', status: HttpStatus.NOT_FOUND },
         HttpStatus.NOT_FOUND,
       );
     }
@@ -51,7 +59,10 @@ export class CompanyService {
   public async findOne(id: string) {
     const company = await this.companyModel.findById(id);
     if (!company) {
-      throw new HttpException(' ', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        { error: 'Company not found', status: HttpStatus.NOT_FOUND },
+        HttpStatus.NOT_FOUND,
+      );
     }
     return {
       id: company._id,
