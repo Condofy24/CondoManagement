@@ -14,7 +14,7 @@ export class UserService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
   public async createUser(createUserDto: CreateUserDto) {
-    const { email, password, name, role } = createUserDto;
+    const { email, password, name, role, phoneNumber, picURL } = createUserDto;
 
     // Check user doesn't already exist
     const isUserAlreadyExist = await this.userModel.exists({ email: email });
@@ -26,7 +26,14 @@ export class UserService {
     }
 
     // Create user
-    const newUser = new this.userModel({ email, password, name, role });
+    const newUser = new this.userModel({
+      email,
+      password,
+      name,
+      role,
+      phoneNumber,
+      picURL,
+    });
 
     const result = await newUser.save();
     if (result instanceof Error)
@@ -48,6 +55,8 @@ export class UserService {
       email: user.email,
       name: user.name,
       role: user.role,
+      phoneNumber:user.phoneNumber,
+      picURL:user.picURL,
     } as UserProfile;
   }
 
@@ -60,6 +69,8 @@ export class UserService {
           email: user.email,
           name: user.name,
           role: user.role,
+          phoneNumber:user.phoneNumber,
+          picURL:user.picURL,
         }) as UserProfile,
     );
   }
@@ -81,7 +92,7 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserDto> {
-    const { name, email, newPassword } = updateUserDto;
+    const { name, email, newPassword,phoneNumber,picURL } = updateUserDto;
 
     // Find the user by id
     const user = await this.userModel.findById(id);
@@ -98,6 +109,8 @@ export class UserService {
 
     user.email = email;
     user.name = name;
+    user.phoneNumber=phoneNumber;
+    user.picURL=picURL;
     await user.save();
 
     return {
@@ -105,6 +118,8 @@ export class UserService {
       email: user.email,
       name: user.name,
       role: user.role,
+      phoneNumber: user.phoneNumber,
+      picURL: user.picURL,
     };
   }
 

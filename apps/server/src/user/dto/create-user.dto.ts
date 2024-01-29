@@ -14,4 +14,10 @@ export class CreateUserDto {
 
   @Validate(IsValidRole)
   role: string;
+
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsNotEmpty()
+  picURL: string;
 }

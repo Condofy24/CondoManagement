@@ -14,4 +14,6 @@ export interface UserProfile {
   password: string;
   name: string;
   role: number;
+  phoneNumber: string;
+  picURL: string;
 }

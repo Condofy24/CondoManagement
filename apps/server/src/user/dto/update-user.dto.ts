@@ -6,4 +6,12 @@ export class UpdateUserDto {
   email: string;
   @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsNotEmpty()
+  picURL: string;
+
+  // Should we also be allowed to update the role of the user or no ?
 }
