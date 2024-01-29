@@ -89,4 +89,14 @@ export class CompanyService {
       companyId: company.companyId,
     };
   }
+
+  public async findAll() {
+    const companies = await this.companyModel.find();
+    return companies?.map((company) => ({
+      id: company._id,
+      name: company.name,
+      location: company.location,
+      companyId: company.companyId,
+    }));
+  }
 }
