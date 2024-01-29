@@ -21,14 +21,14 @@ export default function Header() {
       <div className="absolute left-4 top-2">
         <Image
           src={logo}
-          alt="company logo"
+          alt="website logo"
           quality={100}
           objectFit="cover"
           height={40}
           width={40}
         />
       </div>
-      <nav className="fixed left-1/2 flex h-8 -translate-x-1/2 py-2 sm:h-[initial]">
+      <nav className="fixed left-1/2 flex h-8 -translate-x-1/2 py-1 sm:h-[initial]">
         <ul className="flex w-[22rem] flex-wrap items-center justify-center gap-y-1 text-[0.9rem] font-medium text-gray-500 sm:w-[initial] sm:flex-nowrap sm:gap-5">
           {links.map((link) => (
             <motion.li
@@ -45,7 +45,7 @@ export default function Header() {
                       activeSection === link.name,
                   },
                 )}
-                href={link.hash}
+                href={`/${link.name}`}
                 onClick={() => {
                   setTimeOfLastClick(Date.now());
                   setActiveSection(link.name);
