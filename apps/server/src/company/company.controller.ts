@@ -24,4 +24,9 @@ export class CompanyController {
   getCompany(@Param('id') id: string) {
     return this.companyService.findOne(id);
   }
+
+  @Get('companyId/:id')
+  getByCompanyId(@Param('id') id: string) {
+    return this.companyService.findByCompanyId(id);
+  }
 }
