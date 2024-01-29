@@ -54,7 +54,6 @@ export class PrivilegeGuard implements CanActivate {
     console.log(request)
     const token = extractTokenFromHeader(request);
     if (!token) {
-      console.log("here")
       throw new UnauthorizedException();
     }
     try {
@@ -65,7 +64,6 @@ export class PrivilegeGuard implements CanActivate {
       // so that we can access it in our route handlers
       request['user'] = payload;
     } catch {
-      console.log("here2")
       throw new UnauthorizedException();
     }
     return (
