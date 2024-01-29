@@ -4,6 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import ThemeContextProvider from "@/context/theme-context";
 import ThemeSwitch from "@/app/components/theme/theme-switch";
+import Header from "./components/header";
+import ActiveSectionContextProvider from "@/context/active-section-context";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,15 +26,18 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "relative bg-gray-50 pt-28 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90 sm:pt-36",
+          "bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90",
           fontSans.variable,
         )}
       >
-        <ThemeContextProvider>
-          {children}
+        <ActiveSectionContextProvider>
+          <ThemeContextProvider>
+            <Header />
+            {children}
 
-          <ThemeSwitch />
-        </ThemeContextProvider>
+            <ThemeSwitch />
+          </ThemeContextProvider>
+        </ActiveSectionContextProvider>
       </body>
     </html>
   );
