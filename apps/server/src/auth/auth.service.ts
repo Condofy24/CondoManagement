@@ -17,8 +17,7 @@ export class AuthService {
     const user = await this.userService.findOne(email);
     if (user && !compareSync(password, user?.password)) {
       throw new UnauthorizedException();
-    }
-    if (user) {
+    } else if (user && compareSync(password, user?.password)) {
       const payload = { sub: user.id }; // name the user id sub per jwt conventions
       const userInfo: UserDto = {
         email,
@@ -31,5 +30,6 @@ export class AuthService {
         user: userInfo,
       };
     }
+    throw new UnauthorizedException();
   }
 }
