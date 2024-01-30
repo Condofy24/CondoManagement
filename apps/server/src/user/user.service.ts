@@ -22,15 +22,15 @@ export class UserService {
     private cloudinary: CloudinaryService,
   ) {}
 
-  async uploadImageToCloudinary(file: Express.Multer.File) {
-    try {
-      const imageResponse = await this.cloudinary.uploadImage(file);
-      return imageResponse;
-    } catch (error) {
-      console.error('Error uploading image to Cloudinary:', error);
-      throw new BadRequestException('Failed to upload image to Cloudinary.');
-    }
-  }
+  // async uploadImageToCloudinary(file: Express.Multer.File) {
+  //   try {
+  //     const imageResponse = await this.cloudinary.uploadImage(file);
+  //     return imageResponse;
+  //   } catch (error) {
+  //     console.error('Error uploading image to Cloudinary:', error);
+  //     throw new BadRequestException('Failed to upload image to Cloudinary.');
+  //   }
+  // }
   public async createUser(createUserDto: CreateUserDto) {
     const { email, password, name, role, phoneNumber, image } = createUserDto;
 
@@ -42,11 +42,11 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-    const imageResponse = await this.uploadImageToCloudinary(image);
-    const imageObj = {
-      url: imageResponse.url,
-      filename: imageResponse.public_id,
-    };
+    // const imageResponse = await this.uploadImageToCloudinary(image);
+    // const imageObj = {
+    //   url: imageResponse.url,
+    //   filename: imageResponse.public_id,
+    // };
     // Create user
     const newUser = new this.userModel({
       email,
@@ -54,7 +54,7 @@ export class UserService {
       name,
       role,
       phoneNumber,
-      imageObj,
+      // imageObj,
     });
 
     const result = await newUser.save();

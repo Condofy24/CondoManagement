@@ -1,9 +1,9 @@
-import { v2, ConfigOptions } from 'cloudinary';
-import { CLOUDINARY } from './constants';
+import { v2 } from 'cloudinary';
+
 
 export const CloudinaryProvider = {
-  provide: CLOUDINARY,
-  useFactory: (): ConfigOptions => {
+  provide: 'CLOUDINARY',
+  useFactory: () => {
     return v2.config({
       cloud_name: 'dzu5t20lr',
       api_key: '197778941574538',
