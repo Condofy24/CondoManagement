@@ -1,12 +1,4 @@
-import { useState } from "react";
 import Link from "next/link";
-//import { Link, useNavigate } from "react-router-dom";
-//import { useDispatch, useSelector } from "react-redux";
-//import { signInAction, clearMessage } from "../redux/actions/authActions";
-import { AiFillGithub } from "react-icons/ai";
-import { RxCross1 } from "react-icons/rx";
-import { MdOutlineAdminPanelSettings } from "react-icons/md";
-//import ButtonLoadingSpinner from "../components/loader/ButtonLoadingSpinner";
 import Logo from "@/public/logo.png";
 import Image from "next/image";
 
@@ -18,38 +10,6 @@ const SignIn = () => {
           <div className="mx-auto flex justify-center">
           <Image className="h-7 w-auto sm:h-8" src={Logo} alt="" />
           </div>
-          {/* { (
-            <div
-              className="mt-6 flex items-center justify-between rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700"
-              role="alert"
-            >
-              <div>
-                <span className="block sm:inline">{signInError}</span>
-              </div>
-              <button
-                className="font-bold text-red-700"
-                onClick={handleClearMessage}
-              >
-                <RxCross1 className="h-3 w-3" />
-              </button>
-            </div>
-          )} */}
-          {/* { (
-            <div
-              className="mt-6 flex items-center justify-between rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700"
-              role="alert"
-            >
-              <div>
-                <span className="block sm:inline">{successMessage}</span>
-              </div>
-              <button
-                className="font-bold text-green-700"
-                onClick={handleClearMessage}
-              >
-                <RxCross1 className="h-3 w-3" />
-              </button>
-            </div>
-          )} */}
           <div className="mt-6 flex items-center justify-center">
             <Link
               href={"/signin"}
