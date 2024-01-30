@@ -4,5 +4,5 @@ export class UserDto {
   name: string;
   role: number;
   phoneNumber: string;
-  picURL: string;
+  image: object;
 }

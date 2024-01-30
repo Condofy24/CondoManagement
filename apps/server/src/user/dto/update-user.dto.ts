@@ -11,7 +11,7 @@ export class UpdateUserDto {
   phoneNumber: string;
 
   @IsNotEmpty()
-  picURL: string;
+  image: Express.Multer.File;
 
   // Should we also be allowed to update the role of the user or no ?
 }

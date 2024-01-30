@@ -19,5 +19,5 @@ export class CreateUserDto {
   phoneNumber: string;
 
   @IsNotEmpty()
-  picURL: string;
+  image: Express.Multer.File;
 }

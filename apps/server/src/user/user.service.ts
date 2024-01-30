@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
@@ -8,13 +13,26 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(
+    @InjectModel('User') private readonly userModel: Model<User>,
+    private cloudinary: CloudinaryService,
+  ) {}
 
+  async uploadImageToCloudinary(file: Express.Multer.File) {
+    try {
+      const imageResponse = await this.cloudinary.uploadImage(file);
+      return imageResponse;
+    } catch (error) {
+      console.error('Error uploading image to Cloudinary:', error);
+      throw new BadRequestException('Failed to upload image to Cloudinary.');
+    }
+  }
   public async createUser(createUserDto: CreateUserDto) {
-    const { email, password, name, role, phoneNumber, picURL } = createUserDto;
+    const { email, password, name, role, phoneNumber, image } = createUserDto;
 
     // Check user doesn't already exist
     const isUserAlreadyExist = await this.userModel.exists({ email: email });
@@ -24,7 +42,11 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-
+    const imageResponse = await this.uploadImageToCloudinary(image);
+    const imageObj = {
+      url: imageResponse.url,
+      filename: imageResponse.public_id,
+    };
     // Create user
     const newUser = new this.userModel({
       email,
@@ -32,7 +54,7 @@ export class UserService {
       name,
       role,
       phoneNumber,
-      picURL,
+      imageObj,
     });
 
     const result = await newUser.save();
@@ -55,8 +77,8 @@ export class UserService {
       email: user.email,
       name: user.name,
       role: user.role,
-      phoneNumber:user.phoneNumber,
-      picURL:user.picURL,
+      phoneNumber: user.phoneNumber,
+      image: user.image,
     } as UserProfile;
   }
 
@@ -69,8 +91,8 @@ export class UserService {
           email: user.email,
           name: user.name,
           role: user.role,
-          phoneNumber:user.phoneNumber,
-          picURL:user.picURL,
+          phoneNumber: user.phoneNumber,
+          image: user.image,
         }) as UserProfile,
     );
   }
@@ -92,7 +114,7 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserDto> {
-    const { name, email, newPassword,phoneNumber,picURL } = updateUserDto;
+    const { name, email, newPassword, phoneNumber, image } = updateUserDto;
 
     // Find the user by id
     const user = await this.userModel.findById(id);
@@ -109,8 +131,8 @@ export class UserService {
 
     user.email = email;
     user.name = name;
-    user.phoneNumber=phoneNumber;
-    user.picURL=picURL;
+    user.phoneNumber = phoneNumber;
+    user.image = image;
     await user.save();
 
     return {
@@ -119,7 +141,7 @@ export class UserService {
       name: user.name,
       role: user.role,
       phoneNumber: user.phoneNumber,
-      picURL: user.picURL,
+      image: user.image,
     };
   }
 
