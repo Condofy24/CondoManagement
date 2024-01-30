@@ -15,7 +15,7 @@ export class CloudinaryService {
             resolve(result);
           } else {
             reject(new Error('Cloudinary upload result is undefined'));
-          }          
+          }
         },
       );
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
