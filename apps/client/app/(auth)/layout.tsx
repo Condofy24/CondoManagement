@@ -7,8 +7,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex relative">
-      <div className="w-3/5 h-[calc(100vh_-_3rem)] object-fill overflow-hidden relative top-12">
+    <div className="flex top-12 h-[calc(100vh_-_3rem)] relative bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90">
+      <div className="w-3/5 object-fill overflow-hidden relative">
         <Image
           src={condo}
           alt="image of a condo"

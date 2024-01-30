@@ -48,3 +48,11 @@
     --ring: 224.3 76.3% 48%;
   }
 }
+
+.borderBlack {
+  @apply border border-black/10;
+}
+
+.formInput {
+  @apply dark:text-white/80 block rounded-lg border bg-white text-gray-700 focus:border-black/100 focus:outline-none focus:ring focus:ring-black/100 focus:ring-opacity-40;
+}
