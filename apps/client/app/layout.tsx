@@ -6,6 +6,7 @@ import ThemeContextProvider from "@/context/theme-context";
 import ThemeSwitch from "@/app/components/theme/theme-switch";
 import Header from "./components/header";
 import ActiveSectionContextProvider from "@/context/active-section-context";
+import { ReduxProvider } from "@/redux/provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,14 +28,13 @@ export default function RootLayout({
       <body
         className={cn(
           "bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
         <ActiveSectionContextProvider>
           <ThemeContextProvider>
             <Header />
-            {children}
-
+            <ReduxProvider>{children}</ReduxProvider>
             <ThemeSwitch />
           </ThemeContextProvider>
         </ActiveSectionContextProvider>
