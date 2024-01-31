@@ -53,6 +53,10 @@
   @apply border border-black/10;
 }
 
+.borderBlack {
+  @apply border border-black/10;
+}
+
 .formInput {
-  @apply dark:text-white/80 block rounded-lg border bg-white text-gray-700 focus:border-black/100 focus:outline-none focus:ring focus:ring-black/100 focus:ring-opacity-40;
+  @apply dark:bg-opacity-100 dark:text-white/80 block rounded-lg border bg-white text-gray-700 focus:border-black/100 focus:outline-none dark:focus:ring-gray-700 focus:ring-1 focus:ring-black/100 focus:ring-opacity-40;
 }

@@ -1,11 +1,11 @@
 "use client";
-
+import CompanyRegistrationForm from "@/app/components/auth/company-registration-form";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { TypeOf, object, string } from "zod";
+import { object, string, TypeOf } from "zod";
 
 const signupSchema = object({
   email: string().email(),
@@ -16,7 +16,7 @@ const signupSchema = object({
 
 type TSignupSchema = TypeOf<typeof signupSchema>;
 
-const SignUpNew = () => {
+export default function CompanyRegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -28,30 +28,6 @@ const SignUpNew = () => {
     resolver: zodResolver(signupSchema),
   });
 
-  const handleProfilePictureChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      setProfilePicture(null);
-      setProfilePictureError(null);
-      return;
-    }
-    if (
-      file.type !== "image/jpeg" &&
-      file.type !== "image/png" &&
-      file.type !== "image/jpg"
-    ) {
-      setProfilePicture(null);
-      setProfilePictureError(
-        "Please upload a valid image file (jpeg, jpg, png)",
-      );
-    } else if (file.size > 10 * 1024 * 1024) {
-      setProfilePicture(null);
-      setProfilePictureError("Please upload an image file less than 10MB");
-    } else {
-      setProfilePicture(file);
-      setProfilePictureError(null);
-    }
-  };
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   setLoading(true);
@@ -69,10 +45,12 @@ const SignUpNew = () => {
   //   clearTimeout(timeout);
   // };
   //
-  const onSubmit = async (data: TSignupSchema) => {};
-
+  const onSubmit = async () => {};
   return (
     <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
+      <div className="mx-auto flex justify-center">
+        <CompanyRegistrationForm />
+      </div>
       <div className="relative mt-8 flex items-center">
         <span className="absolute">
           <svg
@@ -196,6 +174,4 @@ const SignUpNew = () => {
       </div>
     </form>
   );
-};
-
-export default SignUpNew;
+}

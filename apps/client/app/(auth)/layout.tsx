@@ -8,7 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <div className="flex top-12 h-[calc(100vh_-_3rem)] relative bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90">
-      <div className="w-3/5 object-fill overflow-hidden relative">
+      <div className="w-3/5 object-fill overflow-hidden relative hidden md:block">
         <Image
           src={condo}
           alt="image of a condo"
@@ -17,7 +17,7 @@ export default function RootLayout({
           layout="fill"
         />
       </div>
-      <div className="w-2/5">{children}</div>
+      <div className="md:w-2/5">{children}</div>
     </div>
   );
 }
