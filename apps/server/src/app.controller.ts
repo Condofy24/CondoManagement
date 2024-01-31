@@ -15,9 +15,11 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-  @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
-    return this.cloudinaryService.uploadFile(file);
-  }
+
+  // Keeping this for now for testing purpose 
+  // @Post()
+  // @UseInterceptors(FileInterceptor('file'))
+  // uploadImage(@UploadedFile() file: Express.Multer.File) {
+  //   return this.cloudinaryService.uploadFile(file);
+  // }
 }

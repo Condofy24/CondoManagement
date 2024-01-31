@@ -31,7 +31,10 @@ export class UserService {
       throw new BadRequestException('Failed to upload image to Cloudinary.');
     }
   }
-  public async createUser(createUserDto: CreateUserDto, image: Express.Multer.File) {
+  public async createUser(
+    createUserDto: CreateUserDto,
+    image: Express.Multer.File,
+  ) {
     const { email, password, name, role, phoneNumber } = createUserDto;
 
     // Check user doesn't already exist
@@ -113,7 +116,7 @@ export class UserService {
   public async updateUser(
     id: string,
     updateUserDto: UpdateUserDto,
-    image ?: Express.Multer.File
+    image?: Express.Multer.File,
   ): Promise<UserDto> {
     const { name, email, newPassword, phoneNumber } = updateUserDto;
 
@@ -130,18 +133,16 @@ export class UserService {
       user.password = hashedPassword;
     }
 
-    let imageUrl = "";
-    let imageId = "";
-
-    if(image){
+    let imageUrl = '';
+    let imageId = '';
+    if (image) {
       const imageResponse = await this.uploadImageToCloudinary(image);
       imageUrl = imageResponse.secure_url;
       imageId = imageResponse.public_id;
-    }else{
+    } else {
       imageUrl = user.imageUrl;
       imageId = user.imageId;
     }
-    
 
     user.email = email;
     user.name = name;

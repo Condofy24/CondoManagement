@@ -25,7 +25,10 @@ export class UserController {
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
-  create(@Body() createUserDto: CreateUserDto, @UploadedFile() image: Express.Multer.File) {
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
     return this.userService.createUser(createUserDto, image);
   }
 
@@ -52,8 +55,12 @@ export class UserController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() image: Express.Multer.File) {
-    return this.userService.updateUser(id, updateUserDto);
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.userService.updateUser(id, updateUserDto, image);
   }
 
   // TODO: Manager should be able to modify his employees
