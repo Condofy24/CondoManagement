@@ -25,15 +25,14 @@ export class UserService {
   async uploadImageToCloudinary(file: Express.Multer.File) {
     try {
       const imageResponse = await this.cloudinary.uploadFile(file);
-      console.log('here', imageResponse);
       return imageResponse;
     } catch (error) {
       console.error('Error uploading image to Cloudinary:', error);
       throw new BadRequestException('Failed to upload image to Cloudinary.');
     }
   }
-  public async createUser(createUserDto: CreateUserDto) {
-    const { email, password, name, role, phoneNumber, image } = createUserDto;
+  public async createUser(createUserDto: CreateUserDto, image: Express.Multer.File) {
+    const { email, password, name, role, phoneNumber } = createUserDto;
 
     // Check user doesn't already exist
     const isUserAlreadyExist = await this.userModel.exists({ email: email });
@@ -43,10 +42,7 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-    console.log('here1');
     const imageResponse = await this.uploadImageToCloudinary(image);
-    console.log('here2', imageResponse);
-    // const imageURL = imageResponse.url;
     const imageUrl = imageResponse.secure_url;
     const imageId = imageResponse.public_id;
     // Create user
@@ -59,7 +55,6 @@ export class UserService {
       imageUrl,
       imageId,
     });
-
     const result = await newUser.save();
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -118,8 +113,9 @@ export class UserService {
   public async updateUser(
     id: string,
     updateUserDto: UpdateUserDto,
+    image ?: Express.Multer.File
   ): Promise<UserDto> {
-    const { name, email, newPassword, phoneNumber, image } = updateUserDto;
+    const { name, email, newPassword, phoneNumber } = updateUserDto;
 
     // Find the user by id
     const user = await this.userModel.findById(id);
@@ -133,15 +129,19 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
     }
-    var imageUrl = '';
-    var imageId = '';
-    if (!image) {
+
+    let imageUrl = "";
+    let imageId = "";
+
+    if(image){
+      const imageResponse = await this.uploadImageToCloudinary(image);
+      imageUrl = imageResponse.secure_url;
+      imageId = imageResponse.public_id;
+    }else{
       imageUrl = user.imageUrl;
       imageId = user.imageId;
-    } else {
-      imageUrl = 'ss';
-      imageId = 's';
     }
+    
 
     user.email = email;
     user.name = name;
@@ -156,8 +156,8 @@ export class UserService {
       name: user.name,
       role: user.role,
       phoneNumber: user.phoneNumber,
-      imageUrl: user.imageUrl,
-      imageId: user.imageId,
+      imageUrl: imageUrl,
+      imageId: imageId,
     };
   }
 

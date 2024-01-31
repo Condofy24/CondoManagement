@@ -14,7 +14,8 @@ export const UserSchema = new mongoose.Schema(
     name: { type: String, required: true },
     role: { type: Number, required: true, default: 3 },
     phoneNumber: { type: String, required: true },
-    imageURL: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+    imageId: { type: String, required: true },
   },
   {
     timestamps: true, // This enables automatic createdAt and updatedAt fields

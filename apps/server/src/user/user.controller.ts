@@ -24,9 +24,9 @@ export class UserController {
   // TODO: Create controller for managers to create accounts for their employees
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+  @UseInterceptors(FileInterceptor('image'))
+  create(@Body() createUserDto: CreateUserDto, @UploadedFile() image: Express.Multer.File) {
+    return this.userService.createUser(createUserDto, image);
   }
 
   @Get('users')
@@ -51,7 +51,8 @@ export class UserController {
   }
 
   @Patch(':id')
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UseInterceptors(FileInterceptor('image'))
+  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() image: Express.Multer.File) {
     return this.userService.updateUser(id, updateUserDto);
   }
 

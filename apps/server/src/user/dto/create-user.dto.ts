@@ -17,7 +17,4 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   phoneNumber: string;
-
-  @IsNotEmpty()
-  image: Express.Multer.File;
 }

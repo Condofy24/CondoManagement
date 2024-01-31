@@ -18,7 +18,6 @@ export class CloudinaryService {
           }          
         },
       );
-
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }
