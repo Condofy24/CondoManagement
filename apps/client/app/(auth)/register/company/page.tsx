@@ -6,25 +6,45 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { object, string, TypeOf } from "zod";
+import * as z from "zod";
+
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
+const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg"];
 
 const signupSchema = object({
   email: string().email(),
   username: string().min(3).max(20),
   phone: string().min(10).max(20),
+  profilePicture: z
+    .instanceof(File)
+    .refine((file) => {
+      return !file || file.size <= MAX_UPLOAD_SIZE;
+    }, "File size must be less than 3MB")
+    .refine((file) => {
+      return ACCEPTED_FILE_TYPES.includes(file.type);
+    }, "File must be a PNG"),
   password: string().min(8).max(20),
-});
+}).and(
+  object({
+    company: string().min(3).max(20),
+    address: string().min(10).max(50),
+  }).or(
+    object({
+      companyKey: string().min(6).max(6),
+    }),
+  ),
+);
 
-type TSignupSchema = TypeOf<typeof signupSchema>;
+export type TSignupSchema = TypeOf<typeof signupSchema>;
 
 export default function CompanyRegistrationPage() {
   const [loading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("");
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [profilePictureError, setProfilePictureError] = useState<
-    string | null
-  >();
 
-  const { register, handleSubmit } = useForm<TSignupSchema>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TSignupSchema>({
     resolver: zodResolver(signupSchema),
   });
 
@@ -49,9 +69,9 @@ export default function CompanyRegistrationPage() {
   return (
     <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
       <div className="mx-auto flex justify-center">
-        <CompanyRegistrationForm />
+        <CompanyRegistrationForm formRegister={register} />
       </div>
-      <div className="relative mt-8 flex items-center">
+      <div className="relative mt-4 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +94,12 @@ export default function CompanyRegistrationPage() {
           {...register("username")}
         />
       </div>
-      <div className="relative mt-6 flex items-center">
+      {errors.username && (
+        <div className="text-red-600 mt-1 text-sm">
+          {errors.username.message}
+        </div>
+      )}
+      <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -96,10 +121,14 @@ export default function CompanyRegistrationPage() {
           {...register("email")}
           placeholder="Email"
         />
+        {errors.email && <span></span>}
       </div>
+      {errors.email && (
+        <div className="text-red-600 mt-1 text-sm">{errors.email.message}</div>
+      )}
       <label
         htmlFor="profilePicture"
-        className="mx-auto mt-6 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-3 text-center"
+        className="mx-auto mt-3 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-3 text-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -116,22 +145,14 @@ export default function CompanyRegistrationPage() {
           />
         </svg>
         <h2 className="mx-3 text-gray-400">Profile Photo</h2>
-        <input id="avatar" type="file" className="hidden" />
+        <input type="file" className="hidden" {...register("profilePicture")} />
       </label>
-      {profilePicture && (
-        <div className="mt-2 flex items-center justify-center">
-          <span className="font-medium text-blue-500">
-            {profilePicture.name}
-          </span>
+      {errors.profilePicture && (
+        <div className="text-red-600 mt-1 text-sm">
+          {errors.profilePicture.message}
         </div>
       )}
-      {profilePictureError && (
-        <div className="mt-2 flex items-center justify-center">
-          <span className="text-red-500">{profilePictureError}</span>
-        </div>
-      )}
-
-      <div className="relative mt-4 flex items-center">
+      <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -154,7 +175,12 @@ export default function CompanyRegistrationPage() {
           placeholder="Password"
         />
       </div>
-      <div className="mt-6">
+      {errors.password && (
+        <div className="text-red-600 mt-1 text-sm">
+          {errors.password.message}
+        </div>
+      )}
+      <div className="mt-4">
         <button
           disabled={loading}
           type="submit"
@@ -166,7 +192,7 @@ export default function CompanyRegistrationPage() {
           )}
         >
           {loading ? (
-            <ButtonLoadingSpinner loadingText={loadingText} />
+            <ButtonLoadingSpinner loadingText={"loading"} />
           ) : (
             <span>Sign Up</span>
           )}

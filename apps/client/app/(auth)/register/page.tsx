@@ -24,7 +24,11 @@ const SignUpNew = () => {
     string | null
   >();
 
-  const { register, handleSubmit } = useForm<TSignupSchema>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TSignupSchema>({
     resolver: zodResolver(signupSchema),
   });
 

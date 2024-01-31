@@ -22,9 +22,9 @@ export default function RegistrationLayout({
       <div className="absolute right-4 top-4">
         <button
           type="button"
-          className="flex h-[2rem] w-[16rem] items-center justify-center rounded-full bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10"
+          className="flex h-[2rem] w-[7rem] items-center justify-center rounded-full bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10"
         >
-          <Link href="/login">Already have an account?</Link>
+          <Link href="/login">Login</Link>
         </button>
       </div>
       <div className="container flex flex-col h-[calc(100vh_-_3rem)] items-center justify-center px-6 content-start">

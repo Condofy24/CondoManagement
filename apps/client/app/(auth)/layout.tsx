@@ -17,7 +17,7 @@ export default function RootLayout({
           layout="fill"
         />
       </div>
-      <div className="md:w-2/5">{children}</div>
+      <div className="md:w-2/5 flex-grow">{children}</div>
     </div>
   );
 }

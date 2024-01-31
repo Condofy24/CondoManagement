@@ -16,9 +16,9 @@ export default function Header() {
       <motion.div
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed h-[5rem] w-full border border-white border-opacity-40 bg-white bg-opacity-80 shadow-lg shadow-black/[0.03] backdrop-blur-[0.5rem] dark:border-black/40 dark:bg-gray-950 sm:h-[3.25rem]"
+        className="fixed h-[3rem] w-full border border-white border-opacity-40 bg-white bg-opacity-80 shadow-lg shadow-black/[0.03] backdrop-blur-[0.5rem] dark:border-black/40 dark:bg-gray-950 sm:h-[3.25rem]"
       ></motion.div>
-      <div className="absolute left-4 top-2">
+      <div className="absolute left-4 top-2 hidden md:block">
         <Image
           src={logo}
           alt="website logo"
