@@ -15,10 +15,10 @@ export default function RegistrationLayout({
 }: RegistrationLayoutProps) {
   const pathname = usePathname();
 
-  const isCompanyManagerRegistering = pathname.includes("company");
+  const isManagerRegistering = pathname.includes("manager");
 
   return (
-    <section className="relative">
+    <section>
       <div className="absolute right-4 top-4">
         <button
           type="button"
@@ -27,28 +27,28 @@ export default function RegistrationLayout({
           <Link href="/login">Login</Link>
         </button>
       </div>
-      <div className="container flex flex-col h-[calc(100vh_-_3rem)] items-center justify-center px-6 content-start">
-        <div className="mx-auto flex justify-center h-[5rem] w-[5rem]">
+      <div className="container flex flex-col h-[calc(100vh_-_5rem)] items-center justify-start content-start mt-4">
+        <div className="mx-auto flex justify-center size-[5rem]">
           <Image src={Logo} alt="Website Logo" />
         </div>
-        <div className="mt-6 w-full flex items-center justify-center">
+        <div className="mt-4 w-full flex items-center justify-center">
           <Link
             href={"/register"}
             className={cn(
-              "w-1/3 border-gray-400 pb-4 text-center font-semibold text-gray-800 dark:text-white/80",
+              "border-gray-400 pb-4 text-center font-semibold text-gray-800 dark:text-white/80",
               {
-                "border-b-2": !isCompanyManagerRegistering,
+                "border-b-2": !isManagerRegistering,
               },
             )}
           >
             Owner / Tenant
           </Link>
           <Link
-            href={"/register/company"}
+            href={"/register/manager"}
             className={cn(
-              "w-1/3 border-gray-400 pb-4 text-center font-semibold text-gray-800 dark:text-white/80",
+              "ml-4 border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
               {
-                "border-b-2": isCompanyManagerRegistering,
+                "border-b-2": isManagerRegistering,
               },
             )}
           >
