@@ -20,8 +20,18 @@ export class CompanyController {
     return this.companyService.updateCompany(id, updateCompanyDto);
   }
 
+  @Get()
+  getAllComapnies() {
+    return this.companyService.findAll();
+  }
+
   @Get(':id')
   getCompany(@Param('id') id: string) {
     return this.companyService.findOne(id);
+  }
+
+  @Get('companyId/:id')
+  getByCompanyId(@Param('id') id: string) {
+    return this.companyService.findByCompanyId(id);
   }
 }
