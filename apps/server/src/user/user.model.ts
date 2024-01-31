@@ -15,5 +15,6 @@ export interface UserProfile {
   name: string;
   role: number;
   phoneNumber: string;
-  image: object;
+  imageUrl: string;
+  imageId: string;
 }

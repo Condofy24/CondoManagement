@@ -22,15 +22,16 @@ export class UserService {
     private cloudinary: CloudinaryService,
   ) {}
 
-  // async uploadImageToCloudinary(file: Express.Multer.File) {
-  //   try {
-  //     const imageResponse = await this.cloudinary.uploadImage(file);
-  //     return imageResponse;
-  //   } catch (error) {
-  //     console.error('Error uploading image to Cloudinary:', error);
-  //     throw new BadRequestException('Failed to upload image to Cloudinary.');
-  //   }
-  // }
+  async uploadImageToCloudinary(file: Express.Multer.File) {
+    try {
+      const imageResponse = await this.cloudinary.uploadFile(file);
+      console.log('here', imageResponse);
+      return imageResponse;
+    } catch (error) {
+      console.error('Error uploading image to Cloudinary:', error);
+      throw new BadRequestException('Failed to upload image to Cloudinary.');
+    }
+  }
   public async createUser(createUserDto: CreateUserDto) {
     const { email, password, name, role, phoneNumber, image } = createUserDto;
 
@@ -42,11 +43,12 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-    // const imageResponse = await this.uploadImageToCloudinary(image);
-    // const imageObj = {
-    //   url: imageResponse.url,
-    //   filename: imageResponse.public_id,
-    // };
+    console.log('here1');
+    const imageResponse = await this.uploadImageToCloudinary(image);
+    console.log('here2', imageResponse);
+    // const imageURL = imageResponse.url;
+    const imageUrl = imageResponse.secure_url;
+    const imageId = imageResponse.public_id;
     // Create user
     const newUser = new this.userModel({
       email,
@@ -54,7 +56,8 @@ export class UserService {
       name,
       role,
       phoneNumber,
-      // imageObj,
+      imageUrl,
+      imageId,
     });
 
     const result = await newUser.save();
@@ -78,7 +81,8 @@ export class UserService {
       name: user.name,
       role: user.role,
       phoneNumber: user.phoneNumber,
-      image: user.image,
+      imageUrl: user.imageUrl,
+      imageId: user.imageId,
     } as UserProfile;
   }
 
@@ -92,7 +96,8 @@ export class UserService {
           name: user.name,
           role: user.role,
           phoneNumber: user.phoneNumber,
-          image: user.image,
+          imageUrl: user.imageUrl,
+          imageId: user.imageId,
         }) as UserProfile,
     );
   }
@@ -128,11 +133,21 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
     }
+    var imageUrl = '';
+    var imageId = '';
+    if (!image) {
+      imageUrl = user.imageUrl;
+      imageId = user.imageId;
+    } else {
+      imageUrl = 'ss';
+      imageId = 's';
+    }
 
     user.email = email;
     user.name = name;
     user.phoneNumber = phoneNumber;
-    user.image = image;
+    user.imageUrl = imageUrl;
+    user.imageId = imageId;
     await user.save();
 
     return {
@@ -141,7 +156,8 @@ export class UserService {
       name: user.name,
       role: user.role,
       phoneNumber: user.phoneNumber,
-      image: user.image,
+      imageUrl: user.imageUrl,
+      imageId: user.imageId,
     };
   }
 

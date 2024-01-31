@@ -23,14 +23,15 @@ export class AuthService {
         name: user.name,
         role: user.role,
         phoneNumber: user.phoneNumber,
-        image: user.image,
+        imageUrl: user.imageUrl,
+        imageId: user.imageId,
       };
       return {
         token: await this.jwtService.signAsync(payload),
         user: userInfo,
       };
     }
-    console.log(user?.image);
+
     throw new UnauthorizedException();
   }
 }
