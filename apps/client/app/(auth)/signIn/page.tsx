@@ -12,13 +12,13 @@ const SignIn = () => {
           </div>
           <div className="mt-6 flex items-center justify-center">
             <Link
-              href={"/signin"}
+              href={"/signIn"}
               className="w-1/3 border-b-2 border-blue-500 pb-4 text-center font-medium text-gray-800 "
             >
               Sign In
             </Link>
             <Link
-              href={"/signup"}
+              href={"/register"}
               className="w-1/3 border-b border-gray-400 pb-4 text-center font-medium text-gray-500 "
             >
               Sign Up
