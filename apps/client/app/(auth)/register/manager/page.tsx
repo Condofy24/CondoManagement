@@ -1,4 +1,5 @@
 "use client";
+import FormFieldError from "@/app/components/form/form-field-error";
 import RegistationFormInputs from "@/app/components/form/registation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
@@ -50,22 +51,14 @@ export default function ManagerRegistrationPage() {
                 placeholder="Name"
                 {...register("company")}
               />
-              {errors.company && (
-                <div className="text-red-600 mt-1 text-sm">
-                  {errors.company.message}
-                </div>
-              )}
+              <FormFieldError fieldError={errors.company} />
               <input
                 type="text"
                 className="mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-white"
                 placeholder="Address"
                 {...register("address")}
               />
-              {"address" in errors && errors.address && (
-                <div className="text-red-600 mt-1 text-sm">
-                  {errors.address.message}
-                </div>
-              )}
+              <FormFieldError fieldError={errors.address} />
             </div>
           </div>
         </div>

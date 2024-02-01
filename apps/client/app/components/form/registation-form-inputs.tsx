@@ -1,6 +1,7 @@
 import { TSignupSchema } from "@/lib/validation-schemas";
 import { SetStateAction, useRef, useState } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
+import FormFieldError from "./form-field-error";
 
 type RegistationFormInputsProps = {
   register: UseFormRegister<TSignupSchema>;
@@ -45,7 +46,7 @@ export default function RegistationFormInputs({
 
   return (
     <>
-      <div className="relative mt-4 flex items-center">
+      <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -64,15 +65,11 @@ export default function RegistationFormInputs({
         </span>
         <input
           className="w-full px-11 py-2 formInput"
-          placeholder="Username"
+          placeholder="Name"
           {...register("username")}
         />
       </div>
-      {errors.username && (
-        <div className="text-red-600 mt-1 text-sm">
-          {errors.username.message}
-        </div>
-      )}
+      <FormFieldError fieldError={errors.username} />
       <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
@@ -96,12 +93,10 @@ export default function RegistationFormInputs({
           placeholder="Email"
         />
       </div>
-      {errors.email && (
-        <div className="text-red-600 mt-1 text-sm">{errors.email.message}</div>
-      )}
+      <FormFieldError fieldError={errors.email} />
       <div className="relative flex justify-between gap-x-2">
-        <div className="flex-grow">
-          <div className="relative mt-3 flex items-center">
+        <div>
+          <div className="relative mt-2 flex items-center">
             <span className="absolute">
               <svg
                 className="mx-3 h-6 w-6 text-gray-300"
@@ -116,21 +111,17 @@ export default function RegistationFormInputs({
               </svg>
             </span>
             <input
-              className="w-full pl-11 pr-2 py-2 formInput"
+              className="w-full pl-11 pr-1 py-2 formInput"
               {...register("phone")}
               placeholder="Phone Number"
             />
           </div>
-          {errors.phone && (
-            <div className="text-red-600 mt-1 text-sm">
-              {errors.phone.message}
-            </div>
-          )}
+          <FormFieldError fieldError={errors.phone} />
         </div>
         <div>
           <label
             htmlFor="profilePicture"
-            className="mx-auto mt-3 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-2 text-center"
+            className="mx-auto mt-2 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-[0.4rem] text-center"
             onClick={() => {
               profilePicInputRef && profilePicInputRef.current.click();
             }}
@@ -160,13 +151,11 @@ export default function RegistationFormInputs({
               onClick={handleProfilePicChange}
             />
           </label>
-          {profilePicError && (
-            <div className="text-red-600 mt-1 text-sm">{profilePicError}</div>
-          )}
+          <div className="text-red-600 my-1 text-sm h-2">{profilePicError}</div>
         </div>
       </div>
 
-      <div className="relative mt-3 flex items-center">
+      <div className="relative mt-2 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -187,13 +176,10 @@ export default function RegistationFormInputs({
           className="w-full px-10 py-3 formInput"
           {...register("password")}
           placeholder="Password"
+          type="password"
         />
       </div>
-      {errors.password && (
-        <div className="text-red-600 mt-1 text-sm">
-          {errors.password.message}
-        </div>
-      )}
+      <FormFieldError fieldError={errors.password} />
     </>
   );
 }
