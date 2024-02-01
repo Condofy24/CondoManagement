@@ -34,6 +34,7 @@
     "mongoose": "^6.12.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
