@@ -45,6 +45,27 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
+    // Check phone number doesn't already exist
+    const isPhoneNumberValid = await this.userModel.exists({
+      phoneNumber: phoneNumber,
+    });
+    if (phoneNumber.length < 10) {
+      throw new HttpException(
+        {
+          error: 'Phone number length is less than 10',
+          status: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else if (!!isPhoneNumberValid) {
+      throw new HttpException(
+        {
+          error: 'Phone number already linked to another user',
+          status: HttpStatus.CONFLICT,
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
     const imageResponse = await this.uploadImageToCloudinary(image);
     const imageUrl = imageResponse.secure_url;
     const imageId = imageResponse.public_id;
@@ -128,6 +149,38 @@ export class UserService {
         HttpStatus.NOT_FOUND,
       );
     }
+    if (user.email != email) {
+      const isUserAlreadyExist = await this.userModel.exists({ email: email });
+      if (!!isUserAlreadyExist) {
+        throw new HttpException(
+          { error: 'User already exists', status: HttpStatus.CONFLICT },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
+    // Check phone number doesn't already exist
+    const isPhoneNumberValid = await this.userModel.exists({
+      phoneNumber: phoneNumber,
+    });
+    //Still need to validate the input is numbers
+    if (phoneNumber.length < 10 || !/^\d+$/.test(phoneNumber)) {
+      throw new HttpException(
+        {
+          error: 'Invalid phone number format or length',
+          status: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    } else if (!!isPhoneNumberValid) {
+      throw new HttpException(
+        {
+          error: 'Phone number already linked to another user',
+          status: HttpStatus.CONFLICT,
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
     if (newPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
