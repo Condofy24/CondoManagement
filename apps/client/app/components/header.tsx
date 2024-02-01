@@ -28,7 +28,7 @@ export default function Header() {
           width={40}
         />
       </div>
-      <nav className="fixed left-1/2 flex h-8 -translate-x-1/2 py-1 sm:h-[initial]">
+      <nav className="fixed left-1/2 h-12 flex -translate-x-1/2 py-1 sm:h-[initial]">
         <ul className="flex w-[22rem] flex-wrap items-center justify-center gap-y-1 text-[0.9rem] font-medium text-gray-500 sm:w-[initial] sm:flex-nowrap sm:gap-5">
           {links.map((link) => (
             <motion.li

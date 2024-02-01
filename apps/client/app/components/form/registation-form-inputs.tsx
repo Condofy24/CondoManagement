@@ -1,15 +1,48 @@
 import { TSignupSchema } from "@/lib/validation-schemas";
+import { SetStateAction, useRef, useState } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 type RegistationFormInputsProps = {
   register: UseFormRegister<TSignupSchema>;
   errors: FieldErrors<TSignupSchema>;
+  profilePic: {
+    profilePic: File | null;
+    setProfilePic: React.Dispatch<SetStateAction<File | null>>;
+  };
 };
+
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
+const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg"];
 
 export default function RegistationFormInputs({
   register,
   errors,
+  profilePic: { profilePic, setProfilePic },
 }: RegistationFormInputsProps) {
+  const profilePicInputRef = useRef<HTMLInputElement | null>(null);
+  const [profilePicError, setProfilePicError] = useState<string | null>();
+
+  const handleProfilePicChange = (
+    e: MouseEvent<HTMLInputElement, MouseEvent>,
+  ) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setProfilePic(null);
+      setProfilePicError(null);
+      return;
+    }
+    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+      setProfilePic(null);
+      setProfilePicError("Please upload a valid image file (jpeg, jpg, png)");
+    } else if (file.size > MAX_UPLOAD_SIZE) {
+      setProfilePic(null);
+      setProfilePicError("Please upload an image file less than 10MB");
+    } else {
+      setProfilePic(file);
+      setProfilePicError(null);
+    }
+  };
+
   return (
     <>
       <div className="relative mt-4 flex items-center">
@@ -98,6 +131,9 @@ export default function RegistationFormInputs({
           <label
             htmlFor="profilePicture"
             className="mx-auto mt-3 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-2 text-center"
+            onClick={() => {
+              profilePicInputRef && profilePicInputRef.current.click();
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -113,16 +149,19 @@ export default function RegistationFormInputs({
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
               />
             </svg>
-            <h2 className="mx-3 text-gray-400">Picture</h2>
+            <h2 className="mx-3 text-gray-400">
+              {profilePic?.name || "Picture"}
+            </h2>
             <input
+              type="file"
+              accept="image/*"
               className="hidden"
-              {...register("profilePicture", { required: false })}
+              ref={profilePicInputRef}
+              onClick={handleProfilePicChange}
             />
           </label>
-          {errors.profilePicture && (
-            <div className="text-red-600 mt-1 text-sm">
-              {errors.profilePicture.message}
-            </div>
+          {profilePicError && (
+            <div className="text-red-600 mt-1 text-sm">{profilePicError}</div>
           )}
         </div>
       </div>

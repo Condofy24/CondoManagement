@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
 
   const {
     register,
@@ -19,28 +20,22 @@ const SignUpNew = () => {
     resolver: zodResolver(signupSchema),
   });
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setLoadingText("Signing up...");
-  //
-  //   const timeout = setTimeout(() => {
-  //     setLoadingText(
-  //       "This is taking longer than usual. Please wait while backend services are getting started.",
-  //     );
-  //   }, 5000);
-  //
-  //   await dispatch(signUpAction(formData, navigate, isConsentGiven, email));
-  //   setLoading(false);
-  //   setIsConsentGiven(false);
-  //   clearTimeout(timeout);
-  // };
-  //
-  const onSubmit = async () => {};
+  const onSubmit = (data: TSignupSchema) => {
+    setLoading(true);
+
+    // send request to server
+    console.log(data);
+
+    setLoading(false);
+  };
 
   return (
     <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
-      <RegistationFormInputs register={register} errors={errors} />
+      <RegistationFormInputs
+        register={register}
+        errors={errors}
+        profilePic={{ profilePic, setProfilePic }}
+      />
       <div className="mt-4">
         <button
           disabled={loading}

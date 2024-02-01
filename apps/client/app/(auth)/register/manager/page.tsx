@@ -11,7 +11,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function ManagerRegistrationPage() {
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
 
   const {
     register,
@@ -21,24 +22,14 @@ export default function ManagerRegistrationPage() {
     resolver: zodResolver(managerSignupSchema),
   });
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setLoadingText("Signing up...");
-  //
-  //   const timeout = setTimeout(() => {
-  //     setLoadingText(
-  //       "This is taking longer than usual. Please wait while backend services are getting started.",
-  //     );
-  //   }, 5000);
-  //
-  //   await dispatch(signUpAction(formData, navigate, isConsentGiven, email));
-  //   setLoading(false);
-  //   setIsConsentGiven(false);
-  //   clearTimeout(timeout);
-  // };
-  //
-  const onSubmit = async () => {};
+  const onSubmit = (data: TManagerSignupSchema) => {
+    setLoading(true);
+
+    // send request to server
+    console.log(data);
+
+    setLoading(false);
+  };
 
   return (
     <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
@@ -46,7 +37,7 @@ export default function ManagerRegistrationPage() {
         <div className="flex flex-col items-start mt-6 mb-2 dark:bg-gray-800 p-4 border-1 shadow-black border-gray-700 bg-gray-200/45 rounded-lg">
           <h2
             className={cn(
-              "w-[20rem] flex justify-center mb-3 px-3 text-white outline-none font-semibold text-lg text-gray-700/90 dark:text-white/80",
+              "w-[18rem] flex justify-center mb-3 px-3 text-white outline-none font-semibold text-lg text-gray-700/90 dark:text-white/80",
             )}
           >
             Company Details
@@ -56,7 +47,7 @@ export default function ManagerRegistrationPage() {
               <input
                 type="text"
                 className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-white"
-                placeholder="Company Name"
+                placeholder="Name"
                 {...register("company")}
               />
               {errors.company && (
@@ -79,7 +70,11 @@ export default function ManagerRegistrationPage() {
           </div>
         </div>
       </div>
-      <RegistationFormInputs register={register} errors={errors} />
+      <RegistationFormInputs
+        register={register}
+        errors={errors}
+        profilePic={{ profilePic, setProfilePic }}
+      />
       <div className="mt-4">
         <button
           disabled={loading}

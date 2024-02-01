@@ -27,7 +27,7 @@ export default function RegistrationLayout({
           <Link href="/login">Login</Link>
         </button>
       </div>
-      <div className="container flex flex-col h-[calc(100vh_-_5rem)] items-center justify-start content-start mt-4">
+      <div className="container flex flex-col h-[calc(100vh_-_5rem)] items-center justify-center content-start">
         <div className="mx-auto flex justify-center size-[5rem]">
           <Image src={Logo} alt="Website Logo" />
         </div>
@@ -35,7 +35,7 @@ export default function RegistrationLayout({
           <Link
             href={"/register"}
             className={cn(
-              "border-gray-400 pb-4 text-center font-semibold text-gray-800 dark:text-white/80",
+              "border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
               {
                 "border-b-2": !isManagerRegistering,
               },
