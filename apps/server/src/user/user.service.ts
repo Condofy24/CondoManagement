@@ -49,10 +49,10 @@ export class UserService {
     const isPhoneNumberValid = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (phoneNumber.length < 10) {
+    if (phoneNumber.length < 10 || !/^\d+$/.test(phoneNumber)) {
       throw new HttpException(
         {
-          error: 'Phone number length is less than 10',
+          error: 'Invalid phone number format or length',
           status: HttpStatus.BAD_REQUEST,
         },
         HttpStatus.BAD_REQUEST,
