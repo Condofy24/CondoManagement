@@ -16,9 +16,9 @@ export default function Header() {
       <motion.div
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed h-[5rem] w-full border border-white border-opacity-40 bg-white bg-opacity-80 shadow-lg shadow-black/[0.03] backdrop-blur-[0.5rem] dark:border-black/40 dark:bg-gray-950 sm:h-[3.25rem]"
+        className="fixed h-[3rem] w-full border border-white border-opacity-40 bg-white bg-opacity-80 shadow-lg shadow-black/[0.03] backdrop-blur-[0.5rem] dark:border-black/40 dark:bg-gray-950 sm:h-[3.25rem]"
       ></motion.div>
-      <div className="absolute left-4 top-2">
+      <div className="absolute left-4 top-2 hidden md:block">
         <Image
           src={logo}
           alt="website logo"
@@ -28,7 +28,7 @@ export default function Header() {
           width={40}
         />
       </div>
-      <nav className="fixed left-1/2 flex h-8 -translate-x-1/2 py-1 sm:h-[initial]">
+      <nav className="fixed left-1/2 h-12 flex -translate-x-1/2 py-1 sm:h-[initial]">
         <ul className="flex w-[22rem] flex-wrap items-center justify-center gap-y-1 text-[0.9rem] font-medium text-gray-500 sm:w-[initial] sm:flex-nowrap sm:gap-5">
           {links.map((link) => (
             <motion.li
