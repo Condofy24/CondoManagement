@@ -17,9 +17,9 @@ export class AppController {
   }
 
   // Keeping this for now for testing purpose 
-  @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
-    return this.cloudinaryService.uploadFile(file);
-  }
+  // @Post()
+  // @UseInterceptors(FileInterceptor('file'))
+  // uploadImage(@UploadedFile() file: Express.Multer.File) {
+  //   return this.cloudinaryService.uploadFile(file);
+  // }
 }
