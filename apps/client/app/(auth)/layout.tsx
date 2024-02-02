@@ -14,6 +14,7 @@ export default function RootLayout({
           alt="image of a condo"
           priority={true}
           quality={95}
+          objectFit="cover"
           layout="fill"
         />
       </div>
