@@ -4,9 +4,13 @@ import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './entities/user.entity';
 import { IsValidRole } from './user.validators';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    CloudinaryModule,
+  ],
   controllers: [UserController],
   providers: [UserService, IsValidRole],
   exports: [UserService, UserModule],

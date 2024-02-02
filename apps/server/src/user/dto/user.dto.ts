@@ -3,4 +3,7 @@ export class UserDto {
   email: string;
   name: string;
   role: number;
+  phoneNumber: string;
+  imageUrl: string;
+  imageId: string;
 }

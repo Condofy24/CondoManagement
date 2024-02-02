@@ -8,11 +8,14 @@ import {
   Request,
   UseGuards,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -21,8 +24,12 @@ export class UserController {
   // TODO: Create controller for managers to create accounts for their employees
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.userService.createUser(createUserDto, image);
   }
 
   @Get('users')
@@ -47,8 +54,13 @@ export class UserController {
   }
 
   @Patch(':id')
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.updateUser(id, updateUserDto);
+  @UseInterceptors(FileInterceptor('image'))
+  updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.userService.updateUser(id, updateUserDto, image);
   }
 
   // TODO: Manager should be able to modify his employees

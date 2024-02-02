@@ -22,12 +22,16 @@ export class AuthService {
         id: user.id,
         name: user.name,
         role: user.role,
+        phoneNumber: user.phoneNumber,
+        imageUrl: user.imageUrl,
+        imageId: user.imageId,
       };
       return {
         token: await this.jwtService.signAsync(payload),
         user: userInfo,
       };
     }
+
     throw new UnauthorizedException();
   }
 
