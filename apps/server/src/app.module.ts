@@ -18,7 +18,7 @@ import { CloudinaryModule } from './user/cloudinary/cloudinary.module';
     UserModule,
     AuthModule,
     CompanyModule,
-    CloudinaryModule
+    CloudinaryModule,
   ],
   controllers: [
     AppController,
