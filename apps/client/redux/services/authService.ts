@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { UserRolesEnum } from "../models/user";
+import { UserInfo } from "../models/user";
 
 const API_URL = "http://127.0.0.1:4000/api";
 
@@ -11,15 +11,7 @@ interface LoginInput {
 
 interface LoginResult {
   token: string;
-  userInfo: {
-    email: string;
-    id: string;
-    name: string;
-    role: UserRolesEnum;
-    phoneNumber: string;
-    imageUrl: string;
-    imageId: string;
-  };
+  userInfo: UserInfo;
 }
 
 export const login = createAsyncThunk<LoginResult, LoginInput>(
@@ -34,8 +26,7 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
 
       // store user's token in local storage
       localStorage.setItem("token", data.token);
-      
-      console.log(data);
+
       return data;
     } catch (error: any) {
       // return custom error message from API if any

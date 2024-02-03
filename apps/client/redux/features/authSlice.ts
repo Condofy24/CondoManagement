@@ -10,7 +10,7 @@ type AuthState = {
   loading: boolean;
   userInfo: UserInfo;
   token: string | null;
-  error: string | null;
+  error: string | undefined;
   success: boolean;
 };
 
@@ -19,7 +19,7 @@ const initialState = {
     loading: false,
     userInfo: {},
     token: null,
-    error: null,
+    error: undefined,
     success: false,
   } as AuthState,
 } as InitialState;
@@ -31,24 +31,6 @@ export const auth = createSlice({
     reset: (state: any) => {
       return initialState;
     },
-    // logout: () => {
-    //   return initialState;
-    // },
-    // login: (state, action: PayloadAction<UserData>) => {
-    //   return {
-    //     value: {
-    //       loading: false,
-    //       userInfo: {
-    //         email: action.payload.email,
-    //         name: "",
-    //         role: UserRolesEnum.ACCOUNTANT,
-    //       },
-    //       userToken: null,
-    //       error: null,
-    //       success: false,
-    //     },
-    //   };
-    // },
   },
   extraReducers: (builder) => {
     builder.addCase(login.pending, (state) => {
@@ -57,11 +39,14 @@ export const auth = createSlice({
       state.value.loading = false;
       state.value.userInfo = action.payload.userInfo;
       state.value.token = action.payload.token;
-      state.value.error = null;
+      state.value.error = undefined;
       state.value.success = true;
-    })
+    }).addCase(login.rejected, (state, action) => {
+      state.value.loading = false;
+      state.value.error = action.error.message;
+      state.value.success = false;
+    });
   }
 });
 
-//export const { login, logout } = auth.actions;
 export default auth.reducer;

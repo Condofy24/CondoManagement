@@ -1,7 +1,11 @@
 export interface UserInfo {
   email: string;
+  id: string;
   name: string;
   role: UserRolesEnum;
+  phoneNumber: string;
+  imageUrl: string;
+  imageId: string;
 }
 
 export enum UserRolesEnum {
