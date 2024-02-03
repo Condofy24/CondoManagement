@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserInfo } from "../models/user";
+import { UserInfo, UserRolesEnum } from "../models/user";
+import { login } from "../services/authService";
 
 type InitialState = {
   value: AuthState;
@@ -23,18 +24,49 @@ const initialState = {
   } as AuthState,
 } as InitialState;
 
+interface UserData {
+  email: string;
+  password: string;
+}
+
 export const auth = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logOut: () => {
+    reset: (state: any) => {
       return initialState;
     },
-    logIn: (state, action: PayloadAction<string>) => {
-      return initialState;
-    },
+    // logout: () => {
+    //   return initialState;
+    // },
+    // login: (state, action: PayloadAction<UserData>) => {
+    //   return {
+    //     value: {
+    //       loading: false,
+    //       userInfo: {
+    //         email: action.payload.email,
+    //         name: "",
+    //         role: UserRolesEnum.ACCOUNTANT,
+    //       },
+    //       userToken: null,
+    //       error: null,
+    //       success: false,
+    //     },
+    //   };
+    // },
   },
+  extraReducers: (builder) => {
+    builder.addCase(login.pending, (state) => {
+      state.value.loading = true;
+    }).addCase(login.fulfilled, (state, action) => {
+      state.value.loading = false;
+      state.value.userInfo = action.payload;
+      state.value.userToken = action.payload.userToken;
+      state.value.error = null;
+      state.value.success = true;
+    })
+  }
 });
 
-export const { logIn, logOut } = auth.actions;
+//export const { login, logout } = auth.actions;
 export default auth.reducer;
