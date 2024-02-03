@@ -13,14 +13,14 @@ export const login = createAsyncThunk(
   async ({ email, password }: LogInInput, { rejectWithValue }) => {
     console.log(email, password);
     try {
-      const { data } = await axios.post(`${API_URL}/user/login`, {
+      const { data } = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
 
       // store user's token in local storage
-      localStorage.setItem("userToken", data.userToken);
-
+      //localStorage.setItem("userToken", data.token);
+      console.log(data)
       return data;
     } catch (error: any) {
       // return custom error message from API if any
