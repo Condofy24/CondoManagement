@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserInfo, UserRolesEnum } from "../models/user";
+import { createSlice } from "@reduxjs/toolkit";
+import { UserInfo } from "../models/user";
 import { login } from "../services/authService";
 
 type InitialState = {
@@ -9,7 +9,7 @@ type InitialState = {
 type AuthState = {
   loading: boolean;
   userInfo: UserInfo;
-  userToken: string | null;
+  token: string | null;
   error: string | null;
   success: boolean;
 };
@@ -18,16 +18,11 @@ const initialState = {
   value: {
     loading: false,
     userInfo: {},
-    userToken: null,
+    token: null,
     error: null,
     success: false,
   } as AuthState,
 } as InitialState;
-
-interface UserData {
-  email: string;
-  password: string;
-}
 
 export const auth = createSlice({
   name: "auth",
@@ -60,8 +55,8 @@ export const auth = createSlice({
       state.value.loading = true;
     }).addCase(login.fulfilled, (state, action) => {
       state.value.loading = false;
-      state.value.userInfo = action.payload;
-      state.value.userToken = action.payload.userToken;
+      state.value.userInfo = action.payload.userInfo;
+      state.value.token = action.payload.token;
       state.value.error = null;
       state.value.success = true;
     })

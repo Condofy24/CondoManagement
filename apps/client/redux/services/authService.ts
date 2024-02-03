@@ -1,26 +1,41 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { UserRolesEnum } from "../models/user";
 
 const API_URL = "http://127.0.0.1:4000/api";
 
-interface LogInInput {
+interface LoginInput {
   email: string;
   password: string;
 }
 
-export const login = createAsyncThunk(
+interface LoginResult {
+  token: string;
+  userInfo: {
+    email: string;
+    id: string;
+    name: string;
+    role: UserRolesEnum;
+    phoneNumber: string;
+    imageUrl: string;
+    imageId: string;
+  };
+}
+
+export const login = createAsyncThunk<LoginResult, LoginInput>(
   "auth/login",
-  async ({ email, password }: LogInInput, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     console.log(email, password);
     try {
-      const { data } = await axios.post(`${API_URL}/auth/login`, {
+      const { data } = await axios.post<LoginResult>(`${API_URL}/auth/login`, {
         email,
         password,
       });
 
       // store user's token in local storage
-      //localStorage.setItem("userToken", data.token);
-      console.log(data)
+      localStorage.setItem("token", data.token);
+      
+      console.log(data);
       return data;
     } catch (error: any) {
       // return custom error message from API if any

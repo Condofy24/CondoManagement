@@ -5,10 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { login } from "@/redux/services/authService";
+import { useRouter } from "next/navigation";
 
 function LoginHooks() {
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -22,6 +24,8 @@ function LoginHooks() {
     setLoading(true);
 
     dispatch(login(data));
+
+    router.push("/");
 
     setLoading(false);
   };
