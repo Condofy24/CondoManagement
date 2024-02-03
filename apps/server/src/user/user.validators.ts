@@ -8,8 +8,6 @@ import { UserRolesEnum } from './user.model';
 @ValidatorConstraint({ name: 'IsValidRole', async: false })
 export class IsValidRole implements ValidatorConstraintInterface {
   validate(value: any, _args: ValidationArguments) {
-    console.log('here1');
-
     return Object.values(UserRolesEnum).includes(value);
   }
   defaultMessage() {

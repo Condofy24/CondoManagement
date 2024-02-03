@@ -33,7 +33,7 @@ export class UserService {
   }
   public async createUser(
     createUserDto: CreateUserDto,
-    image ?: Express.Multer.File,
+    image?: Express.Multer.File,
   ) {
     const { email, password, name, role, phoneNumber } = createUserDto;
 
@@ -49,7 +49,7 @@ export class UserService {
     const isPhoneNumberValid = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (phoneNumber.length < 10 || !/^\d+$/.test(phoneNumber)) {
+    if (!phoneNumber || phoneNumber.length < 10 || !/^\d+$/.test(phoneNumber)) {
       throw new HttpException(
         {
           error: 'Invalid phone number format or length',
@@ -66,14 +66,15 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-    let imageUrl = "https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png";
-    let imageId = "default_user"
-    if(image){
+    let imageUrl =
+      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
+    let imageId = 'default_user';
+    if (image) {
       const imageResponse = await this.uploadImageToCloudinary(image);
       imageUrl = imageResponse.secure_url;
       imageId = imageResponse.public_id;
     }
-    
+
     // Create user
     const newUser = new this.userModel({
       email,
