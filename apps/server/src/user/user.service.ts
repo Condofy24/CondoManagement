@@ -155,19 +155,10 @@ export class UserService {
       }
     }
     // Check phone number doesn't already exist
-    const isPhoneNumberValid = await this.userModel.exists({
+    const userWithPhoneNumber = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    // Still need to validate the input is numbers
-    if (phoneNumber.length < 10 || !/^\d+$/.test(phoneNumber)) {
-      throw new HttpException(
-        {
-          error: 'Invalid phone number format or length',
-          status: HttpStatus.BAD_REQUEST,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    } else if (!!isPhoneNumberValid) {
+    if (userWithPhoneNumber && userWithPhoneNumber._id.toString() !== id) {
       throw new HttpException(
         {
           error: 'Phone number already linked to another user',
@@ -176,12 +167,10 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-
     if (newPassword) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
     }
-
     let imageUrl = '';
     let imageId = '';
     if (image) {
