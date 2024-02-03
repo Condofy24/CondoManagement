@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CompanyController } from './company/company.controller';
 import { CompanyModule } from './company/company.module';
+import { CloudinaryModule } from './user/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CompanyModule } from './company/company.module';
     UserModule,
     AuthModule,
     CompanyModule,
+    CloudinaryModule
   ],
   controllers: [
     AppController,
