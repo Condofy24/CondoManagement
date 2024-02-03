@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserInfo } from "../models/user";
 import { login } from "../services/authService";
+import { UserInfo } from "@/types";
 
 type InitialState = {
   value: AuthState;
