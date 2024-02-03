@@ -17,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrivilegeGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
 
 @Controller('user')
 export class UserController {
@@ -32,14 +33,10 @@ export class UserController {
   }
 
   @Post('employee')
-  @UseInterceptors(FileInterceptor('image'))
   @UseGuards(PrivilegeGuard)
   @Roles(0)
-  createEmployee(
-    @Body() createUserDto: CreateUserDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    return this.userService.createUser(createUserDto, image);
+  createEmployee(@Body() createEmployeeDto: CreateEmployeeDto) {
+    return this.userService.createEmployee(createEmployeeDto);
   }
 
   @Get('users')
