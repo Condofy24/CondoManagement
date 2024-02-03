@@ -15,12 +15,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { CreateManagerDto } from './dto/create-manager.dto';
+import { CompanyService } from 'src/company/company.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('User') private readonly userModel: Model<User>,
     private cloudinary: CloudinaryService,
+    private companyService: CompanyService,
   ) {}
 
   async uploadImageToCloudinary(file: Express.Multer.File) {
@@ -33,8 +36,13 @@ export class UserService {
     }
   }
 
-  public async createEmployee(createEmployeeDto: CreateEmployeeDto) {
-    const { email, name, role, phoneNumber } = createEmployeeDto;
+  public async createManager(
+    createManagerDto: CreateManagerDto,
+    image?: Express.Multer.File,
+  ) {
+    const { email, password, name, phoneNumber, companyLocation, companyName } =
+      createManagerDto;
+
     // Check user doesn't already exist
     const emailInUse = await this.userModel.exists({ email: email });
     const phoneNumberInUse = await this.userModel.exists({
@@ -54,6 +62,94 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
+
+    // Check company exists
+    const companyExists =
+      await this.companyService.findByCompanyName(companyName);
+    if (companyExists) {
+      throw new HttpException(
+        { error: 'Company exists already', status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const companyRes = await this.companyService.createCompany({
+      companyName,
+      companyLocation,
+    });
+
+    let companyId;
+
+    if (!('companyId' in companyRes)) {
+      throw new HttpException(
+        {
+          error: "Couldn't create company",
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    companyId = companyRes.companyId;
+
+    let imageUrl =
+      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
+    let imageId = 'default_user';
+    if (image) {
+      const imageResponse = await this.uploadImageToCloudinary(image);
+      imageUrl = imageResponse.secure_url;
+      imageId = imageResponse.public_id;
+    }
+
+    // Create user
+    const newUser = new this.userModel({
+      email,
+      password,
+      name,
+      companyId,
+      role: 0,
+      phoneNumber,
+      imageUrl,
+      imageId,
+    });
+    const result = await newUser.save();
+    if (result instanceof Error)
+      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+
+    return response.status(HttpStatus.CREATED);
+  }
+
+  public async createEmployee(createEmployeeDto: CreateEmployeeDto) {
+    const { email, name, role, companyId, phoneNumber } = createEmployeeDto;
+
+    // Check user doesn't already exist
+    const emailInUse = await this.userModel.exists({ email: email });
+    const phoneNumberInUse = await this.userModel.exists({
+      phoneNumber: phoneNumber,
+    });
+    if (emailInUse || phoneNumberInUse) {
+      const errorMessage =
+        emailInUse && phoneNumberInUse
+          ? 'Email and phone number exist'
+          : emailInUse
+            ? 'Email already exists'
+            : phoneNumberInUse
+              ? 'Phone number exists'
+              : '';
+      throw new HttpException(
+        { error: errorMessage, status: HttpStatus.CONFLICT },
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    // Check company exists
+    const companyExists = await this.companyService.findByCompanyId(companyId);
+    if (!companyExists) {
+      throw new HttpException(
+        { error: "Company doesn't exists", status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     let imageUrl =
       'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
     let imageId = 'default_user';
@@ -65,6 +161,7 @@ export class UserService {
       role,
       phoneNumber,
       imageUrl,
+      companyId,
       imageId,
     });
     const result = await newUser.save();

@@ -16,6 +16,7 @@ export const UserSchema = new mongoose.Schema(
     phoneNumber: { type: String, required: true },
     imageUrl: { type: String, required: true },
     imageId: { type: String, required: true },
+    companyId: { type: String, required: false },
   },
   {
     timestamps: true, // This enables automatic createdAt and updatedAt fields
@@ -49,4 +50,5 @@ export interface User {
   phoneNumber: string;
   imageUrl: string;
   imageId: string;
+  companyId?: string;
 }
