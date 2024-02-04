@@ -12,11 +12,11 @@ export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 
-  //Not working need to be checked 
+  //Not working need to be checked
   @Validate(IsValidRole)
   role: string;
 
-  // @Validate(IsValidPhoneNumber). not working now need to be checked later 
+  // @Validate(IsValidPhoneNumber). not working now need to be checked later
   @IsNotEmpty()
   phoneNumber: string;
 }

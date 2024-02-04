@@ -1,4 +1,3 @@
-import { Reflector } from "@nestjs/core";
+import { Reflector } from '@nestjs/core';
 
-
-export const Roles = Reflector.createDecorator<number>()
+export const Roles = Reflector.createDecorator<number>();

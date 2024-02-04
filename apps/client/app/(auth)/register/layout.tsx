@@ -38,7 +38,7 @@ export default function RegistrationLayout({
               "border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
               {
                 "border-b-2": !isManagerRegistering,
-              },
+              }
             )}
           >
             Owner / Tenant
@@ -49,7 +49,7 @@ export default function RegistrationLayout({
               "ml-4 border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
               {
                 "border-b-2": isManagerRegistering,
-              },
+              }
             )}
           >
             Company Manager
