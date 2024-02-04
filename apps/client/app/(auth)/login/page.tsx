@@ -6,31 +6,45 @@ import Image from "next/image";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import FormFieldError from "@/app/components/form/form-field-error";
 import LoginHooks from "./login-hooks";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const Login = () => {
   const { register, handleSubmit, errors, loading, onSubmit } = LoginHooks();
+  const pathname = usePathname();
+  const isLogin = pathname ==='/login' ? true : false;
 
   return (
-    <section>
-      <div className="container flex flex-col h-[calc(100vh_-_5rem)] items-center justify-center content-start">
-        <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
-          <div className="mx-auto flex justify-center">
-            <Image className="h-7 w-auto sm:h-8" src={Logo} alt="" />
-          </div>
-          <div className="mt-6 flex items-center justify-center">
-            <Link
-              href={"/login"}
-              className="w-1/3 border-b-2 border-blue-500 pb-4 text-center font-medium text-gray-800 dark:text-white/80"
-            >
-              Log In
-            </Link>
-            <Link
-              href={"/register"}
-              className="w-1/3 border-b border-gray-400 pb-4 text-center font-medium text-gray-500 dark:text-white/80"
-            >
-              Register
-            </Link>
-          </div>
+    <div className="container flex flex-col h-[calc(100vh_-_5rem)] items-center justify-center content-start">
+      <div className="mx-auto flex justify-center size-[5rem]">
+        <Image src={Logo} alt="Website Logo" />
+      </div>
+      <div className="mt-4 w-full flex items-center justify-center">
+        <Link
+          href={"/login"}
+          className={cn(
+            "border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
+            {
+              "border-b-2": isLogin,
+            }
+          )}
+        >
+          Sign In
+        </Link>
+        <Link
+          href={"/register"}
+          className={cn(
+            "ml-4 border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
+            {
+              "border-b-2": !isLogin,
+            }
+          )}
+        >
+          Sign Up
+        </Link>
+      </div>
+      <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col">
           <div className="relative mt-6 flex items-center">
             <span className="absolute">
               <svg
@@ -75,9 +89,12 @@ const Login = () => {
             <button
               disabled={loading}
               type="submit"
-              className={`w-full transform rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 ${
-                false ? "cursor-not-allowed opacity-50" : ""
-              }`}
+              className={cn(
+                `w-full transform rounded-lg bg-gray-700 px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 ${
+                  loading ? "cursor-not-allowed opacity-50" : ""
+                }`,
+                "bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10"
+              )}
             >
               {loading ? (
                 <ButtonLoadingSpinner loadingText={"loading"} />
@@ -86,9 +103,9 @@ const Login = () => {
               )}
             </button>
           </div>
-        </form>
-      </div>
-    </section>
+        </div>
+      </form>
+    </div>
   );
 };
 
