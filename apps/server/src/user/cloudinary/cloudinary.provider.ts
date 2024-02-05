@@ -1,6 +1,5 @@
 import { v2 } from 'cloudinary';
 
-
 export const CloudinaryProvider = {
   provide: 'CLOUDINARY',
   useFactory: () => {

@@ -1,7 +1,15 @@
 "use client";
 import * as React from "react";
-import { Button, buttonVariants } from "./components/ui/button"; // Adjust the import path based on your project structure
+import { useAppSelector } from "@/redux/store";
 
 export default function Home() {
-  return <main></main>;
+  const user = useAppSelector((state) => state.authReducer.value.userInfo);
+
+  return <main>
+    <h1>
+      Welcome to the home page!
+
+      Username: {JSON.stringify(user)}
+    </h1>
+  </main>;
 }

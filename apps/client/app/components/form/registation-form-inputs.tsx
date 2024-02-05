@@ -1,4 +1,8 @@
-import { TSignupSchema } from "@/lib/validation-schemas";
+import {
+  ACCEPTED_FILE_TYPES,
+  MAX_UPLOAD_SIZE,
+  TSignupSchema,
+} from "@/lib/validation-schemas";
 import { SetStateAction, useRef, useState } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import FormFieldError from "./form-field-error";
@@ -6,43 +10,13 @@ import FormFieldError from "./form-field-error";
 type RegistationFormInputsProps = {
   register: UseFormRegister<TSignupSchema>;
   errors: FieldErrors<TSignupSchema>;
-  profilePic: {
-    profilePic: File | null;
-    setProfilePic: React.Dispatch<SetStateAction<File | null>>;
-  };
 };
-
-const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
-const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg"];
 
 export default function RegistationFormInputs({
   register,
   errors,
-  profilePic: { profilePic, setProfilePic },
 }: RegistationFormInputsProps) {
   const profilePicInputRef = useRef<HTMLInputElement | null>(null);
-  const [profilePicError, setProfilePicError] = useState<string | null>();
-
-  const handleProfilePicChange = (
-    e: MouseEvent<HTMLInputElement, MouseEvent>,
-  ) => {
-    const file = e.target.files[0];
-    if (!file) {
-      setProfilePic(null);
-      setProfilePicError(null);
-      return;
-    }
-    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-      setProfilePic(null);
-      setProfilePicError("Please upload a valid image file (jpeg, jpg, png)");
-    } else if (file.size > MAX_UPLOAD_SIZE) {
-      setProfilePic(null);
-      setProfilePicError("Please upload an image file less than 10MB");
-    } else {
-      setProfilePic(file);
-      setProfilePicError(null);
-    }
-  };
 
   return (
     <>
@@ -123,7 +97,9 @@ export default function RegistationFormInputs({
             htmlFor="profilePicture"
             className="mx-auto mt-2 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-[0.4rem] text-center"
             onClick={() => {
-              profilePicInputRef && profilePicInputRef.current.click();
+              profilePicInputRef &&
+                profilePicInputRef.current &&
+                profilePicInputRef.current.click();
             }}
           >
             <svg
@@ -141,17 +117,17 @@ export default function RegistationFormInputs({
               />
             </svg>
             <h2 className="mx-3 text-gray-400">
-              {profilePic?.name || "Picture"}
+              {profilePicInputRef.current?.value || "Picture"}
             </h2>
             <input
               type="file"
               accept="image/*"
               className="hidden"
+              {...register("profilePicture")}
               ref={profilePicInputRef}
-              onClick={handleProfilePicChange}
             />
           </label>
-          <div className="text-red-600 my-1 text-sm h-2">{profilePicError}</div>
+          <FormFieldError fieldError={errors.profilePicture} />
         </div>
       </div>
 

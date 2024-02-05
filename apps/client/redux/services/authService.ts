@@ -1,16 +1,39 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { UserInfo } from "@/types";
 
-// export const fetchUsers = createAsyncThunk(
-//   "user/fetchAll",
-//   async (_, thunkApi) => {
-//     try {
-//       const res = await axios.get<User[]>(
-//         `${process.env.NEXT_PUBLIC_API_URL}/users`
-//       );
-//       return res.data;
-//     } catch (error) {
-//       return thunkApi.rejectWithValue("Something went wrong :(");
-//     }
-//   }
-// );
+const API_URL = "http://127.0.0.1:4000/api";
+
+interface LoginInput {
+  email: string;
+  password: string;
+}
+
+interface LoginResult {
+  token: string;
+  userInfo: UserInfo;
+}
+
+export const login = createAsyncThunk<LoginResult, LoginInput>(
+  "auth/login",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post<LoginResult>(`${API_URL}/auth/login`, {
+        email,
+        password,
+      });
+
+      // store user's token in local storage
+      localStorage.setItem("token", data.token);
+
+      return data;
+    } catch (error: any) {
+      // return custom error message from API if any
+      if (error.response && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);

@@ -1,20 +1,26 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { login } from "../services/authService";
+import { UserInfo } from "@/types";
 
 type InitialState = {
   value: AuthState;
 };
 
 type AuthState = {
-  isAuth: boolean;
-  username: string;
-  uid: string;
+  loading: boolean;
+  userInfo: UserInfo;
+  token: string | null;
+  error: string | undefined;
+  success: boolean;
 };
 
 const initialState = {
   value: {
-    isAuth: false,
-    username: "",
-    uid: "",
+    loading: false,
+    userInfo: {},
+    token: null,
+    error: undefined,
+    success: false,
   } as AuthState,
 } as InitialState;
 
@@ -22,21 +28,25 @@ export const auth = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logOut: () => {
+    reset: (state: any) => {
       return initialState;
     },
-    logIn: (state, action: PayloadAction<string>) => {
-      return {
-        value: {
-          isAuth: true,
-          username: action.payload,
-          uid: "uid",
-        },
-      };
-    },
   },
+  extraReducers: (builder) => {
+    builder.addCase(login.pending, (state) => {
+      state.value.loading = true;
+    }).addCase(login.fulfilled, (state, action) => {
+      state.value.loading = false;
+      state.value.userInfo = action.payload.userInfo;
+      state.value.token = action.payload.token;
+      state.value.error = undefined;
+      state.value.success = true;
+    }).addCase(login.rejected, (state, action) => {
+      state.value.loading = false;
+      state.value.error = action.error.message;
+      state.value.success = false;
+    });
+  }
 });
 
-
-export const {logIn, logOut} = auth.actions;
 export default auth.reducer;
