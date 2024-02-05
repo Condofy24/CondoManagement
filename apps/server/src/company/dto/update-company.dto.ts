@@ -2,8 +2,8 @@ import { IsNotEmpty } from 'class-validator';
 
 export class UpdateCompanyDto {
   @IsNotEmpty()
-  name: string;
+  companyName: string;
 
   @IsNotEmpty()
-  location: string;
+  companyLocation: string;
 }

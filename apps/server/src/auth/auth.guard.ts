@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { Roles } from './decorators/roles.decorator';
 import { UserService } from 'src/user/user.service';
 import { UserRolesEnum } from '../user/user.model';
+import { UserRolesEnum } from '../user/user.model';
 
 const extractTokenFromHeader = (request: Request): string | undefined => {
   const [type, token] = request.headers.authorization?.split(' ') ?? [];
@@ -40,17 +41,16 @@ export class AuthGuard implements CanActivate {
   }
 }
 
-// TODO: UPDATE THIS CLASS TO HANDLE MANY DIFFERENT PRIVILEGES
 @Injectable()
 export class PrivilegeGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private userService: UserService,
     private reflector: Reflector,
+    private reflector: Reflector,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    console.log(request);
     const token = extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
