@@ -1,11 +1,9 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { IsValidPhoneNumber } from '../user.validators';
+import { IsValidPhoneNumber, IsValidRole } from '../user.validators';
 import { Validate } from 'class-validator';
+import { CreateCompanyDto } from 'src/company/dto/create-company.dto';
 
-export class UpdateUserDto {
-  @IsNotEmpty()
-  newPassword: string;
-
+export class CreateManagerDto extends CreateCompanyDto {
   @IsEmail()
   email: string;
 
@@ -15,4 +13,7 @@ export class UpdateUserDto {
   @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
   phoneNumber: string;
+
+  @IsNotEmpty()
+  password: string;
 }

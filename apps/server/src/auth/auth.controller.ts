@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin.dto';
-import { AuthGuard, PrivilegeGuard } from './auth.guard';
+import { PrivilegeGuard } from './auth.guard';
 import { Roles } from './decorators/roles.decorator';
 
 @Controller('auth')

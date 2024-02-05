@@ -2,8 +2,8 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateCompanyDto {
   @IsNotEmpty()
-  name: string;
+  companyName: string;
 
   @IsNotEmpty()
-  location: string;
+  companyLocation: string;
 }
