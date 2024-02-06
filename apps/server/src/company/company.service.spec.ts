@@ -138,6 +138,27 @@ describe('CompanyService', () => {
     });
   });
 
+  it('should getOne by CompanyName', async () => {
+    const mockCompanyName = 'test';
+    const mockCompany = mockCompanyDoc({
+      companyName: mockCompanyName,
+      companyId: '1',
+    });
+
+    jest.spyOn(model, 'findOne').mockReturnValue({
+      exec: jest.fn().mockResolvedValueOnce(mockCompany),
+    } as any);
+
+    const foundCompany = await service.findByCompanyName(mockCompanyName);
+
+    expect(foundCompany).toEqual({
+      id: mockCompany._id,
+      companyName: mockCompany.companyName,
+      companyLocation: mockCompany.companyLocation,
+      companyId: mockCompany.companyId,
+    });
+  });
+
   it('should throw HttpException when updating a non-existing company', async () => {
     jest.spyOn(model, 'findByIdAndUpdate').mockReturnValueOnce(
       createMock<Query<CompanyDoc, CompanyDoc>>({
@@ -155,6 +176,26 @@ describe('CompanyService', () => {
       expect(error).toBeInstanceOf(HttpException);
       expect(error.message).toBe('Http Exception');
       expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+    }
+  });
+
+  it('should throw HttpException when updating a non-existing company', async () => {
+    jest.spyOn(model, 'findOne').mockReturnValueOnce(
+      createMock<Query<CompanyDoc, CompanyDoc>>({
+        exec: jest.fn().mockResolvedValueOnce(null),
+      }),
+    );
+
+    try {
+      await service.createCompany({
+        companyName: 'Updated Company',
+        companyLocation: 'Updated Location',
+      });
+      fail('Expected HttpException to be thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+      expect(error.message).toBe('Http Exception');
+      expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
     }
   });
 

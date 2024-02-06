@@ -92,7 +92,7 @@ export class CompanyService {
   }
 
   public async findByCompanyName(companyName: string) {
-    const company = await this.companyModel.findOne({ companyName });
+    const company = await this.companyModel.findOne({ companyName }).exec();
     if (!company) {
       return false;
     }
