@@ -63,7 +63,7 @@ export class CompanyService {
   }
 
   public async findOne(id: string) {
-    const company = await this.companyModel.findById(id);
+    const company = await this.companyModel.findById(id).exec();
     if (!company) {
       throw new HttpException(
         { error: 'Company not found', status: HttpStatus.NOT_FOUND },
@@ -79,7 +79,7 @@ export class CompanyService {
   }
 
   public async findByCompanyId(companyId: string) {
-    const company = await this.companyModel.findOne({ companyId });
+    const company = await this.companyModel.findOne({ companyId }).exec();
     if (!company) {
       return false;
     }
@@ -105,7 +105,7 @@ export class CompanyService {
   }
 
   public async findAll() {
-    const companies = await this.companyModel.find();
+    const companies = await this.companyModel.find().exec();
     return companies?.map((company) => ({
       id: company._id,
       companyName: company.companyName,
