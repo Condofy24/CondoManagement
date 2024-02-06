@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { IsValidPhoneNumber, IsValidRole } from '../user.validators';
+import { IsValidPhoneNumber } from '../user.validators';
 import { Validate } from 'class-validator';
-import { CreateCompanyDto } from 'src/company/dto/create-company.dto';
+import { CreateCompanyDto } from '../../company/dto/create-company.dto';
 
 export class CreateManagerDto extends CreateCompanyDto {
   @IsEmail()
