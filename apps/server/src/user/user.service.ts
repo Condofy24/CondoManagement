@@ -16,7 +16,7 @@ import { UserDto } from './dto/user.dto';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
-import { CompanyService } from 'src/company/company.service';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class UserService {
@@ -257,7 +257,7 @@ export class UserService {
     );
   }
 
-  public async remove(id: String): Promise<any> {
+  public async remove(id: string): Promise<any> {
     try {
       await this.userModel.findByIdAndDelete(id);
     } catch {
@@ -266,7 +266,7 @@ export class UserService {
     return response.status(HttpStatus.NO_CONTENT);
   }
 
-  public async getPrivilege(id: string): Promise<Number | undefined> {
+  public async getPrivilege(id: string): Promise<number | undefined> {
     const user = await this.userModel.findById(id);
     return user?.role;
   }

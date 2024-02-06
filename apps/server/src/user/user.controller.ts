@@ -14,9 +14,9 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrivilegeGuard } from 'src/auth/auth.guard';
+import { PrivilegeGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 
