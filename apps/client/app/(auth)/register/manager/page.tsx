@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 export default function ManagerRegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [profilePicError, setProfilePicError] = useState<string | null>();
 
   const {
     register,
@@ -27,7 +28,9 @@ export default function ManagerRegistrationPage() {
     setLoading(true);
 
     // send request to server
-    console.log(data);
+    if (profilePic) {
+      console.log(data);
+    }
 
     setLoading(false);
   };
@@ -66,6 +69,7 @@ export default function ManagerRegistrationPage() {
       <RegistationFormInputs
         register={register}
         errors={errors}
+        profilePic={{ setProfilePic, profilePicError, setProfilePicError }}
       />
       <div className="mt-4">
         <button

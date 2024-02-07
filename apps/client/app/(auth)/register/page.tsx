@@ -7,10 +7,15 @@ import { TSignupSchema, signupSchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { registerUser } from "@/redux/services/auth-service";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
 
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [profilePicError, setProfilePicError] = useState<string | null>();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {
     register,
@@ -20,11 +25,14 @@ const SignUpNew = () => {
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = (data: TSignupSchema) => {
+  const onSubmit = async (data: TSignupSchema) => {
     setLoading(true);
 
-    // send request to server
-    console.log(data);
+    if (profilePic) {
+      dispatch(registerUser({ ...data, profilePic, role: "3" }));
+    } else {
+      setProfilePicError("Profile picture is required");
+    }
 
     setLoading(false);
   };
@@ -34,17 +42,16 @@ const SignUpNew = () => {
       <RegistationFormInputs
         register={register}
         errors={errors}
-        profilePic={{ profilePic, setProfilePic }}
+        profilePic={{ setProfilePic, profilePicError, setProfilePicError }}
       />
       <div className="mt-4">
         <button
           disabled={loading}
           type="submit"
           className={cn(
-            `w-full transform rounded-lg bg-secondary px-6 py-3 text-sm font-medium tracking-wide text-primary transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
+            `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
               loading ? "cursor-not-allowed opacity-50" : ""
             }`,
-            "text-secondary outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-opacity-10",
           )}
         >
           {loading ? (

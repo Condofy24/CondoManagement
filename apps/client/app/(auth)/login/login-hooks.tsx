@@ -4,7 +4,7 @@ import { TLoginSchema, loginSchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { login } from "@/redux/services/authService";
+import { login } from "@/redux/services/auth-service";
 import { useRouter } from "next/navigation";
 
 function LoginHooks() {

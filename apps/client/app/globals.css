@@ -8,13 +8,13 @@
   --bg-tertiary: #fff;
 
   --text-primary: hsl(224, 71.43%, 4.12%);
-  --text-secondary: hsl(216.92, 19.12%, 26.67%);
+  --text-secondary: hsl(210, 20%, 98%);
   --text-tertiary: #000;
 }
 
 .dark {
   --bg-primary: hsl(220.91, 39.29%, 10.98%);
-  --bg-secondary: hsl(220.91, 39.29%, 10.98%);
+  --bg-secondary: hsl(217, 21%, 20%);
   --bg-tertiary: #fff;
 
   --text-primary: hsl(210, 20%, 98.04%);
@@ -26,14 +26,6 @@
   @apply border border-black/10;
 }
 
-.borderBlack {
-  @apply border border-black/10;
-}
-
 .formInput {
   @apply block rounded-lg border bg-white text-secondary dark:text-black/80 focus:border-black/100 focus:outline-none dark:focus:ring-gray-700 focus:ring-1 focus:ring-black/100 focus:ring-opacity-40;
-}
-
-input[type="file"]::-webkit-file-upload-button {
-  visibility: hidden;
 }
