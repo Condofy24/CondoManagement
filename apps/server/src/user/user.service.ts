@@ -48,6 +48,9 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
+    console.log('is email in use', emailInUse);
+    console.log('is phone in use', phoneNumberInUse);
+    console.log('the dto', createManagerDto);
     if (emailInUse || phoneNumberInUse) {
       const errorMessage =
         emailInUse && phoneNumberInUse

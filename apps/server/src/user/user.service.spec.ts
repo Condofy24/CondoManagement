@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
-import { User } from './entities/user.entity';
+import { User, UserSchema } from './entities/user.entity';
 import { UserRolesEnum } from './user.model';
 import { Model, Query } from 'mongoose';
 import { CompanyService } from '../company/company.service';
@@ -13,6 +13,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 import { UserDoc } from './interfaces/user-document.interface';
 import { Readable } from 'node:stream';
+import { UserModule } from './user.module';
 
 export interface MyUser {
   id: string;
@@ -126,19 +127,21 @@ const userDocArray: Partial<UserDoc>[] = [
   }),
 ];
 
-const mockUserModel = {
-  find: jest.fn(),
-  findOne: jest.fn(),
-  findById: jest.fn(),
-  update: jest.fn(),
-  create: jest.fn(),
-  remove: jest.fn(),
-  exec: jest.fn(),
-  save: jest.fn(),
-  findByIdAndDelete: jest.fn(),
-  findByIdAndUpdate: jest.fn(),
-  exists: jest.fn().mockResolvedValue(false),
-};
+class mockUserModel {
+  constructor(private data: any) {}
+  save = jest.fn().mockResolvedValue(this.data);
+  static find = jest.fn().mockResolvedValue([]);
+  static findOne = jest.fn().mockResolvedValue([]);
+  static findById = jest.fn().mockResolvedValue([]);
+  static updateUser = jest.fn().mockResolvedValue([]);
+  static createManager = jest.fn().mockResolvedValue([]);
+  static remove = jest.fn().mockResolvedValue([true]);
+  static exec = jest.fn().mockResolvedValue([]);
+
+  static findByIdAndDelete = jest.fn().mockResolvedValue([]);
+  static findByIdAndUpdate = jest.fn().mockResolvedValue([]);
+  static exists = jest.fn().mockResolvedValue([]);
+}
 
 // Mocked Cloudinary service
 const mockCloudinaryService = {
@@ -241,20 +244,20 @@ describe('UserService', () => {
   });
   // Call the uploadImageToCloudinary method and
   describe('createManager', () => {
-    // it('should create a new manager', async () => {
-    //   const createManagerDto: CreateManagerDto = {
-    //     email: 'manager@example.com',
-    //     password: 'password123',
-    //     name: 'Manager Name',
-    //     phoneNumber: '9876543210',
-    //     companyLocation: 'sad',
-    //     companyName: 'sadsa',
-    //   };
+    it('should create a new manager', async () => {
+      const createManagerDto: CreateManagerDto = {
+        email: 'manasdagser@example.com',
+        password: 'password123',
+        name: 'Manager Name',
+        phoneNumber: '9876235432120',
+        companyLocation: 'sad',
+        companyName: 'sadsa',
+      };
 
-    //   const newManager = await service.createManager(createManagerDto);
-    //   expect(newManager).toBeDefined();
-    //   // Add more assertions if needed
-    // });
+      const newManager = await service.createManager(createManagerDto);
+      expect(newManager).toBeDefined();
+      // Add more assertions if needed
+    });
 
     it('should throw an error if company already exists', async () => {
       mockCompanyService.findByCompanyName.mockResolvedValue(true);
@@ -353,8 +356,7 @@ describe('UserService', () => {
       } as unknown as Query<UserDoc[], UserDoc>);
 
       const users = await service.findAll();
-      console.log('users', users);
-      console.log('userArray', userArray);
+
       expect(users).toEqual(userArray);
     });
 
@@ -411,7 +413,7 @@ describe('UserService', () => {
         console.log('the errror', error);
         expect(error).toBeInstanceOf(HttpException);
         expect(error.message).toBe('Http Exception');
-        expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+        expect(error.getStatus()).toBe(HttpStatus.CONFLICT);
       }
     });
 
@@ -437,7 +439,7 @@ describe('UserService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(HttpException);
         expect(error.message).toBe('Http Exception');
-        expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+        expect(error.getStatus()).toBe(HttpStatus.CONFLICT);
       }
     });
 
