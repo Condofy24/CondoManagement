@@ -223,7 +223,7 @@ export class UserService {
   }
 
   public async findOne(userEmail: string): Promise<User | undefined | null> {
-    return this.userModel.findOne({ email: userEmail });
+    return this.userModel.findOne({ email: userEmail }).exec();
   }
 
   public async getProfile(token: Token): Promise<UserProfile> {
