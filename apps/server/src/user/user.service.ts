@@ -223,7 +223,7 @@ export class UserService {
   }
 
   public async findOne(userEmail: string): Promise<User | undefined | null> {
-    return this.userModel.findOne({ email: userEmail });
+    return this.userModel.findOne({ email: userEmail }).exec();
   }
 
   public async getProfile(token: Token): Promise<UserProfile> {
@@ -242,7 +242,7 @@ export class UserService {
   }
 
   public async findAll(): Promise<UserProfile[]> {
-    const users = await this.userModel.find();
+    const users = await this.userModel.find().exec();
     return users.map(
       (user: User) =>
         ({
@@ -259,7 +259,7 @@ export class UserService {
 
   public async remove(id: string): Promise<any> {
     try {
-      await this.userModel.findByIdAndDelete(id);
+      await this.userModel.findByIdAndDelete(id).exec();
     } catch {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
@@ -267,7 +267,7 @@ export class UserService {
   }
 
   public async getPrivilege(id: string): Promise<number | undefined> {
-    const user = await this.userModel.findById(id);
+    const user = await this.userModel.findById(id).exec();
     return user?.role;
   }
   public async updateUser(

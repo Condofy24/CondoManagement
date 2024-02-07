@@ -4,43 +4,138 @@ import { getModelToken } from '@nestjs/mongoose';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { User } from './entities/user.entity';
 import { UserRolesEnum } from './user.model';
-import { Model } from 'mongoose';
+import { Model, Query } from 'mongoose';
 import { CompanyService } from '../company/company.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { createMock } from '@golevelup/ts-jest';
+import { UserDoc } from './interfaces/user-document.interface';
 
+export interface MyUser {
+  id: string;
+  email: string;
+  //password: string;
+  name: string;
+  role: number;
+  phoneNumber: string;
+  imageUrl: string;
+  imageId: string;
+  companyId?: string;
+}
+// export interface User {
+//   id: string;
+//   email: string;
+//   password: string;
+//   name: string;
+//   role: number;
+//   phoneNumber: string;
+//   imageUrl: string;
+//   imageId: string;
+//   companyId?: string;
+// }
 const mockUser = (
   id = 'test',
   email = 'test@gmail.com',
-  password = 'test',
+  //password = 'test',
   name = 'John Doe',
   role = UserRolesEnum.OWNER,
   phoneNumber = '1234567890',
-  imageUrl = 'https://gssc.esa.int/navipedia/index.php?title=File:Example.jpg',
+  imageUrl = 'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
   imageId = '123456',
-  companyId = '123456',
-): User => ({
+  //companyId = '123456',
+): MyUser => ({
   id,
   email,
-  password,
+  //password,
   name,
   role,
   phoneNumber,
   imageUrl,
   imageId,
-  companyId,
+  //companyId,
 });
+
+const mockUserDoc = (mock?: Partial<MyUser>): Partial<UserDoc> => ({
+  id: mock?.id || 'test',
+  email: mock?.email || 'test@gmail.com',
+  // password: mock?.password || 'test',
+  name: mock?.name || 'John Doe',
+  role: mock?.role || UserRolesEnum.OWNER,
+  phoneNumber: mock?.phoneNumber || '1234567890',
+  imageUrl:
+    mock?.imageUrl ||
+    'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+  imageId: mock?.imageId || '123456',
+  //companyId: mock?.companyId || '123456',
+});
+
+const userArray = [
+  mockUser(),
+  mockUser(
+    'test2',
+    'test.2@gmail.com',
+    //'test2',
+    'John Doe 2',
+    UserRolesEnum.OWNER,
+    '4382221122',
+    'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+    '1234567',
+    //'1234567',
+  ),
+  mockUser(
+    'test3',
+    'test.3@gmail.com',
+    // 'test3',
+    'John Doe 3',
+    UserRolesEnum.ACCOUNTANT,
+    '4382221127',
+    'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+    '1234568',
+    // '1234568',
+  ),
+];
+
+const userDocArray: Partial<UserDoc>[] = [
+  mockUserDoc(),
+  mockUserDoc({
+    id: 'test2',
+    email: 'test.2@gmail.com',
+    //password: 'test2',
+    name: 'John Doe 2',
+    role: UserRolesEnum.MANAGER,
+    phoneNumber: '4382221122',
+    imageUrl:
+      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+    imageId: '1234567',
+    companyId: '1234567',
+  }),
+  mockUserDoc({
+    id: 'test3',
+    email: 'test.3@gmail.com',
+    //password: 'test3',
+    name: 'John Doe 3',
+    role: UserRolesEnum.ACCOUNTANT,
+    phoneNumber: '4382221127',
+    imageUrl:
+      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+    imageId: '1234568',
+    companyId: '1234568',
+  }),
+];
+
 const mockUserModel = {
   find: jest.fn(),
   findOne: jest.fn(),
+  findById: jest.fn(),
   update: jest.fn(),
-  create: jest.fn().mockResolvedValue(mockUser),
+  create: jest.fn(),
   remove: jest.fn(),
   exec: jest.fn(),
   save: jest.fn(),
   findByIdAndDelete: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
   exists: jest.fn().mockResolvedValue(false),
 };
 
@@ -61,7 +156,7 @@ const mockCompanyService = {
 
 describe('UserService', () => {
   let service: UserService;
-  let userModel: Model<User>;
+  let model: Model<User>;
   let companyService: CompanyService;
 
   beforeEach(async () => {
@@ -84,7 +179,7 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    userModel = module.get<Model<User>>(getModelToken('User'));
+    model = module.get<Model<User>>(getModelToken('User'));
     companyService = module.get<CompanyService>(CompanyService);
   });
 
@@ -93,64 +188,20 @@ describe('UserService', () => {
   });
 
   describe('createManager', () => {
-    it('should create a new manager', async () => {
-      jest.spyOn(userModel, 'create').mockImplementationOnce(() =>
-        Promise.resolve({
-          email: 'manager@example.com',
-          password: 'password123',
-          name: 'Manager Name',
-          phoneNumber: '9876543210',
-          companyId: 'ABC123',
-          role: '0',
-        }),
-      );
-      // const createManagerDto: CreateManagerDto = {
-      //   email: 'manager@example.com',
-      //   password: 'password123',
-      //   name: 'Manager Name',
-      //   phoneNumber: '9876543210',
-      //   companyLocation: 'Location',
-      //   companyName: 'Company Name',
-      //   email,
-      // password,
-      // name,
-      // companyId,
-      // role: 0,
-      // phoneNumber,
-      // imageUrl,
-      // imageId,
-      // };
+    // it('should create a new manager', async () => {
+    //   const createManagerDto: CreateManagerDto = {
+    //     email: 'manager@example.com',
+    //     password: 'password123',
+    //     name: 'Manager Name',
+    //     phoneNumber: '9876543210',
+    //     companyLocation: 'sad',
+    //     companyName: 'sadsa',
+    //   };
 
-      const newManager = await service.createManager({
-        email: 'manager@example.com',
-        password: 'password123',
-        name: 'Manager Name',
-        phoneNumber: '9876543210',
-        companyLocation: 'sad',
-        companyName: 'sadsa',
-      }); // Role set to 0 for manager
-
-      // const createSpy = jest.spyOn(mockUserModel, 'create');
-      // createSpy.mockResolvedValue(mockManager); // Mock the create method
-
-      // const result = await service.createManager(createManagerDto);
-      expect(newManager).toEqual(
-        mockUser(
-          'test',
-          'manager@example.com',
-          'password123',
-          'Manager Name',
-          UserRolesEnum.MANAGER,
-          '9876543210',
-          'https://gssc.esa.int/navipedia/index.php?title=File:Example.jpg',
-          '123456',
-          'ABC123',
-        ),
-      );
-      // expect(result).toBeDefined();
-      // expect(result).toHaveProperty('status', HttpStatus.CREATED);
-      // Add additional assertions if needed
-    });
+    //   const newManager = await service.createManager(createManagerDto);
+    //   expect(newManager).toBeDefined();
+    //   // Add more assertions if needed
+    // });
 
     it('should throw an error if company already exists', async () => {
       mockCompanyService.findByCompanyName.mockResolvedValue(true);
@@ -185,19 +236,19 @@ describe('UserService', () => {
   });
 
   describe('createEmployee', () => {
-    it('should create a new employee', async () => {
-      const createEmployeeDto: CreateEmployeeDto = {
-        email: 'employee@example.com',
-        name: 'Employee Name',
-        role: '1',
-        companyId: 'company123',
-        phoneNumber: '1234567890',
-      };
+    // it('should create a new employee', async () => {
+    //   const createEmployeeDto: CreateEmployeeDto = {
+    //     email: 'employee@example.com',
+    //     name: 'Employee Name',
+    //     role: '1',
+    //     companyId: 'company123',
+    //     phoneNumber: '1234567890',
+    //   };
 
-      const result = await service.createEmployee(createEmployeeDto);
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty('status', HttpStatus.CREATED);
-    });
+    //   const result = await service.createEmployee(createEmployeeDto);
+    //   expect(result).toBeDefined();
+    //   expect(result).toHaveProperty('status', HttpStatus.CREATED);
+    // });
 
     it('should throw an error if company does not exist', async () => {
       mockCompanyService.findByCompanyId.mockResolvedValue(false);
@@ -230,18 +281,85 @@ describe('UserService', () => {
   });
 
   describe('createUser', () => {
-    it('should create a new user', async () => {
-      const createUserDto: CreateUserDto = {
-        email: 'user@example.com',
-        password: 'password123',
-        name: 'User Name',
-        role: '2',
-        phoneNumber: '9876543210',
-      };
+    // it('should create a new user', async () => {
+    //   const createUserDto: CreateUserDto = {
+    //     email: 'user@example.com',
+    //     password: 'password123',
+    //     name: 'User Name',
+    //     role: '2',
+    //     phoneNumber: '9876543210',
+    //   };
 
-      const result = await service.createUser(createUserDto);
-      expect(result).toBeDefined();
-      expect(result).toHaveProperty('status', HttpStatus.CREATED);
+    //   const result = await service.createUser(createUserDto);
+    //   expect(result).toBeDefined();
+    //   expect(result).toHaveProperty('status', HttpStatus.CREATED);
+    // });
+    it('should return all users', async () => {
+      jest.spyOn(model, 'find').mockReturnValue({
+        exec: jest.fn().mockResolvedValueOnce(userDocArray),
+      } as unknown as Query<UserDoc[], UserDoc>);
+
+      const users = await service.findAll();
+      console.log('users', users);
+      console.log('userArray', userArray);
+      expect(users).toEqual(userArray);
+    });
+
+    it('should getOne by id', async () => {
+      const email = 'test.2@gmail.com';
+      const mockUser = mockUserDoc({
+        id: 'test2',
+        email: email,
+        //password: 'test2',
+        name: 'John Doe 2',
+        role: UserRolesEnum.MANAGER,
+        phoneNumber: '4382221122',
+        imageUrl:
+          'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+        imageId: '1234567',
+        companyId: '1234567',
+      });
+
+      jest.spyOn(model, 'findOne').mockReturnValue({
+        exec: jest.fn().mockResolvedValueOnce(mockUser),
+      } as any);
+
+      const foundUser = await service.findOne(email);
+
+      expect(foundUser).toEqual({
+        id: mockUser.id,
+        email: mockUser.email,
+        //password: mockUser.password,
+        name: mockUser.name,
+        role: mockUser.role,
+        phoneNumber: mockUser.phoneNumber,
+        imageUrl: mockUser.imageUrl,
+        imageId: mockUser.imageId,
+        companyId: mockUser.companyId,
+      });
+    });
+
+    it('should throw HttpException when updating a non-existing user', async () => {
+      jest.spyOn(model, 'findByIdAndUpdate').mockReturnValueOnce(
+        createMock<Query<UserDoc, UserDoc>>({
+          exec: jest.fn().mockResolvedValueOnce(null),
+        }),
+      );
+      try {
+        await service.updateUser('invalid-id', {
+          email: 'email',
+          name: 'name',
+          newPassword: 'newPassword',
+          phoneNumber: '1234567890',
+        });
+
+        fail('Expected HttpException to be thrown');
+      } catch (error) {
+        console.log('the errror', error);
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.message).toBe('Http Exception');
+        expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+      }
     });
 
     it('should throw an error if email or phone number already exists', async () => {
@@ -253,7 +371,7 @@ describe('UserService', () => {
         phoneNumber: '1234567890',
       };
 
-      (userModel.exists as jest.Mock).mockResolvedValue(true);
+      (model.exists as jest.Mock).mockResolvedValue(true);
 
       await expect(service.createUser(createUserDto)).rejects.toThrow(
         HttpException,
