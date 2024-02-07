@@ -27,8 +27,8 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90",
-          fontSans.variable
+          "bg-primary text-primary dark:text-opacity-90",
+          fontSans.variable,
         )}
       >
         <ActiveSectionContextProvider>
