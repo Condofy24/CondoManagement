@@ -1,7 +1,8 @@
-import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
+import { CreateCompanyDto } from './dto/create-company.dto';
+import { Company } from './entities/company.entity';
 
 interface CompanyDTO {
   _id?: string;
@@ -25,25 +26,23 @@ describe('Company Controller', () => {
         {
           provide: CompanyService,
           useValue: {
-            findAll: jest
-              .fn<CompanyDTO[], unknown[]>()
-              .mockImplementation(() => [
-                {
-                  companyName: testCompany1,
-                  companyLocation: testLocation1,
-                  companyId: '1',
-                },
-                {
-                  companyName: 'Test Company 2',
-                  companyLocation: 'Test Location 2',
-                  companyId: '2',
-                },
-                {
-                  companyName: 'Test Company 3',
-                  companyLocation: 'Test Location 3',
-                  companyId: '3',
-                },
-              ]),
+            findAll: jest.fn<Company[], unknown[]>().mockImplementation(() => [
+              {
+                companyName: testCompany1,
+                companyLocation: testLocation1,
+                companyId: '1',
+              },
+              {
+                companyName: 'Test Company 2',
+                companyLocation: 'Test Location 2',
+                companyId: '2',
+              },
+              {
+                companyName: 'Test Company 3',
+                companyLocation: 'Test Location 3',
+                companyId: '3',
+              },
+            ]),
             findOne: jest
               .fn<Promise<CompanyDTO>, string[]>()
               .mockImplementation((id) =>
@@ -54,7 +53,7 @@ describe('Company Controller', () => {
                   _id: id,
                 }),
               ),
-            findOneByName: jest
+            findByCompanyName: jest
               .fn<Promise<CompanyDTO>, string[]>()
               .mockImplementation((companyName) => {
                 return Promise.resolve({
@@ -63,12 +62,16 @@ describe('Company Controller', () => {
                   companyId: '1',
                 });
               }),
-            insertOne: jest
-              .fn<Promise<CompanyDTO>, CompanyDTO[]>()
-              .mockImplementation((company) =>
-                Promise.resolve({ _id: 'a uuid', ...company }),
-              ),
-            updateOne: jest
+            findByCompanyId: jest
+              .fn<Promise<CompanyDTO>, string[]>()
+              .mockImplementation((companyId) => {
+                return Promise.resolve({
+                  companyName: testCompany1,
+                  companyLocation: testLocation1,
+                  companyId,
+                });
+              }),
+            createCompany: jest
               .fn<Promise<CompanyDTO>, CompanyDTO[]>()
               .mockImplementation((company) =>
                 Promise.resolve({ _id: 'a uuid', ...company }),
@@ -121,6 +124,40 @@ describe('Company Controller', () => {
         companyLocation: testLocation1,
         companyId: '1',
         _id: 'a different id',
+      });
+    });
+  });
+
+  describe('getByCompanyName', () => {
+    it('should get a company back', async () => {
+      await expect(controller.getByCompanyName(testCompany1)).resolves.toEqual({
+        companyName: testCompany1,
+        companyLocation: testLocation1,
+        companyId: '1',
+      });
+    });
+  });
+
+  describe('getByCompanyId', () => {
+    it('should get a company back', async () => {
+      await expect(controller.getByCompanyId('1')).resolves.toEqual({
+        companyName: testCompany1,
+        companyLocation: testLocation1,
+        companyId: '1',
+      });
+    });
+  });
+
+  describe('newCompany', () => {
+    it('should create a new company', () => {
+      const newCompanyDto: CreateCompanyDto = {
+        companyName: 'A new company',
+        companyLocation: 'A new location',
+      };
+
+      expect(controller.create(newCompanyDto)).resolves.toEqual({
+        _id: 'a uuid',
+        ...newCompanyDto,
       });
     });
   });
