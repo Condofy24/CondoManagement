@@ -24,10 +24,10 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
-  @Get('test')
-  @Roles(2)
-  @UseGuards(PrivilegeGuard)
-  test(@Req() req: Request) {
-    return this.authService.test();
-  }
+  // @Get('test')
+  // @Roles(2)
+  // @UseGuards(PrivilegeGuard)
+  // test(@Req() req: Request) {
+  //   return this.authService.test();
+  // }
 }

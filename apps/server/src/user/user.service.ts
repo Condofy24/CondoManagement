@@ -10,7 +10,7 @@ import { User } from './entities/user.entity';
 import { response } from 'express';
 import { Token, UserProfile } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt'
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
