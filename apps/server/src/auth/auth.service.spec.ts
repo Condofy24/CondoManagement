@@ -14,65 +14,67 @@ import { UnauthorizedException } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 import { AuthDoc } from './interfaces/auth-document.interface';
 
-export interface MyAuth {
-  id: string;
-  email: string;
-  password: string;
-}
-// export interface User {
+jest.mock('bcrypt');
+
+// export interface MyAuth {
 //   id: string;
 //   email: string;
 //   password: string;
-//   name: string;
-//   role: number;
-//   phoneNumber: string;
-//   imageUrl: string;
-//   imageId: string;
-//   companyId?: string;
 // }
-const mockAuth = (
-  id = 'test',
-  email = 'test@gmail.com',
-  password = 'test',
-): MyAuth => ({
-  id,
-  email,
-  password,
-});
+// // export interface User {
+// //   id: string;
+// //   email: string;
+// //   password: string;
+// //   name: string;
+// //   role: number;
+// //   phoneNumber: string;
+// //   imageUrl: string;
+// //   imageId: string;
+// //   companyId?: string;
+// // }
+// const mockAuth = (
+//   id = 'test',
+//   email = 'test@gmail.com',
+//   password = 'test',
+// ): MyAuth => ({
+//   id,
+//   email,
+//   password,
+// });
 
-const mockAuthDoc = (mock?: Partial<MyAuth>): Partial<AuthDoc> => ({
-  id: mock?.id || 'test',
-  email: mock?.email || 'test@gmail.com',
-  password: mock?.password || 'test',
-});
+// const mockAuthDoc = (mock?: Partial<MyAuth>): Partial<AuthDoc> => ({
+//   id: mock?.id || 'test',
+//   email: mock?.email || 'test@gmail.com',
+//   password: mock?.password || 'test',
+// });
 
-const userArray = [
-  mockAuth(),
-  mockAuth(
-    'test2',
-    'test.2@gmail.com',
-    'test2',
-  ),
-  mockAuth(
-    'mockAuth',
-    'test.3@gmail.com',
-    'test3',
-  ),
-];
+// const userArray = [
+//   mockAuth(),
+//   mockAuth(
+//     'test2',
+//     'test.2@gmail.com',
+//     'test2',
+//   ),
+//   mockAuth(
+//     'mockAuth',
+//     'test.3@gmail.com',
+//     'test3',
+//   ),
+// ];
 
-const userDocArray: Partial<AuthDoc>[] = [
-  mockAuthDoc(),
-  mockAuthDoc({
-    id: 'test2',
-    email: 'test.2@gmail.com',
-    password: 'test2',
-  }),
-  mockAuthDoc({
-    id: 'test3',
-    email: 'test.3@gmail.com',
-    password: 'test3',
-  }),
-];
+// const userDocArray: Partial<AuthDoc>[] = [
+//   mockAuthDoc(),
+//   mockAuthDoc({
+//     id: 'test2',
+//     email: 'test.2@gmail.com',
+//     password: 'test2',
+//   }),
+//   mockAuthDoc({
+//     id: 'test3',
+//     email: 'test.3@gmail.com',
+//     password: 'test3',
+//   }),
+// ];
 
 describe('AuthService', () => {
     let authService: AuthService;
@@ -148,11 +150,11 @@ describe('AuthService', () => {
       });
     describe('ownerLogin', () => {
         it('should return UnauthorizedException given incorrect credentials',async () => {
-            const mockUser = mockAuthDoc({
+            const mockUser = {
                 id: 'test2',
                 email: "test.2@gmail.com",
                 password: 'test2',
-              });
+              };
             const signInDto: SignInDto = {
                 email:"test.2@gmail.com",
                 password:"test2"
@@ -164,6 +166,42 @@ describe('AuthService', () => {
                 expect(error).toBeInstanceOf(UnauthorizedException);
             }
         });
+       
     })
+    describe('signIn', () => {
+        it('should sign in successfully with correct credentials', async () => {
+          const signInDto: SignInDto = {
+            email: 'test@gmail.com',
+            password: 'test',
+          };
+          
+          const mockUser = {
+            id: 'testUserId',
+            email: signInDto.email,
+            name: 'John Doe',
+            role: 'user',
+            phoneNumber: '1234567890',
+            imageUrl: 'http://example.com/image.jpg',
+            imageId: '123456',
+            // other user properties...
+          };// Mock user with correct credentials
+          userService.findOne = jest.fn().mockResolvedValue(mockUser);
+            jwtService.signAsync = jest.fn().mockResolvedValue('mockToken');
+            (compareSync as jest.Mock).mockReturnValue(true); // Mock compareSync to always return true
+
+            const result = await authService.signIn(signInDto);
+
+            expect(result.token).toEqual('mockToken');
+            expect(result.user).toEqual({
+                email: mockUser.email,
+                id: mockUser.id,
+                name: mockUser.name,
+                role: mockUser.role,
+                phoneNumber: mockUser.phoneNumber,
+                imageUrl: mockUser.imageUrl,
+                imageId: mockUser.imageId,
+            });
+        });
+    });
 })
 
