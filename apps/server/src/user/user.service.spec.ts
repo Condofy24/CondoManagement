@@ -12,6 +12,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { createMock } from '@golevelup/ts-jest';
 import { UserDoc } from './interfaces/user-document.interface';
+import { Readable } from 'node:stream';
 
 export interface MyUser {
   id: string;
@@ -142,7 +143,8 @@ const mockUserModel = {
 // Mocked Cloudinary service
 const mockCloudinaryService = {
   uploadFile: jest.fn().mockResolvedValue({
-    secure_url: 'https://example.com/image.jpg',
+    secure_url:
+      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
     public_id: '12345',
   }),
 };
@@ -186,7 +188,58 @@ describe('UserService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+  describe('uploadImageToCloudinary', () => {
+    it('should upload an image to Cloudinary', async () => {
+      // Mock the Express Multer file object
+      const file: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: 'image.jpg',
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        size: 12345,
+        buffer: Buffer.from('mock-image-buffer'), // Mock image buffer
+        destination: '',
+        filename: '',
+        path: '',
+        stream: new Readable(),
+      };
 
+      // Call the uploadImageToCloudinary method
+      const result = await service.uploadImageToCloudinary(file);
+
+      // Verify that Cloudinary uploadFile method was called with the file
+      expect(mockCloudinaryService.uploadFile).toHaveBeenCalledWith(file);
+
+      // Verify that the result is returned correctly
+      expect(result).toEqual({
+        secure_url:
+          'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+        public_id: '12345',
+      });
+    });
+
+    it('should throw a BadRequestException if image upload to Cloudinary fails', async () => {
+      // Mock the Express Multer file object
+      const file: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: 'image.jpg',
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        size: 12345,
+        buffer: Buffer.from('mock-image-buffer'), // Mock image buffer
+        destination: '',
+        filename: '',
+        path: '',
+        stream: new Readable(),
+      };
+
+      // Mock Cloudinary uploadFile method to throw an error
+      mockCloudinaryService.uploadFile.mockRejectedValueOnce(
+        new Error('Upload failed'),
+      );
+    });
+  });
+  // Call the uploadImageToCloudinary method and
   describe('createManager', () => {
     // it('should create a new manager', async () => {
     //   const createManagerDto: CreateManagerDto = {
@@ -362,6 +415,32 @@ describe('UserService', () => {
       }
     });
 
+    it('should throw HttpException with HttpStatus.BAD_REQUEST for invalid phone number', async () => {
+      const existingUserId = 'existing-id';
+      const updateUserDto = {
+        email: 'email@example.com',
+        name: 'Updated Name',
+        newPassword: 'newPassword',
+        phoneNumber: '123', // Invalid phone number
+      };
+
+      jest.spyOn(model, 'findByIdAndUpdate').mockReturnValueOnce(
+        createMock<Query<UserDoc, UserDoc>>({
+          exec: jest.fn().mockResolvedValueOnce({ user: true }), // Simulating an existing user
+        }),
+      );
+
+      try {
+        await service.updateUser(existingUserId, updateUserDto);
+
+        fail('Expected HttpException to be thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.message).toBe('Http Exception');
+        expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+      }
+    });
+
     it('should throw an error if email or phone number already exists', async () => {
       const createUserDto: CreateUserDto = {
         email: 'existing@example.com',
@@ -404,6 +483,32 @@ describe('UserService', () => {
       await expect(service.createUser(createUserDto)).rejects.toThrow(
         HttpException,
       );
+    });
+  });
+  describe('getPrivilege', () => {
+    it('should return the user role if the user is found', async () => {
+      const userId = 'testUserId';
+      const userRole = 1; // Example user role
+      const mockUser = {
+        _id: userId,
+        role: userRole,
+      };
+
+      jest.spyOn(model, 'findById').mockResolvedValueOnce(mockUser as any);
+
+      const result = await service.getPrivilege(userId);
+
+      expect(result).toEqual(userRole);
+    });
+
+    it('should return undefined if the user is not found', async () => {
+      const userId = 'nonExistentUserId';
+
+      jest.spyOn(model, 'findById').mockResolvedValueOnce(null);
+
+      const result = await service.getPrivilege(userId);
+
+      expect(result).toBeUndefined();
     });
   });
 
