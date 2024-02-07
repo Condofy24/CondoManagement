@@ -10,6 +10,7 @@ import {
 import { registerUser } from "@/redux/services/auth-service";
 import { AppDispatch } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
@@ -19,6 +20,7 @@ export default function ManagerRegistrationPage() {
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicError, setProfilePicError] = useState<string | null>();
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const {
     register,
@@ -32,7 +34,8 @@ export default function ManagerRegistrationPage() {
     setLoading(true);
 
     if (profilePic) {
-      dispatch(registerUser({ ...data, profilePic, role: "3" }));
+      dispatch(registerUser({ ...data, profilePic, role: "0" }));
+      router.push("/login");
     } else {
       setProfilePicError("Profile picture is required");
     }

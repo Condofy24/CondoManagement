@@ -9,8 +9,8 @@ export const signupSchema = object({
     .min(3, { message: "Name must be at least 3 character long" })
     .max(20, "Name cannot exceed 20 characters"),
   phoneNumber: string()
-    .min(7, "Phone number must be valid")
-    .max(12, { message: "Phone number must be valid" }),
+    .min(10, "Phone number must be valid")
+    .max(10, { message: "Phone number must be valid" }),
   password: string()
     .min(8, "Password must contain at least 8 characters")
     .max(20, "Password cannot exceed 20 characters"),

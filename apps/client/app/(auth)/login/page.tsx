@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 const Login = () => {
   const { register, handleSubmit, errors, loading, onSubmit } = LoginHooks();
   const pathname = usePathname();
-  const isLogin = pathname ==='/login' ? true : false;
+  const isLogin = pathname === "/login" ? true : false;
 
   return (
     <div className="container flex flex-col h-[calc(100vh_-_5rem)] items-center justify-center content-start">
@@ -26,7 +26,7 @@ const Login = () => {
             "border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
             {
               "border-b-2": isLogin,
-            }
+            },
           )}
         >
           Sign In
@@ -37,7 +37,7 @@ const Login = () => {
             "ml-4 border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
             {
               "border-b-2": !isLogin,
-            }
+            },
           )}
         >
           Sign Up
@@ -93,7 +93,7 @@ const Login = () => {
                 `w-full transform rounded-lg bg-gray-700 px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50 ${
                   loading ? "cursor-not-allowed opacity-50" : ""
                 }`,
-                "bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10"
+                "bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10",
               )}
             >
               {loading ? (

@@ -10,12 +10,14 @@ import { useForm } from "react-hook-form";
 import { registerUser } from "@/redux/services/auth-service";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
+import { useRouter } from "next/navigation";
 
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
   const {
     register,
@@ -30,6 +32,7 @@ const SignUpNew = () => {
 
     if (profilePic) {
       dispatch(registerUser({ ...data, profilePic, role: "3" }));
+      router.push("/login");
     } else {
       setProfilePicError("Profile picture is required");
     }

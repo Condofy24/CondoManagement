@@ -50,13 +50,18 @@ export const registerUser = createAsyncThunk<void, UserRegistationData>(
     } catch (error: any) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
-        toast.error(error.response.data.message);
+        toast.error(
+          "An error occured when creating your account. Please try again!",
+        );
         return rejectWithValue(error.response.data.message);
       } else {
-        toast.error(error.message);
+        toast.error(
+          "An error occured when creating your account. Please try again!",
+        );
         return rejectWithValue(error.message);
       }
     }
+    toast.success("Registered successfully");
   },
 );
 
@@ -76,12 +81,17 @@ export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
     } catch (error: any) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
-        toast.error(error.response.data.message);
+        toast.error(
+          "An error occured when creating your account. Please try again!",
+        );
         return rejectWithValue(error.response.data.message);
       } else {
-        toast.error(error.message);
+        toast.error(
+          "An error occured when creating your account. Please try again!",
+        );
         return rejectWithValue(error.message);
       }
     }
+    toast.success("Registered successfully");
   },
 );
