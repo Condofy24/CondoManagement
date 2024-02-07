@@ -1,5 +1,5 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, Length } from 'class-validator';
-import { IsValidRole, IsValidPhoneNumber } from '../user.validators';
+import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsValidPhoneNumber, IsValidRole } from '../user.validators';
 import { Validate } from 'class-validator';
 
 export class CreateUserDto {
@@ -12,11 +12,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 
-  //Not working need to be checked 
   @Validate(IsValidRole)
   role: string;
 
-  // @Validate(IsValidPhoneNumber). not working now need to be checked later 
+  @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
   phoneNumber: string;
 }

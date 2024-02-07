@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
 import { SignInDto } from './dto/signin.dto';
@@ -35,7 +35,7 @@ export class AuthService {
     throw new UnauthorizedException();
   }
 
-  test(){
-    return "IN";
-  }
+  // test() {
+  //   return 'IN';
+  // }
 }

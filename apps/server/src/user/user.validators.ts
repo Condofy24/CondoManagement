@@ -8,9 +8,10 @@ import { UserRolesEnum } from './user.model';
 @ValidatorConstraint({ name: 'IsValidRole', async: false })
 export class IsValidRole implements ValidatorConstraintInterface {
   validate(value: any, _args: ValidationArguments) {
-    console.log('here1');
-
-    return Object.values(UserRolesEnum).includes(value);
+    const validValues = Object.keys(UserRolesEnum).filter((item) => {
+      return !isNaN(Number(item));
+    });
+    return validValues.includes(value);
   }
   defaultMessage() {
     return 'Not a valid role.';
@@ -20,16 +21,10 @@ export class IsValidRole implements ValidatorConstraintInterface {
 @ValidatorConstraint({ name: 'IsValidPhoneNumber', async: false })
 export class IsValidPhoneNumber implements ValidatorConstraintInterface {
   validate(value: string, _args: ValidationArguments) {
-    // Check if the value is a number and its length is at least 10
-    console.log('here2');
-    if (!/^\d+$/.test(value) || value.length < 10) {
-      return false;
-    }
-
-    return true;
+    // Check if the value is a number and its length is 10
+    return !(!/^\d+$/.test(value) || value.length > 10 || value.length < 10);
   }
-
   defaultMessage() {
-    return 'The phone number is invalid. It should be a numeric string of at least 10 characters.';
+    return 'Not a valid phone number';
   }
 }

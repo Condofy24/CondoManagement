@@ -14,14 +14,15 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { PrivilegeGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { CreateManagerDto } from './dto/create-manager.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  // TODO: Create controller for managers to create accounts for their employees
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
@@ -30,6 +31,22 @@ export class UserController {
     @UploadedFile() image: Express.Multer.File,
   ) {
     return this.userService.createUser(createUserDto, image);
+  }
+
+  @Post('manager')
+  @UseInterceptors(FileInterceptor('image'))
+  createManager(
+    @Body() createManagerDto: CreateManagerDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.userService.createManager(createManagerDto, image);
+  }
+
+  @Post('employee')
+  @UseGuards(PrivilegeGuard)
+  @Roles(0)
+  createEmployee(@Body() createEmployeeDto: CreateEmployeeDto) {
+    return this.userService.createEmployee(createEmployeeDto);
   }
 
   @Get('users')

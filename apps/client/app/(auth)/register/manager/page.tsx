@@ -66,7 +66,6 @@ export default function ManagerRegistrationPage() {
       <RegistationFormInputs
         register={register}
         errors={errors}
-        profilePic={{ profilePic, setProfilePic }}
       />
       <div className="mt-4">
         <button

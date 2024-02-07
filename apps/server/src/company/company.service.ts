@@ -14,9 +14,9 @@ export class CompanyService {
   ) {}
 
   public async createCompany(createCompanyDto: CreateCompanyDto) {
-    const { name, location } = createCompanyDto;
+    const { companyName, companyLocation } = createCompanyDto;
 
-    const company = await this.companyModel.findOne({ name });
+    const company = await this.companyModel.findOne({ companyName });
     if (company) {
       throw new HttpException(
         { error: 'Company already exists', status: HttpStatus.BAD_REQUEST },
@@ -26,17 +26,21 @@ export class CompanyService {
 
     // Create company
     const companyId = uuidv4();
-    const newCompany = new this.companyModel({ name, location, companyId });
+    const newCompany = new this.companyModel({
+      companyName,
+      companyLocation,
+      companyId,
+    });
 
     const result = await newCompany.save();
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
-    return { id: result._id, name, location, companyId };
+    return { id: result._id, companyName, companyLocation, companyId };
   }
 
   public async updateCompany(id: string, updateCompanyDto: UpdateCompanyDto) {
-    const { name, location } = updateCompanyDto;
+    const { companyName, companyLocation } = updateCompanyDto;
 
     // Find company
     const company = await this.companyModel.findById(id);
@@ -46,14 +50,14 @@ export class CompanyService {
         HttpStatus.NOT_FOUND,
       );
     }
-    company.name = name;
-    company.location = location;
+    company.companyName = companyName;
+    company.companyLocation = companyLocation;
     await company.save();
 
     return {
       id: company.id,
-      name: company.name,
-      location: company.location,
+      companyName: company.companyName,
+      companyLocation: company.companyLocation,
       companyId: company.companyId,
     };
   }
@@ -68,8 +72,8 @@ export class CompanyService {
     }
     return {
       id: company._id,
-      name: company.name,
-      location: company.location,
+      companyName: company.companyName,
+      companyLocation: company.companyLocation,
       companyId: company.companyId,
     };
   }
@@ -77,15 +81,25 @@ export class CompanyService {
   public async findByCompanyId(companyId: string) {
     const company = await this.companyModel.findOne({ companyId });
     if (!company) {
-      throw new HttpException(
-        { error: 'Company not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
+      return false;
     }
     return {
       id: company._id,
-      name: company.name,
-      location: company.location,
+      companyName: company.companyName,
+      companyLocation: company.companyLocation,
+      companyId: company.companyId,
+    };
+  }
+
+  public async findByCompanyName(companyName: string) {
+    const company = await this.companyModel.findOne({ companyName });
+    if (!company) {
+      return false;
+    }
+    return {
+      id: company._id,
+      companyName: company.companyName,
+      companyLocation: company.companyLocation,
       companyId: company.companyId,
     };
   }
@@ -94,8 +108,8 @@ export class CompanyService {
     const companies = await this.companyModel.find();
     return companies?.map((company) => ({
       id: company._id,
-      name: company.name,
-      location: company.location,
+      companyName: company.companyName,
+      companyLocation: company.companyLocation,
       companyId: company.companyId,
     }));
   }
