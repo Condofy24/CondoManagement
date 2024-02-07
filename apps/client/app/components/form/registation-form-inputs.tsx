@@ -12,8 +12,8 @@ type RegistationFormInputsProps = {
   errors: FieldErrors<TSignupSchema>;
   profilePic: {
     setProfilePic: React.Dispatch<SetStateAction<File | null>>;
-    profilePicError: string;
-    setProfilePicError: React.Dispatch<SetStateAction<string>>;
+    profilePicError: string | null;
+    setProfilePicError: React.Dispatch<SetStateAction<string | null>>;
   };
 };
 export default function RegistationFormInputs({
@@ -141,7 +141,7 @@ export default function RegistationFormInputs({
               />
             </svg>
             <h2 className="mx-3 text-gray-400">
-              {profilePicInputRef.current?.value || "Picture"}
+              {profilePicInputRef.current?.value ? "Uploaded" : "Picture"}
             </h2>
             <input
               type="file"

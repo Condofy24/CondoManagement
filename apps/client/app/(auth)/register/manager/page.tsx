@@ -7,14 +7,18 @@ import {
   TManagerSignupSchema,
   managerSignupSchema,
 } from "@/lib/validation-schemas";
+import { registerUser } from "@/redux/services/auth-service";
+import { AppDispatch } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 
 export default function ManagerRegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicError, setProfilePicError] = useState<string | null>();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {
     register,
@@ -27,9 +31,10 @@ export default function ManagerRegistrationPage() {
   const onSubmit = (data: TManagerSignupSchema) => {
     setLoading(true);
 
-    // send request to server
     if (profilePic) {
-      console.log(data);
+      dispatch(registerUser({ ...data, profilePic, role: "3" }));
+    } else {
+      setProfilePicError("Profile picture is required");
     }
 
     setLoading(false);

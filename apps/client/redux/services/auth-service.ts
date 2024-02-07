@@ -1,7 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { UserInfo } from "@/types";
-import { TSignupSchema } from "@/lib/validation-schemas";
+import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
+import toast from "react-hot-toast";
 
 const API_URL = "http://127.0.0.1:4000/api";
 
@@ -39,19 +40,48 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
   },
 );
 
-export const registerUser = createAsyncThunk<
-  void,
-  TSignupSchema | { profilePic: File; role: string }
->("user", async (userData, { rejectWithValue }) => {
-  try {
-    console.log("data", userData);
-    await axios.post(`${API_URL}/user`, userData);
-  } catch (error: any) {
-    // return custom error message from API if any
-    if (error.response && error.response.data.message) {
-      return rejectWithValue(error.response.data.message);
-    } else {
-      return rejectWithValue(error.message);
+type UserRegistationData = TSignupSchema | { profilePic: File; role: string };
+
+export const registerUser = createAsyncThunk<void, UserRegistationData>(
+  "",
+  async (userData, { rejectWithValue }) => {
+    try {
+      await axios.post(`${API_URL}/user`, userData);
+    } catch (error: any) {
+      // return custom error message from API if any
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);
+        return rejectWithValue(error.response.data.message);
+      } else {
+        toast.error(error.message);
+        return rejectWithValue(error.message);
+      }
     }
-  }
-});
+  },
+);
+
+type ManagerRegistrationData =
+  | TManagerSignupSchema
+  | { profilePic: File; role: string };
+
+export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
+  "",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const { company, address, ...managerData } =
+        userData as TManagerSignupSchema;
+
+      await axios.post(`${API_URL}/company`, { company, address });
+      await axios.post(`${API_URL}/user/manager`, managerData);
+    } catch (error: any) {
+      // return custom error message from API if any
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);
+        return rejectWithValue(error.response.data.message);
+      } else {
+        toast.error(error.message);
+        return rejectWithValue(error.message);
+      }
+    }
+  },
+);

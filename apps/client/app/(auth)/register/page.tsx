@@ -14,7 +14,7 @@ import { AppDispatch } from "@/redux/store";
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
-  const [profilePicError, setProfilePicError] = useState<string | null>();
+  const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
 
   const {

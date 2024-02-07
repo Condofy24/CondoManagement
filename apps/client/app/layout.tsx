@@ -7,6 +7,7 @@ import ThemeSwitch from "@/app/components/theme/theme-switch";
 import Header from "./components/header";
 import ActiveSectionContextProvider from "@/context/active-section-context";
 import { ReduxProvider } from "@/redux/provider";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -34,6 +35,8 @@ export default function RootLayout({
         <ActiveSectionContextProvider>
           <ThemeContextProvider>
             <Header />
+            <Toaster position="top-right" />
+
             <ReduxProvider>{children}</ReduxProvider>
             <ThemeSwitch />
           </ThemeContextProvider>
