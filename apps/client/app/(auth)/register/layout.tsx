@@ -35,10 +35,10 @@ export default function RegistrationLayout({
           <Link
             href={"/register"}
             className={cn(
-              "border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
+              "border-gray-400 pb-3 text-center font-semibold text-primary",
               {
                 "border-b-2": !isManagerRegistering,
-              }
+              },
             )}
           >
             Owner / Tenant
@@ -46,10 +46,10 @@ export default function RegistrationLayout({
           <Link
             href={"/register/manager"}
             className={cn(
-              "ml-4 border-gray-400 pb-3 text-center font-semibold text-gray-800 dark:text-white/80",
+              "ml-4 border-gray-400 pb-3 text-center font-semibold text-primary",
               {
                 "border-b-2": isManagerRegistering,
-              }
+              },
             )}
           >
             Company Manager

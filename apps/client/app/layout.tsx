@@ -7,6 +7,7 @@ import ThemeSwitch from "@/app/components/theme/theme-switch";
 import Header from "./components/header";
 import ActiveSectionContextProvider from "@/context/active-section-context";
 import { ReduxProvider } from "@/redux/provider";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,13 +28,15 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90",
-          fontSans.variable
+          "bg-primary text-primary dark:text-opacity-90",
+          fontSans.variable,
         )}
       >
         <ActiveSectionContextProvider>
           <ThemeContextProvider>
             <Header />
+            <Toaster position="top-right" />
+
             <ReduxProvider>{children}</ReduxProvider>
             <ThemeSwitch />
           </ThemeContextProvider>
