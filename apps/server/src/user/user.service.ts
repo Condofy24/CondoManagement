@@ -10,7 +10,7 @@ import { User } from './entities/user.entity';
 import { response } from 'express';
 import { Token, UserProfile } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
@@ -48,7 +48,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (emailInUse || phoneNumberInUse) {
+    if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
           ? 'Email and phone number exist'
@@ -126,7 +126,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (emailInUse || phoneNumberInUse) {
+    if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
           ? 'Email and phone number exist'
@@ -182,7 +182,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (emailInUse || phoneNumberInUse) {
+    if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
           ? 'Email and phone number exist'
@@ -242,7 +242,7 @@ export class UserService {
   }
 
   public async findAll(): Promise<UserProfile[]> {
-    const users = await this.userModel.find();
+    const users = await this.userModel.find().exec();
     return users.map(
       (user: User) =>
         ({
@@ -259,7 +259,7 @@ export class UserService {
 
   public async remove(id: string): Promise<any> {
     try {
-      await this.userModel.findByIdAndDelete(id);
+      await this.userModel.findByIdAndDelete(id).exec();
     } catch {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }

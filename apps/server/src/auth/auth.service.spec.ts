@@ -77,131 +77,130 @@ jest.mock('bcrypt');
 // ];
 
 describe('AuthService', () => {
-    let authService: AuthService;
-    let userService: UserService;
-    let jwtService: JwtService;
-    let model: Model<User>;
+  let authService: AuthService;
+  let userService: UserService;
+  let jwtService: JwtService;
+  let model: Model<User>;
 
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            providers:[
-                UserService,
-                {
-                    provide: getModelToken('User'),
-                    useValue: {
-                        find: jest.fn(),
-                        findOne: jest.fn(),
-                        findById: jest.fn(),
-                        update: jest.fn(),
-                        create: jest.fn(),
-                        remove: jest.fn(),
-                        exec: jest.fn(),
-                        save: jest.fn(),
-                        findByIdAndDelete: jest.fn(),
-                        findByIdAndUpdate: jest.fn(),
-                        exists: jest.fn().mockResolvedValue(false),
-                    },
-                },
-                {
-                    provide: CloudinaryService,
-                    useValue:{
-                        uploadFile:jest.fn().mockResolvedValue({
-                            secure_url:"https://example.com/image.jpg",
-                            public_id:'12345'
-                        })
-                    }
-                },
-                {
-                    provide: CompanyService,
-                    useValue:{
-                        findByCompanyName: jest.fn().mockResolvedValue(null),
-                        createCompany: jest.fn().mockResolvedValue({ companyId: 'company123'}),
-                        findByCompanyId: jest.fn().mockResolvedValue(true),
-                    }
-                },
-                JwtService,
-                AuthService,
-                {
-                    provide: UserService,
-                    useValue: {
-                        findOne: jest.fn(),
-                    },
-                },
-                {
-                    provide: JwtService,
-                    useValue: {
-                        signAsync: jest.fn(),
-                    },
-                }
-            ],
-        }).compile();
-        authService = module.get<AuthService>(AuthService);
-        jwtService = module.get<JwtService>(JwtService);
-        userService = module.get<UserService>(UserService);
-        model = module.get<Model<User>>(getModelToken('User'));
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UserService,
+        {
+          provide: getModelToken('User'),
+          useValue: {
+            find: jest.fn(),
+            findOne: jest.fn(),
+            findById: jest.fn(),
+            update: jest.fn(),
+            create: jest.fn(),
+            remove: jest.fn(),
+            exec: jest.fn(),
+            save: jest.fn(),
+            findByIdAndDelete: jest.fn(),
+            findByIdAndUpdate: jest.fn(),
+            exists: jest.fn().mockResolvedValue(false),
+          },
+        },
+        {
+          provide: CloudinaryService,
+          useValue: {
+            uploadFile: jest.fn().mockResolvedValue({
+              secure_url: 'https://example.com/image.jpg',
+              public_id: '12345',
+            }),
+          },
+        },
+        {
+          provide: CompanyService,
+          useValue: {
+            findByCompanyName: jest.fn().mockResolvedValue(null),
+            createCompany: jest
+              .fn()
+              .mockResolvedValue({ companyId: 'company123' }),
+            findByCompanyId: jest.fn().mockResolvedValue(true),
+          },
+        },
+        JwtService,
+        AuthService,
+        {
+          provide: UserService,
+          useValue: {
+            findOne: jest.fn(),
+          },
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            signAsync: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+    authService = module.get<AuthService>(AuthService);
+    jwtService = module.get<JwtService>(JwtService);
+    userService = module.get<UserService>(UserService);
+    model = module.get<Model<User>>(getModelToken('User'));
+  });
+  it('should be defined', () => {
+    expect(authService).toBeDefined();
+  });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  describe('ownerLogin', () => {
+    it('should return UnauthorizedException given incorrect credentials', async () => {
+      const mockUser = {
+        id: 'test2',
+        email: 'test.2@gmail.com',
+        password: 'test2',
+      };
+      const signInDto: SignInDto = {
+        email: 'test.2@gmail.com',
+        password: 'test2',
+      };
+      try {
+        const userInfo = await authService.signIn(signInDto);
+      } catch (error) {
+        // If an error is thrown, check if it is an UnauthorizedException
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
     });
-    it('should be defined', () => {
-        expect(authService).toBeDefined();
-      });
-    
-      afterEach(() => {
-        jest.clearAllMocks();
-      });
-    describe('ownerLogin', () => {
-        it('should return UnauthorizedException given incorrect credentials',async () => {
-            const mockUser = {
-                id: 'test2',
-                email: "test.2@gmail.com",
-                password: 'test2',
-              };
-            const signInDto: SignInDto = {
-                email:"test.2@gmail.com",
-                password:"test2"
-            };
-            try {
-                const userInfo = await authService.signIn(signInDto);
-            } catch (error) {
-                // If an error is thrown, check if it is an UnauthorizedException
-                expect(error).toBeInstanceOf(UnauthorizedException);
-            }
-        });
-       
-    })
-    describe('signIn', () => {
-        it('should sign in successfully with correct credentials', async () => {
-          const signInDto: SignInDto = {
-            email: 'test@gmail.com',
-            password: 'test',
-          };
-          
-          const mockUser = {
-            id: 'testUserId',
-            email: signInDto.email,
-            name: 'John Doe',
-            role: 'user',
-            phoneNumber: '1234567890',
-            imageUrl: 'http://example.com/image.jpg',
-            imageId: '123456',
-            // other user properties...
-          };// Mock user with correct credentials
-          userService.findOne = jest.fn().mockResolvedValue(mockUser);
-            jwtService.signAsync = jest.fn().mockResolvedValue('mockToken');
-            (compareSync as jest.Mock).mockReturnValue(true); // Mock compareSync to always return true
+  });
+  describe('signIn', () => {
+    it('should sign in successfully with correct credentials', async () => {
+      const signInDto: SignInDto = {
+        email: 'test@gmail.com',
+        password: 'test',
+      };
 
-            const result = await authService.signIn(signInDto);
+      const mockUser = {
+        id: 'testUserId',
+        email: signInDto.email,
+        name: 'John Doe',
+        role: 'user',
+        phoneNumber: '1234567890',
+        imageUrl: 'http://example.com/image.jpg',
+        imageId: '123456',
+        // other user properties...
+      }; // Mock user with correct credentials
+      userService.findOne = jest.fn().mockResolvedValue(mockUser);
+      jwtService.signAsync = jest.fn().mockResolvedValue('mockToken');
+      (compareSync as jest.Mock).mockReturnValue(true); // Mock compareSync to always return true
 
-            expect(result.token).toEqual('mockToken');
-            expect(result.user).toEqual({
-                email: mockUser.email,
-                id: mockUser.id,
-                name: mockUser.name,
-                role: mockUser.role,
-                phoneNumber: mockUser.phoneNumber,
-                imageUrl: mockUser.imageUrl,
-                imageId: mockUser.imageId,
-            });
-        });
+      const result = await authService.signIn(signInDto);
+
+      expect(result.token).toEqual('mockToken');
+      expect(result.user).toEqual({
+        email: mockUser.email,
+        id: mockUser.id,
+        name: mockUser.name,
+        role: mockUser.role,
+        phoneNumber: mockUser.phoneNumber,
+        imageUrl: mockUser.imageUrl,
+        imageId: mockUser.imageId,
+      });
     });
-})
-
+  });
+});
