@@ -27,5 +27,5 @@
 }
 
 .formInput {
-  @apply block rounded-lg border bg-white text-secondary dark:text-black/80 focus:border-black/100 focus:outline-none dark:focus:ring-gray-700 focus:ring-1 focus:ring-black/100 focus:ring-opacity-40;
+  @apply block rounded-lg border bg-white text-primary dark:text-black/80 focus:border-black/100 focus:outline-none dark:focus:ring-gray-700 focus:ring-1 focus:ring-black/100 focus:ring-opacity-40;
 }

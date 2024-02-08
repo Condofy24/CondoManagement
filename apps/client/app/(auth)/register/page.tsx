@@ -41,7 +41,10 @@ const SignUpNew = () => {
   };
 
   return (
-    <form className="w-full max-w-md" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="w-full max-w-md text-primary"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <RegistationFormInputs
         register={register}
         errors={errors}
