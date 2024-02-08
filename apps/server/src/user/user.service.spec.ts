@@ -4,7 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { User, UserSchema } from './entities/user.entity';
 import { UserRolesEnum } from './user.model';
-import { Model, Query } from 'mongoose';
+import { Model, Mongoose, Query } from 'mongoose';
 import { CompanyService } from '../company/company.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
@@ -37,6 +37,7 @@ export interface MyUser {
 //   imageId: string;
 //   companyId?: string;
 // }
+
 const mockUser = (
   id = 'test',
   email = 'test@gmail.com',
@@ -131,10 +132,10 @@ class mockUserModel {
   constructor(private data: any) {}
   save = jest.fn().mockResolvedValue(this.data);
   static find = jest.fn().mockResolvedValue([]);
-  static findOne = jest.fn().mockResolvedValue([]);
-  static findById = jest.fn().mockResolvedValue([]);
-  static updateUser = jest.fn().mockResolvedValue([]);
-  static createManager = jest.fn().mockResolvedValue([]);
+  static findOne = jest.fn().mockResolvedValue({});
+  static findById = jest.fn().mockResolvedValue({});
+  static updateUser = jest.fn().mockResolvedValue({});
+  static createManager = jest.fn().mockResolvedValue({});
   static remove = jest.fn().mockResolvedValue([true]);
   static exec = jest.fn().mockResolvedValue([]);
 
@@ -256,7 +257,7 @@ describe('UserService', () => {
 
       const newManager = await service.createManager(createManagerDto);
       expect(newManager).toBeDefined();
-      // Add more assertions if needed
+      // TODO: Check response status
     });
 
     it('should throw an error if company already exists', async () => {
@@ -292,19 +293,18 @@ describe('UserService', () => {
   });
 
   describe('createEmployee', () => {
-    // it('should create a new employee', async () => {
-    //   const createEmployeeDto: CreateEmployeeDto = {
-    //     email: 'employee@example.com',
-    //     name: 'Employee Name',
-    //     role: '1',
-    //     companyId: 'company123',
-    //     phoneNumber: '1234567890',
-    //   };
+    it('should create a new employee', async () => {
+      const createEmployeeDto: CreateEmployeeDto = {
+        email: 'employee@example.com',
+        name: 'Employee Name',
+        role: '1',
+        companyId: 'company123',
+        phoneNumber: '1234567890',
+      };
 
-    //   const result = await service.createEmployee(createEmployeeDto);
-    //   expect(result).toBeDefined();
-    //   expect(result).toHaveProperty('status', HttpStatus.CREATED);
-    // });
+      const result = await service.createEmployee(createEmployeeDto);
+      expect(result).toBeDefined();
+    });
 
     it('should throw an error if company does not exist', async () => {
       mockCompanyService.findByCompanyId.mockResolvedValue(false);
@@ -337,19 +337,18 @@ describe('UserService', () => {
   });
 
   describe('createUser', () => {
-    // it('should create a new user', async () => {
-    //   const createUserDto: CreateUserDto = {
-    //     email: 'user@example.com',
-    //     password: 'password123',
-    //     name: 'User Name',
-    //     role: '2',
-    //     phoneNumber: '9876543210',
-    //   };
+    it('should create a new user', async () => {
+      const createUserDto: CreateUserDto = {
+        email: 'user@example.com',
+        password: 'password123',
+        name: 'User Name',
+        role: '2',
+        phoneNumber: '9876543210',
+      };
 
-    //   const result = await service.createUser(createUserDto);
-    //   expect(result).toBeDefined();
-    //   expect(result).toHaveProperty('status', HttpStatus.CREATED);
-    // });
+      const result = await service.createUser(createUserDto);
+      expect(result).toBeDefined();
+    });
     it('should return all users', async () => {
       jest.spyOn(model, 'find').mockReturnValue({
         exec: jest.fn().mockResolvedValueOnce(userDocArray),
@@ -410,7 +409,6 @@ describe('UserService', () => {
 
         fail('Expected HttpException to be thrown');
       } catch (error) {
-        console.log('the errror', error);
         expect(error).toBeInstanceOf(HttpException);
         expect(error.message).toBe('Http Exception');
         expect(error.getStatus()).toBe(HttpStatus.CONFLICT);
@@ -451,8 +449,9 @@ describe('UserService', () => {
         role: '2',
         phoneNumber: '1234567890',
       };
-
-      (model.exists as jest.Mock).mockResolvedValue(true);
+      jest
+        .spyOn(model, 'exists')
+        .mockImplementation(() => ({ _id: '00000' }) as any);
 
       await expect(service.createUser(createUserDto)).rejects.toThrow(
         HttpException,

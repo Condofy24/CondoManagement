@@ -48,10 +48,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    console.log('is email in use', emailInUse);
-    console.log('is phone in use', phoneNumberInUse);
-    console.log('the dto', createManagerDto);
-    if (emailInUse || phoneNumberInUse) {
+    if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
           ? 'Email and phone number exist'
@@ -129,7 +126,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (emailInUse || phoneNumberInUse) {
+    if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
           ? 'Email and phone number exist'
@@ -185,7 +182,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    if (emailInUse || phoneNumberInUse) {
+    if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
           ? 'Email and phone number exist'
