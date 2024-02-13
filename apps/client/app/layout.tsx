@@ -37,7 +37,11 @@ export default function RootLayout({
             <Header />
             <Toaster position="top-right" />
 
-            <ReduxProvider>{children}</ReduxProvider>
+            <ReduxProvider>
+              <div className="relative top-12 h-[calc(100vh_-_3rem)]">
+                {children}
+              </div>
+            </ReduxProvider>
             <ThemeSwitch />
           </ThemeContextProvider>
         </ActiveSectionContextProvider>

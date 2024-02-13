@@ -19,3 +19,11 @@ export enum UserRolesEnum {
   OWNER = 3,
   RENTER = 4,
 }
+
+export type PropertyInformation = {
+  name: string;
+  address: string;
+  units: number;
+  parking: number;
+  storage: number;
+};
