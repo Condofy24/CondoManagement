@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BuildingSchema } from './entities/building.entity';
-import {BuildingController} from './building.controller';
-import {BuildingService} from './building.service';
-import { CloudinaryModule } from 'src/user/cloudinary/cloudinary.module';
-import { CompanyModule } from 'src/company/company.module';
+import { BuildingController } from './building.controller';
+import { BuildingService } from './building.service';
+import { CloudinaryModule } from '../user/cloudinary/cloudinary.module';
+import { CompanyModule } from '../company/company.module';
 @Module({
-  imports: [
-    CompanyModule
-  ],
+  imports: [CompanyModule],
   controllers: [BuildingController],
   providers: [BuildingService],
   exports: [BuildingService, BuildingModule],
