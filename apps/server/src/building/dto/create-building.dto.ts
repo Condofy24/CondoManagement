@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
 
-export class CreateEmployeeDto {
+export class CreateBuildingDto {
   @IsNotEmpty()
   name: string;
 

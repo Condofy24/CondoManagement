@@ -7,8 +7,6 @@ import { CloudinaryModule } from 'src/user/cloudinary/cloudinary.module';
 import { CompanyModule } from 'src/company/company.module';
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Building', schema: BuildingSchema }]),
-    CloudinaryModule,
     CompanyModule
   ],
   controllers: [BuildingController],
