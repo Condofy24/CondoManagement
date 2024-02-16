@@ -11,6 +11,8 @@ import { CompanyModule } from './company/company.module';
 import { CloudinaryModule } from './user/cloudinary/cloudinary.module';
 import { BuildingModule } from './building/building.module';
 import { BuildingController } from './building/building.controller';
+import { UnitModule } from './unit/unit.module';
+import { UnitController } from './unit/unit.controller';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { BuildingController } from './building/building.controller';
     CompanyModule,
     CloudinaryModule,
     BuildingModule,
+    UnitModule,
   ],
   controllers: [
     AppController,
@@ -29,6 +32,7 @@ import { BuildingController } from './building/building.controller';
     AuthController,
     CompanyController,
     BuildingController,
+    UnitController,
   ],
   providers: [AppService],
 })

@@ -1,4 +1,3 @@
-import { Double } from 'mongodb';
 import * as mongoose from 'mongoose';
 
 export const VerificationKeySchema = new mongoose.Schema(
@@ -13,9 +12,9 @@ export const VerificationKeySchema = new mongoose.Schema(
   },
 );
 
-export interface Unit {
-    unitId:string,
-    key:string,
-    type:string,
-    claimedBy:string,
+export interface VerificationKey {
+  unitId: string;
+  key: string;
+  type: string;
+  claimedBy: string;
 }
