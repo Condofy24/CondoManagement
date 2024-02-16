@@ -6,8 +6,22 @@ import { InjectModel } from "@nestjs/mongoose";
 
 @Injectable()
 export class BuildingService {
+    constructor(
+        @InjectModel('Building')
+        private readonly buildingModel: Model<Building>
+    ) {}
 
-    getHello(): string {
-        return 'Hello World!';
+    public async createBuilding(createBuildingDto :CreateBuildingDto){
+        const {name,address,unitCount,parkingCount,storageCount,fileUrl} = createBuildingDto;
+        const newBuilding = new this.buildingModel({
+            name,
+            address,
+            unitCount,
+            parkingCount,
+            storageCount,
+            fileUrl,
+        });
+        const result = await newBuilding.save();
+        return result;
     }
 }

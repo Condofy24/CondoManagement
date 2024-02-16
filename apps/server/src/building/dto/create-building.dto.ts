@@ -8,15 +8,12 @@ export class CreateBuildingDto {
   address: string;
 
   @IsNotEmpty()
-  @IsInt()
   unitCount: number;
 
   @IsNotEmpty()
-  @IsInt()
   parkingCount: number;
 
   @IsNotEmpty()
-  @IsInt()
   storageCount: number;
 
   @IsNotEmpty()

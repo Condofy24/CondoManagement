@@ -6,7 +6,11 @@ import { BuildingService } from './building.service';
 import { CloudinaryModule } from '../user/cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 @Module({
-  imports: [CompanyModule],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Building', schema: BuildingSchema }]),
+    CompanyModule,
+    CloudinaryModule,
+  ],
   controllers: [BuildingController],
   providers: [BuildingService],
   exports: [BuildingService, BuildingModule],

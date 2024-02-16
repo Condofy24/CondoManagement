@@ -6,8 +6,8 @@ import { BuildingService } from "./building.service";
 export class BuildingController {
     constructor(private readonly buildingService: BuildingService) {}
 
-    @Get()
-    getHello(): string {
-    return this.buildingService.getHello();
-  }
+    @Post()
+    create(@Body() createBuildingDto: CreateBuildingDto){
+        return this.buildingService.createBuilding(createBuildingDto);
+    }
 }
