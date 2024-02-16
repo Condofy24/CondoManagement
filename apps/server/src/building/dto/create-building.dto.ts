@@ -16,6 +16,4 @@ export class CreateBuildingDto {
   @IsNotEmpty()
   storageCount: number;
 
-  @IsNotEmpty()
-  fileUrl: string;
 }
