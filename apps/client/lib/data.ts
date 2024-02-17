@@ -1,4 +1,6 @@
 import { PropertyInformation } from "@/types";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { FaUser, FaRegCalendarAlt } from "react-icons/fa";
 
 export const headerLinks = [
   {
@@ -28,41 +30,59 @@ export const Properties: PropertyInformation[] = [
   {
     name: "Larson-Jones",
     address: "174 Jaime Underpass, Margaretberg, MO 57717",
-    occupancy: "Owned",
-    units: 96,
-    parking: 34,
-    storage: 28,
+    status: "available",
+    units: 5,
+    parking: 10,
+    storage: 5,
   },
   {
     name: "Herrera-Bowman",
     address: "847 Williams Square, Moodyhaven, WI 15827",
-    occupancy: "Owned",
-    units: 59,
+    status: "owned",
+    units: 10,
     parking: 6,
-    storage: 11,
+    storage: 10,
   },
   {
     name: "Price, King and Clark",
     address: "PSC 3082, Box 9321, APO AP 67579",
-    occupancy: "Owned",
-    units: 24,
-    parking: 18,
+    status: "rented",
+    units: 20,
+    parking: 10,
     storage: 10,
   },
   {
     name: "Stewart LLC",
     address: "USCGC Martin, FPO AA 25091",
-    occupancy: "Owned",
-    units: 75,
-    parking: 17,
-    storage: 9,
+    status: "owned",
+    units: 8,
+    parking: 10,
+    storage: 5,
   },
   {
     name: "Stanley Ltd",
     address: "2065 Patricia Plaza Suite 931, Kaylafurt, WV 34706",
-    occupancy: "Owned",
-    units: 6,
-    parking: 20,
-    storage: 19,
+    status: "available",
+    units: 7,
+    parking: 7,
+    storage: 5,
   },
 ] as const;
+
+export const unitStatuses = [
+  {
+    label: "Available",
+    value: "available",
+    icon: IoMdCheckmarkCircleOutline,
+  },
+  {
+    label: "Owned",
+    value: "owned",
+    icon: FaUser,
+  },
+  {
+    label: "Rented",
+    value: "rented",
+    icon: FaRegCalendarAlt,
+  },
+];

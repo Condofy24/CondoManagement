@@ -1,0 +1,6 @@
+
+> client@0.1.0 build /Users/khxsh/Documents/GitHub Repos/CondoManagement/apps/client
+> next build
+
+sh: next: command not found
+ ELIFECYCLE  Command failed.

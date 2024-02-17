@@ -33,16 +33,20 @@ export const columns: ColumnDef<PropertyInformation>[] = [
     header: "Address",
   },
   {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
     accessorKey: "units",
     header: "Units",
   },
   {
-    accessorKey: "parkings",
+    accessorKey: "parking",
     header: "Parkings",
   },
   {
     accessorKey: "storage",
-    header: "storage",
+    header: "Storage",
   },
   {
     id: "actions",
