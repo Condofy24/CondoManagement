@@ -36,37 +36,37 @@ export class BuildingService {
     const { name, address, unitCount, parkingCount, storageCount } =
       createBuildingDto;
 
-        const building = await this.buildingModel.findOne({name});
-        if(building){
-            throw new HttpException(
-                {error: 'Building already exists', status: HttpStatus.BAD_REQUEST},
-                HttpStatus.BAD_REQUEST,
-            );
-        }
-        const addressInUse = await this.buildingModel.exists({address:address});
-        if(addressInUse?._id){
-            throw new HttpException(
-                {error: "Address already in use",status:HttpStatus.CONFLICT},
-                HttpStatus.CONFLICT,
-            )
-        }
-        const imageResponse = await this.uploadImageToCloudinary(file);
-        let fileUrl = imageResponse.secure_url;
-        let filePublicId = imageResponse.public_id;
-        let fileAssetId = imageResponse.asset_id;
-        const newBuilding = new this.buildingModel({
-            name,
-            address,
-            unitCount,
-            parkingCount,
-            storageCount,
-            fileUrl,
-            filePublicId,
-            fileAssetId
-        });
-        const result = await newBuilding.save();
-        if (result instanceof Error)
-            return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+    const building = await this.buildingModel.findOne({ name });
+    if (building) {
+      throw new HttpException(
+        { error: 'Building already exists', status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const addressInUse = await this.buildingModel.exists({ address: address });
+    if (addressInUse?._id) {
+      throw new HttpException(
+        { error: 'Address already in use', status: HttpStatus.CONFLICT },
+        HttpStatus.CONFLICT,
+      );
+    }
+    const imageResponse = await this.uploadImageToCloudinary(file);
+    let fileUrl = imageResponse.secure_url;
+    let filePublicId = imageResponse.public_id;
+    let fileAssetId = imageResponse.asset_id;
+    const newBuilding = new this.buildingModel({
+      name,
+      address,
+      unitCount,
+      parkingCount,
+      storageCount,
+      fileUrl,
+      filePublicId,
+      fileAssetId,
+    });
+    const result = await newBuilding.save();
+    if (result instanceof Error)
+      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
     return {
       id: result._id,
@@ -87,7 +87,7 @@ export class BuildingService {
     return this.buildingModel.findOne({ _id: buildingId });
   }
 
-  public async addUnitToBuilding(building: Building, unit: Unit){
-building.units.push(unit);
+  public async addUnitToBuilding(building: Building, unit: Unit) {
+    building.units.push(unit);
   }
 }

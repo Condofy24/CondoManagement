@@ -13,5 +13,4 @@ export class CreateUnitDto {
 
   @IsNotEmpty()
   fees: Double;
-
 }
