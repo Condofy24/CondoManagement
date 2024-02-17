@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UnitService } from './unit.service';
 
@@ -6,8 +6,11 @@ import { UnitService } from './unit.service';
 export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
-  @Post()
-  create(@Body() createUnitDto: CreateUnitDto) {
-    return this.unitService.createUnit(createUnitDto);
+  @Post(':buildingId')
+  create(
+    @Param('buildingId') buildingId: string,
+    @Body() createUnitDto: CreateUnitDto,
+  ) {
+    return this.unitService.createUnit(buildingId, createUnitDto);
   }
 }

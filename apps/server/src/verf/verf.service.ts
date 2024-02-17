@@ -13,14 +13,12 @@ export class VerfService {
   ) {}
   public async createVerfKey(unitId: string, type: string, claimedBy: string) {
     const key = uuidv4();
-    console.log('this is key', key);
     const newKey = new this.verfModel({
       unitId,
       key,
       type,
       claimedBy,
     });
-    console.log('this is the whole key', newKey);
     const result = await newKey.save();
     return result;
   }

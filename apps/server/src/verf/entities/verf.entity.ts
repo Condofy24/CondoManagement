@@ -5,7 +5,7 @@ export const VerificationKeySchema = new mongoose.Schema(
     unitId: { type: String, required: true },
     key: { type: String, required: true },
     type: { type: String, required: true },
-    claimedBy: { type: String, required: true },
+    claimedBy: { type: String, required: false },
   },
   {
     timestamps: true, // This enables automatic createdAt and updatedAt fields
