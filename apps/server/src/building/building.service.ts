@@ -32,6 +32,13 @@ export class BuildingService {
                 HttpStatus.BAD_REQUEST,
             );
         }
+        const addressInUse = await this.buildingModel.exists({address:address});
+        if(addressInUse?._id){
+            throw new HttpException(
+                {error: "Address already in use",status:HttpStatus.CONFLICT},
+                HttpStatus.CONFLICT,
+            )
+        }
         const imageResponse = await this.uploadImageToCloudinary(file);
         let fileUrl = imageResponse.secure_url;
         let filePublicId = imageResponse.public_id;
