@@ -30,7 +30,6 @@ export const Properties: PropertyInformation[] = [
   {
     name: "Larson-Jones",
     address: "174 Jaime Underpass, Margaretberg, MO 57717",
-    status: "available",
     units: 5,
     parking: 10,
     storage: 5,
@@ -38,7 +37,6 @@ export const Properties: PropertyInformation[] = [
   {
     name: "Herrera-Bowman",
     address: "847 Williams Square, Moodyhaven, WI 15827",
-    status: "owned",
     units: 10,
     parking: 6,
     storage: 10,
@@ -46,7 +44,6 @@ export const Properties: PropertyInformation[] = [
   {
     name: "Price, King and Clark",
     address: "PSC 3082, Box 9321, APO AP 67579",
-    status: "rented",
     units: 20,
     parking: 10,
     storage: 10,
@@ -54,7 +51,6 @@ export const Properties: PropertyInformation[] = [
   {
     name: "Stewart LLC",
     address: "USCGC Martin, FPO AA 25091",
-    status: "owned",
     units: 8,
     parking: 10,
     storage: 5,
@@ -62,7 +58,6 @@ export const Properties: PropertyInformation[] = [
   {
     name: "Stanley Ltd",
     address: "2065 Patricia Plaza Suite 931, Kaylafurt, WV 34706",
-    status: "available",
     units: 7,
     parking: 7,
     storage: 5,
