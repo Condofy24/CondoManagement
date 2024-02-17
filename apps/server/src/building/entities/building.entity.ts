@@ -3,6 +3,7 @@ import { Unit } from 'src/unit/entities/unit.entity';
 
 export const BuildingSchema = new mongoose.Schema(
   {
+    companyId: { type: String, required: true },
     name: { type: String, required: true },
     address: { type: String, required: true },
     unitCount: { type: Number, required: true },
@@ -11,7 +12,6 @@ export const BuildingSchema = new mongoose.Schema(
     fileUrl: { type: String, required: true },
     filePublicId: { type: String, required: true },
     fileAssetId: { type: String, required: true },
-    units:{type:Array<Unit>},
   },
   {
     timestamps: true, // This enables automatic createdAt and updatedAt fields
@@ -19,6 +19,7 @@ export const BuildingSchema = new mongoose.Schema(
 );
 
 export interface Building {
+  companyId: string;
   name: string;
   address: string;
   unitCount: number;
@@ -27,5 +28,4 @@ export interface Building {
   fileUrl: string;
   filePublicId: string;
   fileAssetId: string;
-  units:Array<Unit>;
 }

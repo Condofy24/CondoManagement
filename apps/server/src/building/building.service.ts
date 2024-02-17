@@ -10,6 +10,7 @@ import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
 import { Unit } from '../unit/entities/unit.entity';
+import { CompanyService } from 'src/company/company.service';
 
 //to download the files you can access Cloudinary's Admin API
 @Injectable()
@@ -18,6 +19,7 @@ export class BuildingService {
     @InjectModel('Building')
     private readonly buildingModel: Model<Building>,
     private cloudinary: CloudinaryService,
+    private companyService: CompanyService,
   ) {}
   async uploadFileToCloudinary(file: Express.Multer.File) {
     try {
@@ -32,10 +34,17 @@ export class BuildingService {
   public async createBuilding(
     createBuildingDto: CreateBuildingDto,
     file: Express.Multer.File,
+    companyId: string,
   ) {
     const { name, address, unitCount, parkingCount, storageCount } =
       createBuildingDto;
-
+    const companyExists = await this.companyService.findByCompanyId(companyId);
+    if (!companyExists) {
+      throw new HttpException(
+        { error: "Company doesn't exists", status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const building = await this.buildingModel.findOne({ name });
     if (building) {
       throw new HttpException(
@@ -55,6 +64,7 @@ export class BuildingService {
     let filePublicId = fileResponse.public_id;
     let fileAssetId = fileResponse.asset_id;
     const newBuilding = new this.buildingModel({
+      companyId,
       name,
       address,
       unitCount,
@@ -69,7 +79,7 @@ export class BuildingService {
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
     return {
-      id: result._id,
+      companyId,
       name,
       address,
       unitCount,

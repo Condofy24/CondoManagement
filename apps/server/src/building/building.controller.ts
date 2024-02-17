@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -14,12 +15,17 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class BuildingController {
   constructor(private readonly buildingService: BuildingService) {}
 
-  @Post()
+  @Post(':companyId')
   @UseInterceptors(FileInterceptor('file'))
   create(
+    @Param('companyId') companyId: string,
     @Body() createBuildingDto: CreateBuildingDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.buildingService.createBuilding(createBuildingDto, file);
+    return this.buildingService.createBuilding(
+      createBuildingDto,
+      file,
+      companyId,
+    );
   }
 }
