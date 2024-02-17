@@ -19,10 +19,10 @@ export class BuildingService {
     private readonly buildingModel: Model<Building>,
     private cloudinary: CloudinaryService,
   ) {}
-  async uploadImageToCloudinary(file: Express.Multer.File) {
+  async uploadFileToCloudinary(file: Express.Multer.File) {
     try {
-      const imageResponse = await this.cloudinary.uploadFile(file);
-      return imageResponse;
+      const fileResponse = await this.cloudinary.uploadFile(file);
+      return fileResponse;
     } catch (error) {
       console.error('Error uploading file to Cloudinary:', error);
       throw new BadRequestException('Failed to upload file to Cloudinary.');
@@ -50,10 +50,10 @@ export class BuildingService {
         HttpStatus.CONFLICT,
       );
     }
-    const imageResponse = await this.uploadImageToCloudinary(file);
-    let fileUrl = imageResponse.secure_url;
-    let filePublicId = imageResponse.public_id;
-    let fileAssetId = imageResponse.asset_id;
+    const fileResponse = await this.uploadFileToCloudinary(file);
+    let fileUrl = fileResponse.secure_url;
+    let filePublicId = fileResponse.public_id;
+    let fileAssetId = fileResponse.asset_id;
     const newBuilding = new this.buildingModel({
       name,
       address,
@@ -85,9 +85,5 @@ export class BuildingService {
     buildingId: string,
   ): Promise<Building | undefined | null> {
     return this.buildingModel.findOne({ _id: buildingId });
-  }
-
-  public async addUnitToBuilding(building: Building, unit: Unit) {
-    building.units.push(unit);
   }
 }

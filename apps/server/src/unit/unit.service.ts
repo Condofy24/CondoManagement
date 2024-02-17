@@ -18,6 +18,13 @@ export class UnitService {
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
     const unit = await this.unitModel.findOne({ unitNumber });
+    const buildingExists = await this.buildingService.findOne(buildingId);
+    if (!buildingExists) {
+      throw new HttpException(
+        { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (unit) {
       throw new HttpException(
         { error: 'Unit already exists', status: HttpStatus.BAD_REQUEST },
@@ -25,14 +32,13 @@ export class UnitService {
       );
     }
     const newUnit = new this.unitModel({
+      buildingId,
       unitNumber,
       size,
       isOccupiedByRenter,
       fees,
     });
     const result = await newUnit.save();
-    const building = await this.buildingService.findOne(buildingId);
-    building?.units.push(newUnit);
     const verfKeyOwner = this.verfService.createVerfKey(result.id, 'owner', '');
     const verKeyRenter = this.verfService.createVerfKey(
       result.id,
