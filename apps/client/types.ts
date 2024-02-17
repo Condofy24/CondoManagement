@@ -23,7 +23,7 @@ export enum UserRolesEnum {
 export type PropertyInformation = {
   name: string;
   address: string;
-  occupancy: string;
+  status: string;
   units: number;
   parking: number;
   storage: number;
