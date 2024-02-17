@@ -1,7 +1,3 @@
-import { links } from "@/lib/data";
-
-export type SectionName = (typeof links)[number]["name"];
-
 export interface UserInfo {
   email: string;
   id: string;
@@ -23,7 +19,6 @@ export enum UserRolesEnum {
 export type PropertyInformation = {
   name: string;
   address: string;
-  status: string;
   units: number;
   parking: number;
   storage: number;

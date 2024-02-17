@@ -33,10 +33,6 @@ export const columns: ColumnDef<PropertyInformation>[] = [
     header: "Address",
   },
   {
-    accessorKey: "status",
-    header: "Status",
-  },
-  {
     accessorKey: "units",
     header: "Units",
   },
