@@ -2,29 +2,6 @@ import { PropertyInformation } from "@/types";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { FaUser, FaRegCalendarAlt } from "react-icons/fa";
 
-export const headerLinks = [
-  {
-    name: "Home",
-    hash: "#home",
-    route: "home",
-  },
-  {
-    name: "Dashboard",
-    hash: "#dashboard",
-    route: "condo/dashboard",
-  },
-  {
-    name: "Reservations",
-    hash: "#reservation",
-    route: "reservations",
-  },
-  {
-    name: "Requests",
-    hash: "#request",
-    route: "requests",
-  },
-] as const;
-
 // used for testing, will be removed later
 export const Properties: PropertyInformation[] = [
   {

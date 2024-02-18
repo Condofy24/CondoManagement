@@ -22,7 +22,7 @@ export function MainNav() {
           href="/property/dashboard"
           className={cn(
             "transition-colors hover:text-foreground/80",
-            pathname.includes("/property/dashboard")
+            pathname.includes("dashboard")
               ? "text-foreground"
               : "text-foreground/60",
           )}
@@ -30,7 +30,7 @@ export function MainNav() {
           Properties
         </Link>
         <Link
-          href="/docs/components"
+          href="/"
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/docs/components")
@@ -41,7 +41,7 @@ export function MainNav() {
           Reservations
         </Link>
         <Link
-          href="/requests"
+          href="/"
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/requests")
