@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose';
 export const UnitSchema = new mongoose.Schema(
   {
     buildingId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: 'Building',
       required: true,
     },
@@ -19,7 +19,7 @@ export const UnitSchema = new mongoose.Schema(
 );
 
 export interface Unit {
-  buildingId: mongoose.Schema.Types.ObjectId;
+  buildingId: mongoose.Types.ObjectId;
   unitNumber: number;
   size: number;
   isOccupiedByRenter: boolean;

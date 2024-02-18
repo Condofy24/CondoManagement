@@ -45,13 +45,22 @@ export class BuildingService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const building = await this.buildingModel.findOne({ name });
+    const building = await this.buildingModel.findOne({
+      name,
+      companyId: companyExists.id,
+    });
     if (building) {
-      throw new HttpException(
-        { error: 'Building already exists', status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
+      if (building.companyId.equals(companyExists.id)) {
+        throw new HttpException(
+          {
+            error: 'Building name already exists for the company',
+            status: HttpStatus.BAD_REQUEST,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
+    //TODO: We should change address to an object instead of string and validate the attributes of the object
     const addressInUse = await this.buildingModel.exists({ address: address });
     if (addressInUse?._id) {
       throw new HttpException(
@@ -97,7 +106,7 @@ export class BuildingService {
       return null;
     }
     return {
-      id: building._id,
+      id: building.id,
       companyId: building.companyId,
       name: building.name,
       address: building.address,

@@ -19,7 +19,6 @@ export class UnitService {
 
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
-    const unit = await this.unitModel.findOne({ unitNumber });
     const buildingExists = await this.buildingService.findOne(buildingId);
     if (!buildingExists) {
       throw new HttpException(
@@ -27,13 +26,21 @@ export class UnitService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    const unit = await this.unitModel.findOne({
+      unitNumber,
+      buildingId: buildingExists.id,
+    });
     if (unit) {
-      throw new HttpException(
-        { error: 'Unit already exists', status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
+      console.log(unit);
+      console.log(buildingExists);
+      console.log(unit.buildingId.equals(buildingExists.id));
+      if (unit.buildingId.equals(buildingExists.id)) {
+        throw new HttpException(
+          { error: 'Unit already exists', status: HttpStatus.BAD_REQUEST },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
-    console.log(buildingExists);
     const newUnit = new this.unitModel({
       buildingId: buildingExists.id,
       unitNumber,
