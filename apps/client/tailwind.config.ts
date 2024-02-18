@@ -11,14 +11,14 @@ const config: Config = {
   theme: {
     extend: {
       textColor: {
-        primary: "var(--text-primary)",
-        secondary: "var(--text-secondary)",
-        tertiary: "var(--text-tertiary)",
+        foreground: "var(--foreground)",
+        primary: "var(--primary-foreground)",
+        secondary: "var(--secondary-foreground)",
       },
       backgroundColor: {
-        primary: "var(--bg-primary)",
-        secondary: "var(--bg-secondary)",
-        tertiary: "var(--bg-tertiary)",
+        background: "var(--background)",
+        primary: "var(--primary)",
+        secondary: "var(--secondary)",
       },
     },
   },
@@ -26,4 +26,3 @@ const config: Config = {
 };
 
 export default config;
-

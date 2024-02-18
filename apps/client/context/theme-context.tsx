@@ -6,7 +6,7 @@ type Theme = "light" | "dark";
 
 type ThemeContextType = {
   theme: Theme;
-  toggleTheme: () => void;
+  changeTheme: (theme: Theme) => void;
 } | null;
 
 type ThemeContextProviderProps = {
@@ -20,8 +20,8 @@ export default function ThemeContextProvider({
 }: ThemeContextProviderProps) {
   const [theme, setTheme] = useState<Theme>("light");
 
-  const toggleTheme = () => {
-    if (theme === "light") {
+  const changeTheme = (theme: Theme) => {
+    if (theme === "dark") {
       setTheme("dark");
       window.localStorage.setItem("theme", "dark");
       document.documentElement.classList.add("dark");
@@ -50,7 +50,7 @@ export default function ThemeContextProvider({
     <ThemeContext.Provider
       value={{
         theme,
-        toggleTheme,
+        changeTheme,
       }}
     >
       {children}

@@ -7,7 +7,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex top-12 h-[calc(100vh_-_3rem)] relative bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90">
+    <div className="flex h-[calc(100vh_-_3.75rem)] relative bg-gray-50 text-gray-950 dark:bg-gray-900 dark:text-gray-50 dark:text-opacity-90">
       <div className="w-3/5 object-fill overflow-hidden relative hidden lg:block">
         <Image
           src={condo}

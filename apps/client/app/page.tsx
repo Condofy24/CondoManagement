@@ -1,15 +1,61 @@
 "use client";
-import * as React from "react";
+import BuildingView from "@/public/home/buildingView.jpg";
+import Buildings from "@/public/home/buildings.jpg";
+import UnitView from "@/public/home/unitView.jpg";
 import { useAppSelector } from "@/redux/store";
+import Image from "next/image";
+import * as React from "react";
+import {
+  PageHeader,
+  PageHeaderDescription,
+  PageHeaderHeading,
+} from "./components/page-header";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./components/ui/carousel";
 
 export default function Home() {
   const user = useAppSelector((state) => state.authReducer.value.userInfo);
 
-  return <main>
-    <h1>
-      Welcome to the home page!
-
-      Username: {JSON.stringify(user)}
-    </h1>
-  </main>;
+  return (
+    <main className="relative">
+      <PageHeader>
+        <PageHeaderHeading className="hidden md:block">
+          Welcome to Condofy
+        </PageHeaderHeading>
+        <PageHeaderHeading className="md:hidden">Condofy</PageHeaderHeading>
+        <PageHeaderDescription>
+          At Condofy, we understand that managing a condominium involves a
+          delicate balance between ensuring resident satisfaction and
+          maintaining operational efficiency. That's why we've created a
+          comprehensive platform designed to simplify every aspect of condo
+          management, transforming challenges into opportunities for community
+          enhancement and seamless administration.
+        </PageHeaderDescription>
+      </PageHeader>
+      <section className="px-4">
+        <div className="overflow-hidden rounded-[0.5rem] border bg-background shadow-md md:shadow-xl">
+          <Carousel>
+            <CarouselContent className="px-3 py-3">
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex flex-col justify-center">
+                <Image src={UnitView} href="condo unit" />
+              </CarouselItem>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex flex-col justify-center">
+                <Image src={Buildings} href="condo unit" objectFit="cover" />
+              </CarouselItem>
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex flex-col justify-center">
+                <Image src={BuildingView} href="condo unit" />
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
+      </section>
+    </main>
+  );
 }
