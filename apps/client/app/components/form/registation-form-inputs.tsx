@@ -1,6 +1,7 @@
 import {
   ACCEPTED_FILE_TYPES,
   MAX_UPLOAD_SIZE,
+  TManagerSignupSchema,
   TSignupSchema,
 } from "@/lib/validation-schemas";
 import { ChangeEvent, SetStateAction, useRef, useState } from "react";
@@ -8,7 +9,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 import FormFieldError from "./form-field-error";
 
 type RegistationFormInputsProps = {
-  register: UseFormRegister<TSignupSchema>;
+  register: UseFormRegister<TSignupSchema | TManagerSignupSchema>;
   errors: FieldErrors<TSignupSchema>;
   profilePic: {
     setProfilePic: React.Dispatch<SetStateAction<File | null>>;
