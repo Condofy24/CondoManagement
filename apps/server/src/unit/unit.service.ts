@@ -31,9 +31,6 @@ export class UnitService {
       buildingId: buildingExists.id,
     });
     if (unit) {
-      console.log(unit);
-      console.log(buildingExists);
-      console.log(unit.buildingId.equals(buildingExists.id));
       if (unit.buildingId.equals(buildingExists.id)) {
         throw new HttpException(
           { error: 'Unit already exists', status: HttpStatus.BAD_REQUEST },
