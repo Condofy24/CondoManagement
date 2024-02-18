@@ -101,7 +101,7 @@ export class BuildingService {
   }
 
   public async findOne(buildingId: string) {
-    const building = await this.buildingModel.findOne({ buildingId });
+    const building = await this.buildingModel.findById(buildingId);
     if (!building) {
       return null;
     }
