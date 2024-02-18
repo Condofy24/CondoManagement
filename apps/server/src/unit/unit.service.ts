@@ -5,6 +5,7 @@ import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
+import { VerfRolesEnum } from 'src/verf/entities/verf.entity';
 
 @Injectable()
 export class UnitService {
@@ -39,10 +40,14 @@ export class UnitService {
       fees,
     });
     const result = await newUnit.save();
-    const verfKeyOwner = this.verfService.createVerfKey(result.id, 'owner', '');
+    const verfKeyOwner = this.verfService.createVerfKey(
+      result.id,
+      VerfRolesEnum.OWNER,
+      '',
+    );
     const verKeyRenter = this.verfService.createVerfKey(
       result.id,
-      'renter',
+      VerfRolesEnum.RENTER,
       '',
     );
     return result;
