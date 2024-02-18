@@ -9,6 +9,10 @@ import { AuthModule } from './auth/auth.module';
 import { CompanyController } from './company/company.controller';
 import { CompanyModule } from './company/company.module';
 import { CloudinaryModule } from './user/cloudinary/cloudinary.module';
+import { BuildingModule } from './building/building.module';
+import { BuildingController } from './building/building.controller';
+import { UnitModule } from './unit/unit.module';
+import { UnitController } from './unit/unit.controller';
 
 @Module({
   imports: [
@@ -19,12 +23,16 @@ import { CloudinaryModule } from './user/cloudinary/cloudinary.module';
     AuthModule,
     CompanyModule,
     CloudinaryModule,
+    BuildingModule,
+    UnitModule,
   ],
   controllers: [
     AppController,
     UserController,
     AuthController,
     CompanyController,
+    BuildingController,
+    UnitController,
   ],
   providers: [AppService],
 })
