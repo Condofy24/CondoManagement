@@ -64,7 +64,7 @@ export class BuildingService {
     let filePublicId = fileResponse.public_id;
     let fileAssetId = fileResponse.asset_id;
     const newBuilding = new this.buildingModel({
-      companyId,
+      companyId: companyExists.id,
       name,
       address,
       unitCount,
@@ -91,9 +91,22 @@ export class BuildingService {
     };
   }
 
-  public async findOne(
-    buildingId: string,
-  ): Promise<Building | undefined | null> {
-    return this.buildingModel.findOne({ _id: buildingId });
+  public async findOne(buildingId: string) {
+    const building = await this.buildingModel.findOne({ buildingId });
+    if (!building) {
+      return null;
+    }
+    return {
+      id: building._id,
+      companyId: building.companyId,
+      name: building.name,
+      address: building.address,
+      unitCount: building.unitCount,
+      parkingCount: building.parkingCount,
+      storageCount: building.storageCount,
+      fileUrl: building.fileUrl,
+      filePublicId: building.filePublicId,
+      fileAssetId: building.fileAssetId,
+    };
   }
 }

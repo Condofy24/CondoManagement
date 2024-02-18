@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Unit } from './entities/unit.entity';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
 import { VerfRolesEnum } from 'src/verf/entities/verf.entity';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class UnitService {
@@ -32,8 +33,9 @@ export class UnitService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    console.log(buildingExists);
     const newUnit = new this.unitModel({
-      buildingId,
+      buildingId: buildingExists.id,
       unitNumber,
       size,
       isOccupiedByRenter,

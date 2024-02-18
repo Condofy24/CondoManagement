@@ -3,7 +3,11 @@ import { Unit } from 'src/unit/entities/unit.entity';
 
 export const BuildingSchema = new mongoose.Schema(
   {
-    companyId: { type: String, required: true },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Company',
+    },
     name: { type: String, required: true },
     address: { type: String, required: true },
     unitCount: { type: Number, required: true },
@@ -19,7 +23,7 @@ export const BuildingSchema = new mongoose.Schema(
 );
 
 export interface Building {
-  companyId: string;
+  companyId: mongoose.Schema.Types.ObjectId;
   name: string;
   address: string;
   unitCount: number;
