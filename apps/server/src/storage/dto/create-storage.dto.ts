@@ -3,7 +3,7 @@ import { Double } from 'mongodb';
 
 export class CreateStorageDto {
   @IsNotEmpty()
-  parkingNumber: number;
+  storageNumber: number;
 
   @IsNotEmpty()
   isOccupied: boolean;
