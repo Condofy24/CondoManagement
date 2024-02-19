@@ -6,7 +6,7 @@ export class CreateParkingDto {
   parkingNumber: number;
 
   @IsNotEmpty()
-  isOccupiedByRenter: boolean;
+  isOccupied: boolean;
 
   @IsNotEmpty()
   fees: Double;

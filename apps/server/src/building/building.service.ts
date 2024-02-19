@@ -118,4 +118,25 @@ export class BuildingService {
       fileAssetId: building.fileAssetId,
     };
   }
+
+public async findByIdandUpdateParkingCount(buildingId: string, newParkingCount: number) {
+    const building = await this.buildingModel.findByIdAndUpdate(
+        buildingId, { parkingCount: newParkingCount }, { new: true }
+        );
+    if (!building) {
+        return null;
+    }
+    return {
+        id: building.id,
+        companyId: building.companyId,
+        name: building.name,
+        address: building.address,
+        unitCount: building.unitCount,
+        parkingCount: building.parkingCount,
+        storageCount: building.storageCount,
+        fileUrl: building.fileUrl,
+        filePublicId: building.filePublicId,
+        fileAssetId: building.fileAssetId,
+    };
+}
 }
