@@ -1,12 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Parking } from './entities/parking.entity';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
-import { VerfRolesEnum } from 'src/verf/entities/verf.entity';
-import { ObjectId } from 'mongodb';
+
 
 @Injectable()
 export class ParkingService {
