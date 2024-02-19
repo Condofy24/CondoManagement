@@ -1,15 +1,14 @@
 import * as mongoose from 'mongoose';
 
-export const UnitSchema = new mongoose.Schema(
+export const ParkingSchema = new mongoose.Schema(
   {
     buildingId: {
       type: mongoose.Types.ObjectId,
       ref: 'Building',
       required: true,
     },
-    unitNumber: { type: Number, required: true },
-    size: { type: Number, required: true },
-    isOccupiedByRenter: { type: Boolean, required: true },
+    parkingNumber: { type: Number, required: true },
+    isOccupied: { type: Boolean, required: true },
     fees: { type: Number, required: true },
   },
   {
@@ -17,10 +16,9 @@ export const UnitSchema = new mongoose.Schema(
   },
 );
 
-export interface Unit {
+export interface Parking {
   buildingId: mongoose.Types.ObjectId;
-  unitNumber: number;
-  size: number;
-  isOccupiedByRenter: boolean;
+  parkingNumber: number;
+  isOccupied: boolean;
   fees: number;
 }
