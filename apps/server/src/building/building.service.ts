@@ -139,4 +139,27 @@ public async findByIdandUpdateParkingCount(buildingId: string, newParkingCount: 
         fileAssetId: building.fileAssetId,
     };
 }
+
+public async findByIdandUpdateStorageCount(buildingId: string, newStorageCount: number) {
+    const building = await this.buildingModel.findByIdAndUpdate(
+        buildingId, { storageCount: newStorageCount }, { new: true }
+        );
+    if (!building) {
+        return null;
+    }
+    return {
+        id: building.id,
+        companyId: building.companyId,
+        name: building.name,
+        address: building.address,
+        unitCount: building.unitCount,
+        parkingCount: building.parkingCount,
+        storageCount: building.storageCount,
+        fileUrl: building.fileUrl,
+        filePublicId: building.filePublicId,
+        fileAssetId: building.fileAssetId,
+    };
+}
+
+
 }
