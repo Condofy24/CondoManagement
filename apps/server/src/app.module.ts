@@ -13,7 +13,7 @@ import { BuildingModule } from './building/building.module';
 import { BuildingController } from './building/building.controller';
 import { UnitModule } from './unit/unit.module';
 import { UnitController } from './unit/unit.controller';
-import { ParkingModule } from './parking/parking.modules';
+import { ParkingModule } from './parking/parking.module';
 import { ParkingController } from './parking/parking.controller';
 
 @Module({
