@@ -3,7 +3,7 @@ import { CreateStorageDto } from './dto/create-storage.dto';
 import { StorageService } from './storage.service';
 
 @Controller('storage')
-export class storageController {
+export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 
   @Post(':buildingId')
