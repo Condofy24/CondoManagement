@@ -15,6 +15,8 @@ import { UnitModule } from './unit/unit.module';
 import { UnitController } from './unit/unit.controller';
 import { ParkingModule } from './parking/parking.module';
 import { ParkingController } from './parking/parking.controller';
+import { StorageModule } from './storage/storage.module';
+import { StorageController } from './storage/storage.controller';
 
 @Module({
   imports: [
@@ -27,7 +29,8 @@ import { ParkingController } from './parking/parking.controller';
     CloudinaryModule,
     BuildingModule,
     UnitModule,
-    ParkingModule
+    ParkingModule,
+    StorageModule
   ],
   controllers: [
     AppController,
@@ -36,7 +39,8 @@ import { ParkingController } from './parking/parking.controller';
     CompanyController,
     BuildingController,
     UnitController,
-    ParkingController
+    ParkingController,
+    StorageController
   ],
   providers: [AppService],
 })
