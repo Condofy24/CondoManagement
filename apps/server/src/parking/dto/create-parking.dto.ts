@@ -1,7 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 import { Double } from 'mongodb';
 
-export class CreateUnitDto {
+export class CreateParkingDto {
   @IsNotEmpty()
   parkingNumber: number;
 
