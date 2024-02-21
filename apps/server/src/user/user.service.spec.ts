@@ -3,19 +3,24 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UserModel } from './entities/user.entity';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { UserService } from './user.service';
-import { HttpException } from '@nestjs/common';
+import { BadRequestException, HttpException } from '@nestjs/common';
 import { CompanyService } from '../company/company.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+
 const mockingoose = require('mockingoose');
 
+const cloudinaryResponseMock = {
+  secure_url: 'https://example.com/image.jpg',
+  public_id: 'image123',
+};
+
 const cloudinaryServiceMock = {
-  uploadFile: jest.fn().mockResolvedValue({
-    secure_url: 'mockSecureUrl',
-    public_id: 'mockPublicId',
-  }),
+  uploadFile: jest.fn().mockResolvedValue(cloudinaryResponseMock),
 };
 
 const companyServiceMock = {
@@ -33,7 +38,7 @@ const createManagerDto: CreateManagerDto = {
   companyName: 'Test Company',
 };
 
-const createEmployeeDto: CreateEmployeeDto = {
+const createEmployeeDtoTestData: CreateEmployeeDto = {
   email: 'bob@test.com',
   name: 'Test Manager',
   phoneNumber: '1224567890',
@@ -41,13 +46,55 @@ const createEmployeeDto: CreateEmployeeDto = {
   role: 'Staff',
 };
 
-const userInfoTestData = {
+const createUserDtoTestData: CreateUserDto = {
+  email: 'bob@test.com',
+  password: 'password',
+  name: 'Test Manager',
+  phoneNumber: '1224567890',
+  role: 'Owner',
+};
+
+const updateUserDtoTestData: UpdateUserDto = {
+  email: 'bob@test.com',
+  newPassword: 'password',
+  name: 'Test Manager',
+  phoneNumber: '1224567890',
+};
+
+const adminInfoTestData = {
   email: 'test@example.com',
-  name: 'Test User',
+  name: 'Test Admin',
   role: 'Admin',
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
+};
+
+const userInfoTestData = {
+  email: 'user@example.com',
+  name: 'Test User',
+  role: 'Owner',
+  phoneNumber: '1234567890',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+};
+
+const imageMockData: Express.Multer.File = {
+  fieldname: 'file',
+  originalname: 'test.jpg',
+  encoding: '7bit',
+  mimetype: 'image/jpeg',
+  size: 1024,
+  destination: 'uploads/',
+  filename: 'test.jpg',
+  path: 'uploads/test.jpg',
+  buffer: Buffer.from('some buffer data', 'utf-8'),
+  stream: new Readable({
+    read() {
+      this.push(buffer);
+      this.push(null);
+    },
+  }),
 };
 
 describe('UserService', () => {
@@ -77,7 +124,27 @@ describe('UserService', () => {
 
   afterEach(() => {
     mockingoose(UserModel).reset();
+    cloudinaryServiceMock.uploadFile.mockResolvedValue(cloudinaryResponseMock);
     jest.clearAllMocks();
+  });
+
+  describe('uploadImageToCloudinary', () => {
+    it('should upload image to cloudinary successfully', async () => {
+      // Act
+      const result = await service.uploadImageToCloudinary(imageMockData);
+      // Assert
+      expect(result).toEqual(cloudinaryResponseMock);
+    });
+
+    it('should upload image to cloudinary successfully', async () => {
+      // Arrange
+      cloudinaryServiceMock.uploadFile.mockRejectedValue(new Error());
+
+      // Act
+      await expect(
+        service.uploadImageToCloudinary(imageMockData),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
 
   describe('createManager', () => {
@@ -95,6 +162,21 @@ describe('UserService', () => {
       // Assert
       expect(result).toBeDefined();
       expect(result.statusCode).toBe(201);
+    });
+
+    it('should throw an error if saving user fails', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(null, 'findOne');
+      companyServiceMock.findByCompanyName.mockResolvedValue(false);
+      companyServiceMock.createCompany.mockResolvedValue({
+        companyId: 'mockId',
+      });
+      mockingoose(UserModel).toReturn(new Error(), 'save');
+
+      // Act & Assert
+      await expect(service.createManager(createManagerDto)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw an error if email already exists', async () => {
@@ -140,30 +222,15 @@ describe('UserService', () => {
       companyServiceMock.createCompany.mockResolvedValue({
         companyId: 'mockId',
       });
-
-      const mockFile: Express.Multer.File = {
-        fieldname: 'file',
-        originalname: 'test.jpg',
-        encoding: '7bit',
-        mimetype: 'image/jpeg',
-        size: 1024,
-        destination: 'uploads/',
-        filename: 'test.jpg',
-        path: 'uploads/test.jpg',
-        buffer: Buffer.from('some buffer data', 'utf-8'),
-        stream: new Readable({
-          read() {
-            this.push(buffer);
-            this.push(null);
-          },
-        }),
-      };
+      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
 
       // Act
-      await service.createManager(createManagerDto, mockFile);
+      await service.createManager(createManagerDto, imageMockData);
 
       // Assert
-      expect(cloudinaryServiceMock.uploadFile).toHaveBeenCalledWith(mockFile);
+      expect(cloudinaryServiceMock.uploadFile).toHaveBeenCalledWith(
+        imageMockData,
+      );
     });
   });
 
@@ -174,13 +241,27 @@ describe('UserService', () => {
       companyServiceMock.findByCompanyId.mockResolvedValue({
         companyName: 'genetec',
       });
-      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
+      mockingoose(UserModel).toReturn(adminInfoTestData, 'save');
 
       // Act
-      const result = await service.createEmployee(createEmployeeDto);
+      const result = await service.createEmployee(createEmployeeDtoTestData);
 
       // Assert
       expect(result).toBeDefined();
+    });
+
+    it('should throw an error if saving employee fails', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(null, 'findOne');
+      companyServiceMock.findByCompanyId.mockResolvedValue({
+        companyName: 'genetec',
+      });
+      mockingoose(UserModel).toReturn(new Error(), 'save');
+
+      // Act & Assert
+      await expect(service.createManager(createManagerDto)).rejects.toThrow(
+        HttpException,
+      );
     });
 
     it('should throw an error if email already exists', async () => {
@@ -188,9 +269,9 @@ describe('UserService', () => {
       mockingoose(UserModel).toReturn({ _id: 'test' }, 'findOne');
 
       // Act & Assert
-      await expect(service.createEmployee(createEmployeeDto)).rejects.toThrow(
-        HttpException,
-      );
+      await expect(
+        service.createEmployee(createEmployeeDtoTestData),
+      ).rejects.toThrow(HttpException);
     });
 
     it('should throw an error if company doesnt exist', async () => {
@@ -199,15 +280,14 @@ describe('UserService', () => {
       companyServiceMock.findByCompanyId.mockResolvedValue(false);
 
       // Act & Assert
-      await expect(service.createEmployee(createEmployeeDto)).rejects.toThrow(
-        HttpException,
-      );
+      await expect(
+        service.createEmployee(createEmployeeDtoTestData),
+      ).rejects.toThrow(HttpException);
     });
 
     it('should create company if information is valid', async () => {
       // Arrange
       mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyName.mockResolvedValue(false);
 
       // Act
       await service.createManager(createManagerDto);
@@ -233,6 +313,43 @@ describe('UserService', () => {
     });
   });
 
+  describe('createUser', () => {
+    it('should create user successfully if information is valid', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(null, 'findOne');
+      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
+
+      // Act
+      const result = await service.createUser(createUserDtoTestData);
+
+      // Assert
+      expect(result).toBeDefined();
+    });
+
+    it('should throw an error if email already exists', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn({ _id: 'test' }, 'findOne');
+
+      // Act & Assert
+      await expect(service.createUser(createUserDtoTestData)).rejects.toThrow(
+        HttpException,
+      );
+    });
+
+    it('should upload profile image if its valid', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(null, 'findOne');
+
+      // Act
+      await service.createUser(createUserDtoTestData, imageMockData);
+
+      // Assert
+      expect(cloudinaryServiceMock.uploadFile).toHaveBeenCalledWith(
+        imageMockData,
+      );
+    });
+  });
+
   describe('getProfile', () => {
     it('should throw an exception if user doesnt exist', async () => {
       // Arrange
@@ -247,14 +364,14 @@ describe('UserService', () => {
     it('should return user information if user exists', async () => {
       // Arrange
 
-      mockingoose(UserModel).toReturn(userInfoTestData, 'findOne');
+      mockingoose(UserModel).toReturn(adminInfoTestData, 'findOne');
 
       // Act
       const result = await service.getProfile({ sub: 't', iat: 1, exp: 2 });
 
       // Assert
       expect(result).toEqual(
-        expect.objectContaining({ ...userInfoTestData, role: 3 }),
+        expect.objectContaining({ ...adminInfoTestData, role: 3 }),
       );
     });
   });
@@ -262,7 +379,7 @@ describe('UserService', () => {
   describe('findAll', () => {
     it('should return all the users', async () => {
       // Arrange
-      const users = [userInfoTestData];
+      const users = [adminInfoTestData];
       mockingoose(UserModel).toReturn(users, 'find');
 
       // Act
@@ -271,7 +388,7 @@ describe('UserService', () => {
       // Assert
       expect(result.length).toBe(users.length);
       expect(result[0]).toEqual(
-        expect.objectContaining({ ...userInfoTestData, role: 3 }),
+        expect.objectContaining({ ...adminInfoTestData, role: 3 }),
       );
     });
   });
@@ -303,13 +420,82 @@ describe('UserService', () => {
   describe('getPrivilege', () => {
     it('should return users role', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(userInfoTestData, 'findOne');
+      mockingoose(UserModel).toReturn(adminInfoTestData, 'findOne');
 
       // Act
       const result = await service.getPrivilege('userId');
 
       // Assert
       expect(result).toEqual(3);
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should create user successfully if information is valid', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(null, 'findOne');
+      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
+
+      // Act
+      const result = await service.createUser(createUserDtoTestData);
+
+      // Assert
+      expect(result).toBeDefined();
+    });
+
+    it('should throw an exception if user does not exist', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(null, 'findOne');
+
+      // Act & Assert
+      await expect(
+        service.updateUser('1', updateUserDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+
+    it('should throw an exception if new email already exists', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(
+        { ...userInfoTestData, email: updateUserDtoTestData.email },
+        'findOne',
+      );
+
+      // Act & Assert
+      await expect(
+        service.updateUser('1', updateUserDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+
+    it('should throw an exception if new phone number already exists', async () => {
+      // Arrange
+      mockingoose(UserModel).toReturn(
+        { ...userInfoTestData, phoneNumber: updateUserDtoTestData.phoneNumber },
+        'findOne',
+      );
+
+      // Act & Assert
+      await expect(
+        service.updateUser('1', updateUserDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+
+    it('should update profile image if its valid', async () => {
+      // Arrange
+      const finderMock = (query: any) => {
+        if (query.getQuery()._id === '1') {
+          return { ...userInfoTestData, role: 3 };
+        }
+      };
+
+      mockingoose(UserModel).toReturn(finderMock, 'findOne'); // findById is findOne
+
+      // Act
+      await service.updateUser('1', updateUserDtoTestData, imageMockData);
+
+      // Assert
+      expect(cloudinaryServiceMock.uploadFile).toHaveBeenCalledWith(
+        imageMockData,
+      );
     });
   });
 });

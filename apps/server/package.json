@@ -80,6 +80,9 @@
       "json",
       "ts"
     ],
+    "coveragePathIgnorePatterns": [
+      ".*__snapshots__/.*"
+    ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {

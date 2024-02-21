@@ -111,10 +111,11 @@ export class UserService {
       imageUrl,
       imageId,
     });
-    const result = await newUser.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-
+    try {
+      await newUser.save();
+    } catch (e) {
+      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return response.status(HttpStatus.CREATED);
   }
 
@@ -164,10 +165,12 @@ export class UserService {
       companyId,
       imageId,
     });
-    const result = await newUser.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
+    try {
+      await newUser.save();
+    } catch (e) {
+      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return response.status(HttpStatus.CREATED);
   }
 
@@ -210,7 +213,7 @@ export class UserService {
       email,
       password,
       name,
-      role,
+      role: UserRolesEnum[role as keyof typeof UserRolesEnum],
       phoneNumber,
       imageUrl,
       imageId,
