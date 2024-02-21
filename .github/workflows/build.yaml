@@ -27,12 +27,8 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm install
+        working-directory: ./apps/server/
 
       - name: Run Tests
         run: pnpm test
-
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ArtiomTr/jest-coverage-report-action@v2
+        working-directory: ./apps/server/
