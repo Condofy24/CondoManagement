@@ -81,7 +81,11 @@
       "ts"
     ],
     "coveragePathIgnorePatterns": [
-      ".*__snapshots__/.*"
+      ".*__snapshots__/.*",
+      ".module.ts",
+      "<rootDir>/src/app/main.ts",
+      ".dto.ts",
+      ".entity.ts"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
