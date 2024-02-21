@@ -14,5 +14,4 @@ jobs:
       - uses: ArtiomTr/jest-coverage-report-action@v2.2.6
         with:
           working-directory: ./apps/server/
-          test-script: yarn jest
           package-manager: pnpm
