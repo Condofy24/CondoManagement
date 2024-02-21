@@ -31,7 +31,6 @@ export class UserService {
       const imageResponse = await this.cloudinary.uploadFile(file);
       return imageResponse;
     } catch (error) {
-      console.error('Error uploading image to Cloudinary:', error);
       throw new BadRequestException('Failed to upload image to Cloudinary.');
     }
   }
