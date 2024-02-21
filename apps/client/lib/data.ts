@@ -1,4 +1,4 @@
-import { PropertyInformation } from "@/types";
+import { PropertyInformation, UnitInformation } from "@/types";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { FaUser, FaRegCalendarAlt } from "react-icons/fa";
 
@@ -58,3 +58,24 @@ export const unitStatuses = [
     icon: FaRegCalendarAlt,
   },
 ];
+
+export const UnitProperties: UnitInformation[] = [
+  {
+    unitNumber: 1,
+    size: 100,
+    isOccupied: true,
+    fees: 100,
+  },
+  {
+    unitNumber: 2,
+    size: 200,
+    isOccupied: false,
+    fees: 200,
+  },
+  {
+    unitNumber: 3,
+    size: 300,
+    isOccupied: true,
+    fees: 300,
+  },
+] as const;
