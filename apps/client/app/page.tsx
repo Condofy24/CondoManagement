@@ -42,13 +42,13 @@ export default function Home() {
           <Carousel>
             <CarouselContent className="px-3 py-3">
               <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex flex-col justify-center">
-                <Image src={UnitView} href="condo unit" />
+                <Image src={UnitView} alt="condo unit" />
               </CarouselItem>
               <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex flex-col justify-center">
-                <Image src={Buildings} href="condo unit" objectFit="cover" />
+                <Image src={Buildings} alt="condo unit" objectFit="cover" />
               </CarouselItem>
               <CarouselItem className="md:basis-1/2 lg:basis-1/3 flex flex-col justify-center">
-                <Image src={BuildingView} href="condo unit" />
+                <Image src={BuildingView} alt="condo unit" />
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious />

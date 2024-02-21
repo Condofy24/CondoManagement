@@ -3,7 +3,6 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import ThemeContextProvider from "@/context/theme-context";
-import ActiveSectionContextProvider from "@/context/active-section-context";
 import { ReduxProvider } from "@/redux/provider";
 import { Toaster } from "react-hot-toast";
 import { SiteHeader } from "./components/nav/site-header";
@@ -28,17 +27,15 @@ export default function RootLayout({
       <body
         className={cn(
           "bg-primary text-primary dark:text-opacity-90",
-          fontSans.variable,
+          fontSans.variable
         )}
       >
-        <ActiveSectionContextProvider>
-          <ThemeContextProvider>
-            <SiteHeader />
-            <Toaster position="top-right" />
+        <ThemeContextProvider>
+          <SiteHeader />
+          <Toaster position="top-right" />
 
-            <ReduxProvider>{children}</ReduxProvider>
-          </ThemeContextProvider>
-        </ActiveSectionContextProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </ThemeContextProvider>
       </body>
     </html>
   );
