@@ -15,3 +15,5 @@ jobs:
         with:
           working-directory: ./apps/server/
           package-manager: pnpm
+          test-script: pnpm test
+          coverage-script: pnpm test:coverage
