@@ -10,8 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: ArtiomTr/jest-coverage-report-action@v2.2.6
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 6.0.2
+      - name: Generate Coverage
+        uses: ArtiomTr/jest-coverage-report-action@v2.2.6
         with:
           working-directory: ./apps/server/
           package-manager: pnpm
