@@ -34,8 +34,4 @@ export class AuthService {
 
     throw new UnauthorizedException();
   }
-
-  // test() {
-  //   return 'IN';
-  // }
 }
