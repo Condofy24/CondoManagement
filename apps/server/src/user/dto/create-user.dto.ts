@@ -18,4 +18,9 @@ export class CreateUserDto {
   @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
   phoneNumber: string;
+
+  //To get the verfKey upon signup of a user and checking that its not empty
+  @IsNotEmpty()
+  verfKey:string;
+
 }
