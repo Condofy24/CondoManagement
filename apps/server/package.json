@@ -83,7 +83,7 @@
     "coveragePathIgnorePatterns": [
       ".*__snapshots__/.*",
       ".module.ts",
-      "<rootDir>/src/app/main.ts",
+      "main.ts",
       ".dto.ts",
       ".entity.ts"
     ],
