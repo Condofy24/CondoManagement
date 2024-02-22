@@ -22,4 +22,17 @@ export class VerfService {
     const result = await newKey.save();
     return result;
   }
+  public async findByVerfKey(key: string) {
+    const Verf = await this.verfModel.findOne({ key });
+    if (!Verf) {
+      return false;
+    }
+    return {
+      id: Verf._id,
+      unitId: Verf.unitId,
+      key:Verf.key,
+      type:Verf.type,
+      claimedBy:Verf.claimedBy,
+    };
+  }
 }
