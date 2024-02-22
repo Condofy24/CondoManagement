@@ -1,21 +1,10 @@
 {
-  "name": "CondoManagement",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "devDependencies": {
-    "eslint": "^8.47.0",
-    "prettier": "^3.0.2",
-    "tsconfig": "*",
-    "turbo": "latest"
-  },
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "dev": "turbo run dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "turbo": "^1.8.3"
+  },
+  "packageManager": "pnpm@8.15.3"
 }
