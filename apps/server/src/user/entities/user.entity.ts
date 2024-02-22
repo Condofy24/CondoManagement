@@ -23,6 +23,11 @@ export const UserSchema = new mongoose.Schema(
   },
 );
 
+export const UserModel = mongoose.model(
+  'User',
+  new mongoose.Schema(UserSchema),
+);
+
 // This middleware will automatically hash the password before saving it to the database
 UserSchema.pre('save', async function (next) {
   const user = this as any; // 'this' refers to the user document
