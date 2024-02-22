@@ -17,6 +17,7 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
+import {VerfService} from '../verf/verf.service';
 
 @Injectable()
 export class UserService {
@@ -24,6 +25,7 @@ export class UserService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
+    private verfService :VerfService,
   ) {}
 
   async uploadImageToCloudinary(file: Express.Multer.File) {
@@ -141,6 +143,8 @@ export class UserService {
       );
     }
 
+
+    
     // Check company exists
     const companyExists = await this.companyService.findByCompanyId(companyId);
     if (!companyExists) {
@@ -175,13 +179,18 @@ export class UserService {
     createUserDto: CreateUserDto,
     image?: Express.Multer.File,
   ) {
-    const { email, password, name, role, phoneNumber } = createUserDto;
+    const { email, password, name, role, phoneNumber, verfKey } = createUserDto;
 
     // Check user doesn't already exist
     const emailInUse = await this.userModel.exists({ email: email });
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
+    
+    
+
+    //check if Key exists:
+
     if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
@@ -194,6 +203,13 @@ export class UserService {
       throw new HttpException(
         { error: errorMessage, status: HttpStatus.CONFLICT },
         HttpStatus.CONFLICT,
+      );
+    }
+    const verfExist = await this.verfService.findByVerfKey(verfKey);
+    if (!verfExist) {
+      throw new HttpException(
+        { error: "Key doesn't exists", status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
       );
     }
     let imageUrl =
