@@ -14,8 +14,8 @@ import { useRouter } from "next/navigation";
 
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
-  const [propertyPic, setPropertyPic] = useState<File | null>(null);
-  const [propertyPicError, setPropertyPicError] = useState<string | null>(null);
+  const [propertyFile, setPropertyFile] = useState<File | null>(null);
+  const [propertyFileError, setPropertyFileError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
@@ -30,12 +30,12 @@ const SignUpNew = () => {
   const onSubmit = async (data: TPropertySchema) => {
     setLoading(true);
 
-    if (propertyPic) {
+    if (propertyFile) {
       //SERVICE CALL
-      //dispatch(registerUser({ ...data, profilePic, role: "3" }));
+      //dispatch(registerUser({ ...data, profileFile, role: "3" }));
       //router.push("/login");
     } else {
-      setPropertyPicError("Profile picture is required");
+      setPropertyFileError("Property File is required");
     }
 
     setLoading(false);
@@ -53,9 +53,9 @@ const SignUpNew = () => {
       <PropertyFormInputs
         register={register}
         errors={errors}
-        propertyPic={{ setPropertyPic, propertyPicError, setPropertyPicError }}
+        propertyFile={{ setPropertyFile, propertyFileError, setPropertyFileError }}
       />
-      <div className="mt-4">
+      <div className="mt-4 rounded-lg border border-black p-1 ">
         <button
           disabled={loading}
           type="submit"

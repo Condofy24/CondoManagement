@@ -1,5 +1,4 @@
 import {
-  ACCEPTED_FILE_TYPES,
   MAX_UPLOAD_SIZE,
   TPropertySchema,
 } from "@/lib/validation-schemas";
@@ -10,35 +9,35 @@ import FormFieldError from "./form-field-error";
 type PropertyFormInputProps = {
     register: UseFormRegister<TPropertySchema>;
     errors: FieldErrors<TPropertySchema>;
-    propertyPic: {
-        setPropertyPic: React.Dispatch<SetStateAction<File | null>>;
-        propertyPicError: string | null;
-        setPropertyPicError: React.Dispatch<SetStateAction<string | null>>;
+    propertyFile: {
+        setPropertyFile: React.Dispatch<SetStateAction<File | null>>;
+        propertyFileError: string | null;
+        setPropertyFileError: React.Dispatch<SetStateAction<string | null>>;
     };
 }
 export default function PropertyFormInputs({
   register,
   errors,
-  propertyPic: { setPropertyPic, propertyPicError, setPropertyPicError },
+  propertyFile: { setPropertyFile, propertyFileError, setPropertyFileError },
 }: PropertyFormInputProps) {
-  const propertyPicInputRef = useRef<HTMLInputElement | null>(null);
+  const propertyFileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePropertyPicChange = (e: ChangeEvent<HTMLInputElement>) => {
+  var valid;
+
+  const handlePropertyFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
     if (!file) {
-      setPropertyPic(null);
-      setPropertyPicError("Property picture is required.");
+      setPropertyFile(null);
+      setPropertyFileError("Property file is required.");
       return;
-    }
-    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-      setPropertyPic(null);
-      setPropertyPicError("Please upload a valid image file (jpeg, jpg, png)");
-    } else if (file.size > MAX_UPLOAD_SIZE) {
-      setPropertyPic(null);
-      setPropertyPicError("Please upload an image file less than 10MB");
+    } 
+    else if (file.size > MAX_UPLOAD_SIZE) {
+      setPropertyFile(null);
+      setPropertyFileError("Please upload a valid file less than 10MB");
     } else {
-      setPropertyPic(file);
-      setPropertyPicError(null);
+      setPropertyFile(file);
+      setPropertyFileError(null);
+      valid = true;
     }
   };
 
@@ -93,6 +92,7 @@ export default function PropertyFormInputs({
         />
       </div>
       <FormFieldError fieldError={errors.address} />
+      
       <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
@@ -170,12 +170,12 @@ export default function PropertyFormInputs({
       <FormFieldError fieldError={errors.lockerCount} />
         <div className="mt-3" >
           <label
-            htmlFor="propertyPicture"
+            htmlFor="propertyFile"
             className="mx-auto mt-2 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-[0.4rem] text-center"
             onClick={() => {
-              propertyPicInputRef &&
-                propertyPicInputRef.current &&
-                propertyPicInputRef.current.click();
+              propertyFileInputRef &&
+                propertyFileInputRef.current &&
+                propertyFileInputRef.current.click();
             }}
           >
             <svg
@@ -193,17 +193,17 @@ export default function PropertyFormInputs({
               />
             </svg>
             <h2 className="mx-3 text-gray-400">
-              {propertyPicInputRef.current?.value ? "Uploaded" : "Picture"}
+              {propertyFileInputRef.current?.value && valid==true ? "Uploaded" : "File"}
             </h2>
             <input
               type="file"
-              accept="image/*"
+              accept=".pdf, .doc, .txt"
               className="hidden"
-              ref={propertyPicInputRef}
-              onChange={handlePropertyPicChange}
+              ref={propertyFileInputRef}
+              onChange={handlePropertyFileChange}
             />
           </label>
-          <div className="text-red-600 my-1 text-sm h-2">{propertyPicError}</div>
+          <div className="text-red-600 my-1 text-sm h-2">{propertyFileError}</div>
         </div>
     </>
   );
