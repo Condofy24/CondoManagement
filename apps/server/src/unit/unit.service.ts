@@ -58,4 +58,20 @@ export class UnitService {
     );
     return result;
   }
+
+  public async findAll(): Promise<Unit[]> {
+    const units = await this.unitModel.find().exec();
+    return units.map(
+      (unit: Unit) =>
+        ({
+          buildingId: unit.buildingId,
+          ownerId: unit.ownerId,
+          renterId: unit.renterId,
+          unitNumber: unit.unitNumber,
+          size: unit.size,
+          isOccupiedByRenter: unit.isOccupiedByRenter,
+          fees: unit.fees,
+        }) as Unit,
+    );
+  }
 }

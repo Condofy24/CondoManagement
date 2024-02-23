@@ -13,4 +13,8 @@ export class UnitController {
   ) {
     return this.unitService.createUnit(buildingId, createUnitDto);
   }
+  @Get(':buildingId')
+  findAll(@Param('buildingId') buildingId: string) {
+    return this.unitService.findAll();
+  }
 }
