@@ -35,22 +35,16 @@ export class StorageService {
         );
       }
     }
-  let storageAvailability = buildingExists.storageCount;
+  let storageCount = buildingExists.storageCount;
   
-   if(storageAvailability==0){
-    throw new HttpException(
-        { error: 'No more available storages', status: HttpStatus.BAD_REQUEST },
-          HttpStatus.BAD_REQUEST,
-        );
-  }
     const newStorage = new this.storageModel({
       buildingId: buildingExists.id,
       storageNumber,
       isOccupied,
       fees,
     });
-    storageAvailability--;
-    this.buildingService.findByIdandUpdateStorageCount(buildingExists.id,storageAvailability);
+    storageCount++;
+    this.buildingService.findByIdandUpdateStorageCount(buildingExists.id,storageCount);
     const result = await newStorage.save();
     return result;
  } 

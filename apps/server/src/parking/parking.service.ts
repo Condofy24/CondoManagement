@@ -35,22 +35,16 @@ export class ParkingService {
         );
       }
     }
-  let parkingAvailability = buildingExists.parkingCount;
-  
-   if(parkingAvailability==0){
-    throw new HttpException(
-        { error: 'No more available parkings', status: HttpStatus.BAD_REQUEST },
-          HttpStatus.BAD_REQUEST,
-        );
-  }
+  let parkingCount = buildingExists.parkingCount;
+
     const newParking = new this.parkingModel({
       buildingId: buildingExists.id,
       parkingNumber,
       isOccupied,
       fees,
     });
-    parkingAvailability--;
-    this.buildingService.findByIdandUpdateParkingCount(buildingExists.id,parkingAvailability);
+    parkingCount++;
+    this.buildingService.findByIdandUpdateParkingCount(buildingExists.id,parkingCount);
     const result = await newParking.save();
     return result;
  } 
