@@ -118,4 +118,21 @@ export class BuildingService {
       fileAssetId: building.fileAssetId,
     };
   }
+  public async findAll(): Promise<Building[]> {
+    const buildings = await this.buildingModel.find().exec();
+    return buildings.map(
+      (building: Building) =>
+        ({
+          companyId: building.companyId,
+          name: building.name,
+          address: building.address,
+          unitCount: building.unitCount,
+          parkingCount: building.parkingCount,
+          storageCount: building.storageCount,
+          fileUrl: building.fileUrl,
+          filePublicId: building.filePublicId,
+          fileAssetId: building.fileAssetId,
+        }) as Building,
+    );
+  }
 }
