@@ -47,5 +47,17 @@ export class ParkingService {
     this.buildingService.findByIdandUpdateParkingCount(buildingExists.id,parkingCount);
     const result = await newParking.save();
     return result;
- } 
+ }
+ 
+ public async findAll(): Promise<Parking[]> {
+    const parkings = await this.parkingModel.find().exec();
+    return parkings.map(
+      (parking: Parking) =>
+        ({
+          buildingId: parking.buildingId,
+          parkingNumber: parking.parkingNumber,
+          isOccupied: parking.isOccupied,
+          fees: parking.fees
+        }) as Parking,
+  )}
 }

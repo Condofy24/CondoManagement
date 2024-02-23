@@ -13,4 +13,9 @@ export class ParkingController {
   ) {
     return this.parkingService.createParking(buildingId, createParkingDto);
   }
+
+   @Get(':companyId')
+  findAll(@Param('companyId') companyId: string) {
+    return this.parkingService.findAll();
+  }
 }
