@@ -23,3 +23,10 @@ export type PropertyInformation = {
   parking: number;
   storage: number;
 };
+
+export type UnitInformation = {
+  unitNumber: number;
+  size: number;
+  isOccupied: boolean;
+  fees: number;
+};

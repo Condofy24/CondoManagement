@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
 import { response } from 'express';
-import { Token, UserProfile } from './user.model';
+import { Token, UserProfile, UserRolesEnum } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -31,7 +31,6 @@ export class UserService {
       const imageResponse = await this.cloudinary.uploadFile(file);
       return imageResponse;
     } catch (error) {
-      console.error('Error uploading image to Cloudinary:', error);
       throw new BadRequestException('Failed to upload image to Cloudinary.');
     }
   }
@@ -111,10 +110,11 @@ export class UserService {
       imageUrl,
       imageId,
     });
-    const result = await newUser.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-
+    try {
+      await newUser.save();
+    } catch (e) {
+      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return response.status(HttpStatus.CREATED);
   }
 
@@ -158,16 +158,18 @@ export class UserService {
       email,
       password: `${name}_${phoneNumber}`, // Default password
       name,
-      role,
+      role: UserRolesEnum[role as keyof typeof UserRolesEnum],
       phoneNumber,
       imageUrl,
       companyId,
       imageId,
     });
-    const result = await newUser.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
+    try {
+      await newUser.save();
+    } catch (e) {
+      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return response.status(HttpStatus.CREATED);
   }
 
@@ -210,7 +212,7 @@ export class UserService {
       email,
       password,
       name,
-      role,
+      role: UserRolesEnum[role as keyof typeof UserRolesEnum],
       phoneNumber,
       imageUrl,
       imageId,
@@ -259,7 +261,7 @@ export class UserService {
 
   public async remove(id: string): Promise<any> {
     try {
-      await this.userModel.findByIdAndDelete(id).exec();
+      await this.userModel.findOneAndRemove({ _id: id }).exec();
     } catch {
       throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
@@ -267,7 +269,7 @@ export class UserService {
   }
 
   public async getPrivilege(id: string): Promise<number | undefined> {
-    const user = await this.userModel.findById(id);
+    const user = await this.userModel.findOne({ _id: id });
     return user?.role;
   }
   public async updateUser(
