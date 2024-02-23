@@ -13,7 +13,7 @@ export const UnitSchema = new mongoose.Schema(
       ref: 'User',
       required: false,
     },
-    rentetId: {
+    renterId: {
       type: mongoose.Types.ObjectId,
       ref: 'User',
       required: false,
