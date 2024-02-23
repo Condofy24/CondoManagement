@@ -189,10 +189,6 @@ export class UserService {
       phoneNumber: phoneNumber,
     });
     
-    
-
-    //check if Key exists:
-
     if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
@@ -207,6 +203,7 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
+      //check if Key exists:
     const verfExist = await this.verfService.findByVerfKey(verfKey);
     if (!verfExist) {
       throw new HttpException(
@@ -214,6 +211,7 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     let imageUrl =
       'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
     let imageId = 'default_user';
@@ -233,6 +231,11 @@ export class UserService {
       imageUrl,
       imageId,
     });
+    
+    if(verfExist.type==1){newUser.role= UserRolesEnum.OWNER}
+    else if (verfExist.type==1){newUser.role= UserRolesEnum.RENTER}
+
+
     const result = await newUser.save();
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);

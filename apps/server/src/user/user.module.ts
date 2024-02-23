@@ -6,12 +6,13 @@ import { UserSchema } from './entities/user.entity';
 import { IsValidRole } from './user.validators';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
-
+import {VerfModule} from '../verf/verf.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     CloudinaryModule,
     CompanyModule,
+    VerfModule,
   ],
   controllers: [UserController],
   providers: [UserService, IsValidRole],
