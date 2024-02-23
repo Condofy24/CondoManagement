@@ -11,7 +11,7 @@ const userTestData = {
   id: '1',
   name: 'Test User',
   password: 'thebuilder',
-  role: 'user',
+  role: 4, //'user',
   phoneNumber: '1234567890',
   imageUrl: 'imageurl',
   imageId: 'imageid',
