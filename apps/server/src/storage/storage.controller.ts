@@ -13,4 +13,9 @@ export class StorageController {
   ) {
     return this.storageService.createStorage(buildingId, createStorageDto);
   }
+
+  @Get(':companyId')
+  findAll(@Param('companyId') companyId: string) {
+    return this.storageService.findAll();
+  }
 }

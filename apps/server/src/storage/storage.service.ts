@@ -48,4 +48,16 @@ export class StorageService {
     const result = await newStorage.save();
     return result;
  } 
+
+ public async findAll(): Promise<Storage[]> {
+    const storages = await this.storageModel.find().exec();
+    return storages.map(
+      (storage: Storage) =>
+        ({
+          buildingId: storage.buildingId,
+          storageNumber: storage.storageNumber,
+          isOccupied: storage.isOccupied,
+          fees: storage.fees
+        }) as Storage,
+  )}
 }
