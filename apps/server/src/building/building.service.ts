@@ -11,6 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
 import { Unit } from '../unit/entities/unit.entity';
 import { CompanyService } from 'src/company/company.service';
+import { updateBuildingDto } from './dto/update-building.dto';
 
 //to download the files you can access Cloudinary's Admin API
 @Injectable()
@@ -98,6 +99,47 @@ export class BuildingService {
       filePublicId,
       fileAssetId,
     };
+  }
+
+  public async updateBuilding(buildingId:string,updateBuildingDto:updateBuildingDto,file?:Express.Multer.File){
+    const { name, address } = updateBuildingDto;
+    const building = await this.buildingModel.findById(buildingId);
+    if(!building){
+      throw new HttpException(
+        { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    let fileResponse;
+    let fileUrl = building.fileUrl;
+    let fileAssetId = building.fileAssetId;
+    let filePublicId = building.filePublicId;
+    if(file){
+      fileResponse = await this.uploadFileToCloudinary(file);
+      fileUrl = fileResponse.secure_url;
+      filePublicId = fileResponse.public_id;
+      fileAssetId = fileResponse.asset_id;
+    }
+    const result = await this.buildingModel.findByIdAndUpdate(buildingId,
+      {
+        name: name,
+        address: address,
+        fileUrl: fileUrl,
+        filePublicId: filePublicId,
+        fileAssetId: fileAssetId
+      }
+    ); // To return the updated document)
+    console.log(result);
+    if (result instanceof Error)
+      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+      return {
+        name,
+        address,
+        fileUrl,
+        filePublicId,
+        fileAssetId,
+      };
+
   }
 
   public async findOne(buildingId: string) {
