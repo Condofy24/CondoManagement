@@ -76,19 +76,18 @@ export class ParkingService {
   })
   return result
 }
-
- public async findAll(): Promise<Parking[]> {
-    const parkings = await this.parkingModel.find().exec();
-    return parkings.map(
-      (parking: Parking) =>
-        ({
-          buildingId: parking.buildingId,
-          parkingNumber: parking.parkingNumber,
-          isOccupied: parking.isOccupied,
-          fees: parking.fees
-        }) as Parking,
-  )}
-
+  public async findAll(buildingId: string): Promise<Parking[]> {
+     const parking = await this.parkingModel.find({ buildingId }).exec();
+     return parking.map(
+       (parking: Parking) =>
+         ({
+           buildingId: parking.buildingId,
+           parkingNumber: parking.parkingNumber,
+           isOccupied: parking.isOccupied,
+           fees: parking.fees,
+         }) as Parking,
+     );
+   }
      public async updateParking(parkingId: string, updateParkingDto: UpdateParkingDto) {
      const { parkingNumber, isOccupied, fees } = updateParkingDto;
 

@@ -40,8 +40,8 @@ export class ParkingController {
     return this.parkingService.removeParking(id);
   }
 
-   @Get(':companyId')
-  findAll(@Param('companyId') companyId: string) {
-    return this.parkingService.findAll();
+  @Get(':buildingId')
+  findAll(@Param('buildingId') buildingId: string) {
+    return this.parkingService.findAll(buildingId);
   }
 }
