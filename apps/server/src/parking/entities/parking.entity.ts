@@ -7,6 +7,11 @@ export const ParkingSchema = new mongoose.Schema(
       ref: 'Building',
       required: true,
     },
+    unitId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Unit',
+      required: false,
+    },
     parkingNumber: { type: Number, required: true },
     isOccupied: { type: Boolean, required: true },
     fees: { type: Number, required: true },
@@ -18,6 +23,7 @@ export const ParkingSchema = new mongoose.Schema(
 
 export interface Parking {
   buildingId: mongoose.Types.ObjectId;
+  unitId?: mongoose.Types.ObjectId
   parkingNumber: number;
   isOccupied: boolean;
   fees: number;
