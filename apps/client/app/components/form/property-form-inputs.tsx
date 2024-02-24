@@ -22,7 +22,7 @@ export default function PropertyFormInputs({
 }: PropertyFormInputProps) {
   const propertyFileInputRef = useRef<HTMLInputElement | null>(null);
 
-  var valid;
+  var valid: boolean = false;
 
   const handlePropertyFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
@@ -37,7 +37,8 @@ export default function PropertyFormInputs({
     } else {
       setPropertyFile(file);
       setPropertyFileError(null);
-      valid = true;
+      //valid = true;
+      //console.log(valid);
     }
   };
 
@@ -195,7 +196,7 @@ export default function PropertyFormInputs({
               />
             </svg>
             <h2 className="mx-3 text-gray-400">
-              {propertyFileInputRef.current?.value && valid==true ? "Uploaded" : "File"}
+              {propertyFileInputRef.current?.value ? "Uploaded" : "File"}
             </h2>
             <input
               type="file"
