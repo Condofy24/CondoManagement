@@ -10,7 +10,7 @@ export class CreateEmployeeDto {
   name: string;
 
   @Validate(IsValidRole)
-  role: string;
+  role: number;
 
   @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
