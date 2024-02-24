@@ -62,6 +62,9 @@ export class UnitService {
       VerfRolesEnum.RENTER,
       '',
     );
+    let unitCount = buildingExists.unitCount;
+    unitCount++;
+    this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
     return result;
   }
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
