@@ -7,6 +7,7 @@ import { BuildingService } from '../building/building.service';
 import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { UnitService } from 'src/unit/unit.service';
 import { response } from 'express';
+import { UpdateStorageDto } from './dto/update-storage.dto';
 
 
 @Injectable()
@@ -34,7 +35,7 @@ export class StorageService {
     if (storage) {
       if (storage.buildingId.equals(buildingExists.id)) {
         throw new HttpException(
-          { error: 'Storage already occupied', status: HttpStatus.BAD_REQUEST },
+          { error: 'Storage already exists', status: HttpStatus.BAD_REQUEST },
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -90,6 +91,40 @@ export class StorageService {
           fees: storage.fees
         }) as Storage,
   )}
+
+  public async updateStorage(storageId: string, updateStorageDto: UpdateStorageDto) {
+  const { storageNumber, isOccupied, fees } = updateStorageDto;
+  const storage = await this.storageModel.findById(storageId);
+     //FindOne by the storage number and the building id
+     if (!storage) {
+       throw new HttpException(
+         { error: "Storage doesn't exists", status: HttpStatus.BAD_REQUEST },
+         HttpStatus.BAD_REQUEST,
+       );
+     }
+     if(storage.storageNumber!=storageNumber){
+    const duplicateStorageNumber = await this.storageModel.findOne({ buildingId: storage.buildingId, storageNumber: storageNumber });
+    if(duplicateStorageNumber){
+      throw new HttpException(
+         { error: "Storage number already taken", status: HttpStatus.BAD_REQUEST },
+         HttpStatus.BAD_REQUEST,
+       );
+    }
+  }
+     const result = await this.storageModel.findByIdAndUpdate(storageId, {
+       storageNumber: storageNumber,
+       isOccupied: isOccupied,
+       fees: fees,
+     }); // To return the updated document)
+     console.log(result);
+     if (result instanceof Error)
+       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+     return {
+       storageNumber,
+       isOccupied,
+       fees
+     };
+   }
 
   public async remove(id: string): Promise<any> {
     const storage = await this.storageModel.findById(id).exec();
