@@ -1,17 +1,20 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Unit } from './entities/unit.entity';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
 import { VerfRolesEnum } from 'src/verf/entities/verf.entity';
 import { response } from 'express';
-import { ObjectId } from 'mongodb';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { UserService } from 'src/user/user.service';
-import { error } from 'console';
 
 @Injectable()
 export class UnitService {
@@ -152,7 +155,7 @@ export class UnitService {
 
     return response.status(HttpStatus.NO_CONTENT);
   }
-  public async linkUnitToBuilding(
+  public async linkUnitToUser(
     buildingId: string,
     userId: string,
     linkUnitToBuildingDto: LinkUnitToBuidlingDto,
@@ -192,9 +195,71 @@ export class UnitService {
         { unitNumber, buildingId },
         {
           renterId: userId,
+          isOccupiedByRenter: true,
         },
       );
     }
-    return result;
+    return {
+      id: unit._id,
+      buildingId: unit.buildingId,
+      ownerId: unit.ownerId,
+      renterId: unit.renterId,
+      unitNumber: unit.unitNumber,
+      size: unit.size,
+      isOccupiedByRenter: unit.isOccupiedByRenter,
+      fees: unit.fees,
+    };
+  }
+  public async findOwnerUnits(ownerId: string): Promise<Unit[]> {
+    const user = await this.userService.findById(ownerId);
+    if (!user) {
+      throw new HttpException(
+        { error: 'User not found', status: HttpStatus.NOT_FOUND },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (user.role != 3) {
+      throw new UnauthorizedException();
+    }
+
+    const units = await this.unitModel.find({ ownerId }).exec();
+    return units.map(
+      (unit: Unit) =>
+        ({
+          buildingId: unit.buildingId,
+          ownerId: unit.ownerId,
+          renterId: unit.renterId,
+          unitNumber: unit.unitNumber,
+          size: unit.size,
+          isOccupiedByRenter: unit.isOccupiedByRenter,
+          fees: unit.fees,
+        }) as Unit,
+    );
+  }
+  public async findRenterUnit(renterId: string) {
+    const user = await this.userService.findById(renterId);
+    if (!user) {
+      throw new HttpException(
+        { error: 'User not found', status: HttpStatus.NOT_FOUND },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (user.role != 4) {
+      throw new UnauthorizedException();
+    }
+    const unit = await this.unitModel.findOne({ renterId }).exec();
+    if (!unit) {
+      return null;
+    }
+    return {
+      id: unit._id,
+      buildingId: unit.buildingId,
+      ownerId: unit.ownerId,
+      renterId: unit.renterId,
+      unitNumber: unit.unitNumber,
+      size: unit.size,
+      isOccupiedByRenter: unit.isOccupiedByRenter,
+      fees: unit.fees,
+    };
   }
 }

@@ -9,7 +9,6 @@ import { Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
-import { Unit } from '../unit/entities/unit.entity';
 import { CompanyService } from 'src/company/company.service';
 import { updateBuildingDto } from './dto/update-building.dto';
 

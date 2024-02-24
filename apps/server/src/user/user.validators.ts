@@ -21,8 +21,7 @@ export class IsValidRole implements ValidatorConstraintInterface {
 @ValidatorConstraint({ name: 'IsValidPhoneNumber', async: false })
 export class IsValidPhoneNumber implements ValidatorConstraintInterface {
   validate(value: string, _args: ValidationArguments) {
-    // Check if the value is a number and its length is 10
-    console.log(value)
+ 
     return !(!/^\d+$/.test(value) || value.length > 10 || value.length < 10);
   }
   defaultMessage() {
