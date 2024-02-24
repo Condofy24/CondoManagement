@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UnitService } from './unit.service';
 import { UpdateUnitDto } from './dto/update-unit.dto';
@@ -24,11 +32,19 @@ export class UnitController {
   }
   @Patch('/update/link/:buildingId/:userId')
   linkUnitToBuilding(
-    @Param('buildingId') buildingId:string,
-    @Param('userId') userId:string,
-    @Body() linkUnitToBuildingDto:LinkUnitToBuidlingDto
-  ){
-    return this.unitService.linkUnitToBuilding(buildingId,userId,linkUnitToBuildingDto);
+    @Param('buildingId') buildingId: string,
+    @Param('userId') userId: string,
+    @Body() linkUnitToBuildingDto: LinkUnitToBuidlingDto,
+  ) {
+    return this.unitService.linkUnitToBuilding(
+      buildingId,
+      userId,
+      linkUnitToBuildingDto,
+    );
+  }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.unitService.remove(id);
   }
   @Get(':buildingId')
   findAll(@Param('buildingId') buildingId: string) {

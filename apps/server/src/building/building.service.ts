@@ -101,10 +101,14 @@ export class BuildingService {
     };
   }
 
-  public async updateBuilding(buildingId:string,updateBuildingDto:updateBuildingDto,file?:Express.Multer.File){
+  public async updateBuilding(
+    buildingId: string,
+    updateBuildingDto: updateBuildingDto,
+    file?: Express.Multer.File,
+  ) {
     const { name, address } = updateBuildingDto;
     const building = await this.buildingModel.findById(buildingId);
-    if(!building){
+    if (!building) {
       throw new HttpException(
         { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
         HttpStatus.BAD_REQUEST,
@@ -114,32 +118,29 @@ export class BuildingService {
     let fileUrl = building.fileUrl;
     let fileAssetId = building.fileAssetId;
     let filePublicId = building.filePublicId;
-    if(file){
+    if (file) {
       fileResponse = await this.uploadFileToCloudinary(file);
       fileUrl = fileResponse.secure_url;
       filePublicId = fileResponse.public_id;
       fileAssetId = fileResponse.asset_id;
     }
-    const result = await this.buildingModel.findByIdAndUpdate(buildingId,
-      {
-        name: name,
-        address: address,
-        fileUrl: fileUrl,
-        filePublicId: filePublicId,
-        fileAssetId: fileAssetId
-      }
-    ); // To return the updated document)
+    const result = await this.buildingModel.findByIdAndUpdate(buildingId, {
+      name: name,
+      address: address,
+      fileUrl: fileUrl,
+      filePublicId: filePublicId,
+      fileAssetId: fileAssetId,
+    }); // To return the updated document)
     console.log(result);
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-      return {
-        name,
-        address,
-        fileUrl,
-        filePublicId,
-        fileAssetId,
-      };
-
+    return {
+      name,
+      address,
+      fileUrl,
+      filePublicId,
+      fileAssetId,
+    };
   }
 
   public async findOne(buildingId: string) {
@@ -176,5 +177,31 @@ export class BuildingService {
           fileAssetId: building.fileAssetId,
         }) as Building,
     );
+  }
+
+  public async findByIdandUpdateUnitCount(
+    buildingId: string,
+    newUnitCount: number,
+  ) {
+    const building = await this.buildingModel.findByIdAndUpdate(
+      buildingId,
+      { unitCount: newUnitCount },
+      { new: true },
+    );
+    if (!building) {
+      return null;
+    }
+    return {
+      id: building.id,
+      companyId: building.companyId,
+      name: building.name,
+      address: building.address,
+      unitCount: building.unitCount,
+      parkingCount: building.parkingCount,
+      storageCount: building.storageCount,
+      fileUrl: building.fileUrl,
+      filePublicId: building.filePublicId,
+      fileAssetId: building.fileAssetId,
+    };
   }
 }
