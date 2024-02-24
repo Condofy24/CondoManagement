@@ -181,7 +181,7 @@ export class UserService {
     createUserDto: CreateUserDto,
     image?: Express.Multer.File,
   ) {
-    const { email, password, name, role, phoneNumber, verfKey } = createUserDto;
+    const { email, password, name, phoneNumber, verfKey } = createUserDto;
 
     // Check user doesn't already exist
     const emailInUse = await this.userModel.exists({ email: email });
@@ -220,22 +220,21 @@ export class UserService {
       imageUrl = imageResponse.secure_url;
       imageId = imageResponse.public_id;
     }
+let assignedRole
+      if(verfExist.type==0){assignedRole=3 }
+      if (verfExist.type==1){assignedRole= 4}
 
     // Create user
     const newUser = new this.userModel({
       email,
       password,
       name,
-      role,
+      role: assignedRole,
       phoneNumber,
       imageUrl,
       imageId,
     });
     
-    if(verfExist.type==1){newUser.role= UserRolesEnum.OWNER}
-    else if (verfExist.type==1){newUser.role= UserRolesEnum.RENTER}
-
-
     const result = await newUser.save();
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);

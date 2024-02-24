@@ -12,8 +12,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 
-  @Validate(IsValidRole)
-  role: number;
+  // @Validate(IsValidRole)
+  // role: number;
 
   @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
