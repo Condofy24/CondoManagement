@@ -68,7 +68,7 @@ export default function PropertyFormInputs({
         />
       </div>
       <FormFieldError fieldError={errors.propertyName} />
-            <div className="relative mt-3 flex items-center">
+      <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +93,9 @@ export default function PropertyFormInputs({
       </div>
       <FormFieldError fieldError={errors.address} />
       
-      <div className="relative mt-3 flex items-center">
+    {/* below are the count fields (unit, parking, locker) requested upon removal. Code is held as reference if ever the form requires further refacrtoring  */}
+
+      {/* <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -167,7 +169,7 @@ export default function PropertyFormInputs({
             type="password"
           />
       </div>
-      <FormFieldError fieldError={errors.lockerCount} />
+      <FormFieldError fieldError={errors.lockerCount} /> */}
         <div className="mt-3" >
           <label
             htmlFor="propertyFile"

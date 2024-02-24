@@ -55,7 +55,7 @@ const SignUpNew = () => {
         errors={errors}
         propertyFile={{ setPropertyFile, propertyFileError, setPropertyFileError }}
       />
-      <div className="mt-4 rounded-lg border border-black p-1 ">
+      <div className="mt-4 rounded-lg border-4 border-grey p-1 ">
         <button
           disabled={loading}
           type="submit"
@@ -68,7 +68,7 @@ const SignUpNew = () => {
           {loading ? (
             <ButtonLoadingSpinner loadingText={"loading"} />
           ) : (
-            <span>Create</span>
+            <span className="text-green-500">Create</span>
           )}
         </button>
       </div>
