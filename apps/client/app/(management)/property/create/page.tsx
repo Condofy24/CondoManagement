@@ -15,7 +15,9 @@ import { useRouter } from "next/navigation";
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
   const [propertyFile, setPropertyFile] = useState<File | null>(null);
-  const [propertyFileError, setPropertyFileError] = useState<string | null>(null);
+  const [propertyFileError, setPropertyFileError] = useState<string | null>(
+    null
+  );
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
@@ -42,40 +44,42 @@ const SignUpNew = () => {
   };
 
   return (
-    <>
-    <div className="flex flex-1 justify-center items-center p-4">
-    <div className="w-full max-w-md text-primary">
-    <h2 className="text-2xl font-bold tracking-tight">Create a New Property</h2>
-    <form
-      className="w-full max-w-md text-primary"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <PropertyFormInputs
-        register={register}
-        errors={errors}
-        propertyFile={{ setPropertyFile, propertyFileError, setPropertyFileError }}
-      />
-      <div className="mt-4 rounded-lg border-4 border-grey p-1 ">
-        <button
-          disabled={loading}
-          type="submit"
-          className={cn(
-            `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
-              loading ? "cursor-not-allowed opacity-50" : ""
-            }`,
-          )}
-        >
-          {loading ? (
-            <ButtonLoadingSpinner loadingText={"loading"} />
-          ) : (
-            <span className="text-green-500">Create</span>
-          )}
-        </button>
-      </div>
-    </form>
+    <div className="flex flex-col items-center my-20">
+      <h2 className="text-2xl text-center font-bold tracking-tight">
+        Create a New Property
+      </h2>
+      <form
+        className="w-full max-w-md text-primary"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <PropertyFormInputs
+          register={register}
+          errors={errors}
+          propertyFile={{
+            setPropertyFile,
+            propertyFileError,
+            setPropertyFileError,
+          }}
+        />
+        <div className="mt-4 rounded-lg border-4 border-grey p-1 ">
+          <button
+            disabled={loading}
+            type="submit"
+            className={cn(
+              `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
+                loading ? "cursor-not-allowed opacity-50" : ""
+              }`
+            )}
+          >
+            {loading ? (
+              <ButtonLoadingSpinner loadingText={"loading"} />
+            ) : (
+              <span className="text-green-500">Create</span>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
-    </div>
-  </>
   );
 };
 
