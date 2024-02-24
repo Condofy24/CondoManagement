@@ -30,6 +30,6 @@ export class BuildingController {
   }
   @Get(':companyId')
   findAll(@Param('companyId') companyId: string) {
-    return this.buildingService.findAll();
+    return this.buildingService.findAll(companyId);
   }
 }

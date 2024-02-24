@@ -15,6 +15,10 @@ export class UnitController {
   }
   @Get(':buildingId')
   findAll(@Param('buildingId') buildingId: string) {
-    return this.unitService.findAll();
+    return this.unitService.findAll(buildingId);
+  }
+  @Get('/getUnit/:id')
+  getUnit(@Param('id') id: string) {
+    return this.unitService.findOne(id);
   }
 }
