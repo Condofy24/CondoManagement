@@ -4,6 +4,9 @@ import { Model } from 'mongoose';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
+import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
+import { UnitService } from 'src/unit/unit.service';
+import { response } from 'express';
 
 
 @Injectable()
@@ -12,6 +15,7 @@ export class StorageService {
     @InjectModel('Storage')
     private readonly storageModel: Model<Storage>,
     private readonly buildingService: BuildingService,
+    private readonly unitService: UnitService
   ) {}
 
   public async createStorage(buildingId: string, createStorageDto: CreateStorageDto) {
@@ -49,6 +53,32 @@ export class StorageService {
     return result;
  } 
 
+
+
+  public async linkStorageToUnit(buildingId: string, unitId: string,linkStorageToUnitDto:LinkStorageToUnitDto){
+  const { storageNumber } = linkStorageToUnitDto;
+  const unitExsits = await this.unitService.findOne(unitId)
+  if(!unitExsits){
+  throw new HttpException(
+          { error: 'Unit does not exist', status: HttpStatus.BAD_REQUEST },
+          HttpStatus.BAD_REQUEST,
+        );
+  }
+  const storageExists = await this.storageModel.findOne({storageNumber:storageNumber, buildingId: buildingId})
+  if(!storageExists){
+    throw new HttpException(
+          { error: 'Storage does not exist', status: HttpStatus.BAD_REQUEST },
+          HttpStatus.BAD_REQUEST,
+        );
+  }
+
+  let result = await this.storageModel.findOneAndUpdate({storageNumber, buildingId}, {
+    unitId: unitId
+  })
+  return result
+
+  }
+
  public async findAll(): Promise<Storage[]> {
     const storages = await this.storageModel.find().exec();
     return storages.map(
@@ -60,4 +90,31 @@ export class StorageService {
           fees: storage.fees
         }) as Storage,
   )}
+
+  public async remove(id: string): Promise<any> {
+    const storage = await this.storageModel.findById(id).exec();
+    if (!storage) {
+      throw new HttpException('Storage not found', HttpStatus.BAD_REQUEST);
+    }
+    const buildingId = storage.buildingId.toString();
+    const building = await this.buildingService.findOne(buildingId);
+    if (!building) {
+      throw new HttpException(
+        {
+          error: "Building doesn't exists",
+          status: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    let storageCount = building.storageCount;
+
+    await this.storageModel.remove(storage);
+    storageCount--;
+    this.buildingService.findByIdandUpdateStorageCount(buildingId, storageCount);
+
+    return response.status(HttpStatus.NO_CONTENT);
+  }
+
+
 }
