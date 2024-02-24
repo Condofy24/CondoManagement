@@ -1,20 +1,17 @@
-import {
-  MAX_UPLOAD_SIZE,
-  TPropertySchema,
-} from "@/lib/validation-schemas";
+import { MAX_UPLOAD_SIZE, TPropertySchema } from "@/lib/validation-schemas";
 import { ChangeEvent, SetStateAction, useRef, useState } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import FormFieldError from "./form-field-error";
 
 type PropertyFormInputProps = {
-    register: UseFormRegister<TPropertySchema>;
-    errors: FieldErrors<TPropertySchema>;
-    propertyFile: {
-        setPropertyFile: React.Dispatch<SetStateAction<File | null>>;
-        propertyFileError: string | null;
-        setPropertyFileError: React.Dispatch<SetStateAction<string | null>>;
-    };
-}
+  register: UseFormRegister<TPropertySchema>;
+  errors: FieldErrors<TPropertySchema>;
+  propertyFile: {
+    setPropertyFile: React.Dispatch<SetStateAction<File | null>>;
+    propertyFileError: string | null;
+    setPropertyFileError: React.Dispatch<SetStateAction<string | null>>;
+  };
+};
 export default function PropertyFormInputs({
   register,
   errors,
@@ -22,23 +19,18 @@ export default function PropertyFormInputs({
 }: PropertyFormInputProps) {
   const propertyFileInputRef = useRef<HTMLInputElement | null>(null);
 
-  var valid: boolean = false;
-
   const handlePropertyFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
     if (!file) {
       setPropertyFile(null);
       setPropertyFileError("Property file is required.");
       return;
-    } 
-    else if (file.size > MAX_UPLOAD_SIZE) {
+    } else if (file.size > MAX_UPLOAD_SIZE) {
       setPropertyFile(null);
       setPropertyFileError("Please upload a valid file less than 10MB");
     } else {
       setPropertyFile(file);
       setPropertyFileError(null);
-      //valid = true;
-      //console.log(valid);
     }
   };
 
@@ -53,7 +45,6 @@ export default function PropertyFormInputs({
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={1}
-
           >
             <path
               strokeLinecap="round"
@@ -93,8 +84,8 @@ export default function PropertyFormInputs({
         />
       </div>
       <FormFieldError fieldError={errors.address} />
-      
-    {/* below are the count fields (unit, parking, locker) requested upon removal. Code is held as reference if ever the form requires further refacrtoring  */}
+
+      {/* below are the count fields (unit, parking, locker) requested upon removal. Code is held as reference if ever the form requires further refacrtoring  */}
 
       {/* <div className="relative mt-3 flex items-center">
         <span className="absolute">
@@ -171,43 +162,43 @@ export default function PropertyFormInputs({
           />
       </div>
       <FormFieldError fieldError={errors.lockerCount} /> */}
-        <div className="mt-3" >
-          <label
-            htmlFor="propertyFile"
-            className="mx-auto mt-2 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-[0.4rem] text-center"
-            onClick={() => {
-              propertyFileInputRef &&
-                propertyFileInputRef.current &&
-                propertyFileInputRef.current.click();
-            }}
+      <div className="mt-3">
+        <label
+          htmlFor="propertyFile"
+          className="mx-auto mt-2 flex cursor-pointer items-center rounded-lg border-2 border-dashed bg-white px-3 py-[0.4rem] text-center"
+          onClick={() => {
+            propertyFileInputRef &&
+              propertyFileInputRef.current &&
+              propertyFileInputRef.current.click();
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-gray-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-gray-300"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-              />
-            </svg>
-            <h2 className="mx-3 text-gray-400">
-              {propertyFileInputRef.current?.value ? "Uploaded" : "File"}
-            </h2>
-            <input
-              type="file"
-              accept=".pdf, .doc, .txt"
-              className="hidden"
-              ref={propertyFileInputRef}
-              onChange={handlePropertyFileChange}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
             />
-          </label>
-          <div className="text-red-600 my-1 text-sm h-2">{propertyFileError}</div>
-        </div>
+          </svg>
+          <h2 className="mx-3 text-gray-400">
+            {propertyFileInputRef.current?.value ? "Uploaded" : "File"}
+          </h2>
+          <input
+            type="file"
+            accept=".pdf, .doc, .txt"
+            className="hidden"
+            ref={propertyFileInputRef}
+            onChange={handlePropertyFileChange}
+          />
+        </label>
+        <div className="text-red-600 my-1 text-sm h-2">{propertyFileError}</div>
+      </div>
     </>
   );
 }
