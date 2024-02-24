@@ -37,8 +37,7 @@ export class BuildingService {
     file: Express.Multer.File,
     companyId: string,
   ) {
-    const { name, address, unitCount, parkingCount, storageCount } =
-      createBuildingDto;
+    const { name, address } = createBuildingDto;
     const companyExists = await this.companyService.findByCompanyId(companyId);
     if (!companyExists) {
       throw new HttpException(
@@ -77,9 +76,6 @@ export class BuildingService {
       companyId: companyExists.id,
       name,
       address,
-      unitCount,
-      parkingCount,
-      storageCount,
       fileUrl,
       filePublicId,
       fileAssetId,
@@ -92,9 +88,6 @@ export class BuildingService {
       companyId,
       name,
       address,
-      unitCount,
-      parkingCount,
-      storageCount,
       fileUrl,
       filePublicId,
       fileAssetId,
