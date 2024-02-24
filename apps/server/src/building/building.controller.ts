@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -29,18 +30,18 @@ export class BuildingController {
       companyId,
     );
   }
-  @Post('update/:buildingId')
+  @Patch('update/:buildingId')
   update(
-    @Param('buildingId') buildingId:string,
+    @Param('buildingId') buildingId: string,
     @Body() updateBuildingDto: updateBuildingDto,
-    @UploadedFile() file:Express.Multer.File
-    ){
-      return this.buildingService.updateBuilding(
-        buildingId,
-        updateBuildingDto,
-        file
-      );
-    }
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.buildingService.updateBuilding(
+      buildingId,
+      updateBuildingDto,
+      file,
+    );
+  }
   @Get(':companyId')
   findAll(@Param('companyId') companyId: string) {
     return this.buildingService.findAll(companyId);
