@@ -162,7 +162,7 @@ export class UserService {
       email,
       password: `${name}_${phoneNumber}`, // Default password
       name,
-      role: UserRolesEnum[role as keyof typeof UserRolesEnum],
+      role,
       phoneNumber,
       imageUrl,
       companyId,
@@ -226,7 +226,7 @@ export class UserService {
       email,
       password,
       name,
-      role: UserRolesEnum[role as keyof typeof UserRolesEnum],
+      role,
       phoneNumber,
       imageUrl,
       imageId,

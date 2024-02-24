@@ -13,7 +13,7 @@ export class CreateUserDto {
   name: string;
 
   @Validate(IsValidRole)
-  role: string;
+  role: number;
 
   @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
