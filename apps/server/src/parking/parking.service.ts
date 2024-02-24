@@ -7,6 +7,7 @@ import { BuildingService } from '../building/building.service';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { UnitService } from 'src/unit/unit.service';
 import { response } from 'express';
+import { UpdateParkingDto } from './dto/update-parking.dto';
 
 
 @Injectable()
@@ -34,7 +35,7 @@ export class ParkingService {
     if (parking) {
       if (parking.buildingId.equals(buildingExists.id)) {
         throw new HttpException(
-          { error: 'Parking already occupied', status: HttpStatus.BAD_REQUEST },
+          { error: 'Parking number already exists', status: HttpStatus.BAD_REQUEST },
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -88,6 +89,38 @@ export class ParkingService {
         }) as Parking,
   )}
 
+     public async updateParking(parkingId: string, updateParkingDto: UpdateParkingDto) {
+     const { parkingNumber, isOccupied, fees } = updateParkingDto;
+
+     const parking = await this.parkingModel.findById(parkingId);
+     if (!parking) {
+       throw new HttpException(
+         { error: "Parking doesn't exists", status: HttpStatus.BAD_REQUEST },
+         HttpStatus.BAD_REQUEST,
+       );
+     }
+     if(parking.parkingNumber!=parkingNumber){
+    const duplicateParkingNumber = await this.parkingModel.findOne({ buildingId: parking.buildingId, parkingNumber: parkingNumber });
+    if(duplicateParkingNumber){
+      throw new HttpException(
+         { error: "Parking number already taken", status: HttpStatus.BAD_REQUEST },
+         HttpStatus.BAD_REQUEST,
+       );
+    }
+     }
+     const result = await this.parkingModel.findByIdAndUpdate(parkingId, {
+       parkingNumber: parkingNumber,
+       isOccupied: isOccupied,
+       fees: fees,
+     });
+     if (result instanceof Error)
+       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+     return {
+       parkingNumber,
+       isOccupied,
+       fees
+     };
+   }
 
   public async removeParking(id: string): Promise<any> {
     const parkingExsits = await this.parkingModel.findById(id).exec();

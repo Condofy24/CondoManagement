@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Patch, Delete } from '@nestjs/commo
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
+import { UpdateParkingDto } from './dto/update-parking.dto';
 
 @Controller('parking')
 export class ParkingController {
@@ -23,6 +24,16 @@ export class ParkingController {
    ){
      return this.parkingService.linkParkingToUnit(buildingId,unitId,linkParkingToUnitDto);
    }
+
+   @Patch('update/:parkingId')
+   updateParking(
+   @Param('parkingId') parkingId: string,
+   @Body() updateParkingDto:UpdateParkingDto
+   )
+   {
+   return this.parkingService.updateParking(parkingId, updateParkingDto);
+   }
+
 
    @Delete(':id')
   remove(@Param('id') id: string) {
