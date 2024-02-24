@@ -34,9 +34,9 @@ export class StorageController {
    return this.storageService.updateStorage(storageId, updateStorageDto);
    }
 
-  @Get(':companyId')
-  findAll(@Param('companyId') companyId: string) {
-    return this.storageService.findAll();
+  @Get(':buildingId')
+  findAll(@Param('buildingId') buildingId: string) {
+    return this.storageService.findAll(buildingId);
   }
 
    @Delete(':id')

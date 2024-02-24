@@ -80,17 +80,18 @@ export class StorageService {
 
   }
 
- public async findAll(): Promise<Storage[]> {
-    const storages = await this.storageModel.find().exec();
-    return storages.map(
-      (storage: Storage) =>
-        ({
-          buildingId: storage.buildingId,
-          storageNumber: storage.storageNumber,
-          isOccupied: storage.isOccupied,
-          fees: storage.fees
-        }) as Storage,
-  )}
+  public async findAll(buildingId: string): Promise<Storage[]> {
+     const storage = await this.storageModel.find({ buildingId }).exec();
+     return storage.map(
+       (storage: Storage) =>
+         ({
+           buildingId: storage.buildingId,
+           storageNumber: storage.storageNumber,
+           isOccupied: storage.isOccupied,
+           fees: storage.fees,
+         }) as Storage,
+     );
+   }
 
   public async updateStorage(storageId: string, updateStorageDto: UpdateStorageDto) {
   const { storageNumber, isOccupied, fees } = updateStorageDto;
