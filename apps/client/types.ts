@@ -27,6 +27,6 @@ export type PropertyInformation = {
 export type UnitInformation = {
   unitNumber: number;
   size: number;
-  isOccupied: boolean;
+  status: boolean;
   fees: number;
 };

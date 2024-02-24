@@ -1,11 +1,9 @@
 "use client";
 
-import { DataTableFacetedFilter } from "@/app/components/table/data-table-faceted-filter";
 import { DataTableViewOptions } from "@/app/components/table/data-table-view-options";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import { unitStatuses } from "@/lib/data";
 import { Table } from "@tanstack/react-table";
 
 interface DataTableToolbarProps<TData> {
@@ -29,13 +27,6 @@ export default function PropertiesTableToolbar<TData>({
             }
             className="h-8 w-[150px] lg:w-[250px]"
           />
-          {table?.getColumn("status") && (
-            <DataTableFacetedFilter
-              column={table.getColumn("status")}
-              title="Status"
-              options={unitStatuses}
-            />
-          )}
           {isFiltered && (
             <Button
               variant="ghost"
