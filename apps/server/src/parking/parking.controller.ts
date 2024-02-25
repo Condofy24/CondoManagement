@@ -54,4 +54,9 @@ export class ParkingController {
   findAll(@Param('buildingId') buildingId: string) {
     return this.parkingService.findAll(buildingId);
   }
+
+  @Get('unit/:unitId')
+  findAllByUnitId(@Param('unitId') unitId: string) {
+    return this.parkingService.findByUnitId(unitId);
+  }
 }
