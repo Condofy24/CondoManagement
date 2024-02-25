@@ -1,4 +1,4 @@
-import CreateParking from "@/app/(management)/assets/create-parking";
+import CreateAsset from "@/app/(management)/assets/create-asset";
 import CreateUnit from "@/app/(management)/assets/create-unit";
 import {
   Dialog,
@@ -31,8 +31,8 @@ const getDescription = (assetName: AssetType) => {
     case AssetType.unit:
       return <CreateUnit />;
     case AssetType.parking:
-      return <CreateParking />;
+      return <CreateAsset assetType={AssetType.parking}/>;
     case AssetType.storage:
-      return "Create a new storage";
+      return <CreateAsset assetType={AssetType.storage}/>;
   }
 };

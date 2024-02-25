@@ -47,7 +47,7 @@ export default function CreateUnit() {
         />
         <FormFieldError fieldError={errors.size} />
       </div>
-      <Button type="submit">CREATE</Button>
+      <Button type="submit">SUBMIT</Button>
     </form>
   );
 }

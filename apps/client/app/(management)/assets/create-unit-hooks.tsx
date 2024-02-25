@@ -15,7 +15,6 @@ export default function UseCreateUnit() {
   });
 
   const onSubmit = (data: TCreateUnitSchema) => {
-    console.log("first")
     console.log(data);
   };
 

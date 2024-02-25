@@ -39,7 +39,7 @@ export const assetsColumns = (
     {
       id: "actions",
       cell: ({ row }) => {
-        const property = row.original;
+        const asset = row.original;
 
         return (
           <DropdownMenu>
@@ -52,8 +52,7 @@ export const assetsColumns = (
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Edit property details</DropdownMenuItem>
-              <DropdownMenuItem>Download property file</DropdownMenuItem>
+              <DropdownMenuItem>Edit {assetName} details</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );

@@ -45,7 +45,7 @@ export const unitColumns: ColumnDef<UnitInformation>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const property = row.original;
+      const unit = row.original;
 
       return (
         <DropdownMenu>
@@ -58,8 +58,7 @@ export const unitColumns: ColumnDef<UnitInformation>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit property details</DropdownMenuItem>
-            <DropdownMenuItem>Download property file</DropdownMenuItem>
+            <DropdownMenuItem>Edit Unit details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
