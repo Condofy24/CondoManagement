@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -10,6 +11,7 @@ import {
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { BuildingService } from './building.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { updateBuildingDto } from './dto/update-building.dto';
 
 @Controller('building')
 export class BuildingController {
@@ -28,8 +30,20 @@ export class BuildingController {
       companyId,
     );
   }
+  @Patch('update/:buildingId')
+  update(
+    @Param('buildingId') buildingId: string,
+    @Body() updateBuildingDto: updateBuildingDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.buildingService.updateBuilding(
+      buildingId,
+      updateBuildingDto,
+      file,
+    );
+  }
   @Get(':companyId')
   findAll(@Param('companyId') companyId: string) {
-    return this.buildingService.findAll();
+    return this.buildingService.findAll(companyId);
   }
 }

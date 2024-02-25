@@ -1,6 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-
-export class CreateUnitDto {
+export class UpdateUnitDto {
   @IsNotEmpty()
   unitNumber: number;
 
