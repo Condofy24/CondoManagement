@@ -23,7 +23,7 @@ export const StorageSchema = new mongoose.Schema(
 
 export interface Storage {
   buildingId: mongoose.Types.ObjectId;
-  unitId?: mongoose.Types.ObjectId
+  unitId?: mongoose.Types.ObjectId;
   storageNumber: number;
   isOccupied: boolean;
   fees: number;

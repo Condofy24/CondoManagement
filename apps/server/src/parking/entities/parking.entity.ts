@@ -23,7 +23,7 @@ export const ParkingSchema = new mongoose.Schema(
 
 export interface Parking {
   buildingId: mongoose.Types.ObjectId;
-  unitId?: mongoose.Types.ObjectId
+  unitId?: mongoose.Types.ObjectId;
   parkingNumber: number;
   isOccupied: boolean;
   fees: number;

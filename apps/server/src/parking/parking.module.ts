@@ -10,7 +10,7 @@ import { UnitModule } from 'src/unit/unit.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Parking', schema: ParkingSchema }]),
     BuildingModule,
-    UnitModule
+    UnitModule,
   ],
   controllers: [ParkingController],
   providers: [ParkingService],

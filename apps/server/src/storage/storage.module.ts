@@ -10,7 +10,7 @@ import { UnitModule } from 'src/unit/unit.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Storage', schema: StorageSchema }]),
     BuildingModule,
-    UnitModule
+    UnitModule,
   ],
   controllers: [StorageController],
   providers: [StorageService],

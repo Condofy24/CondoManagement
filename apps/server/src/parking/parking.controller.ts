@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Patch, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
@@ -16,26 +24,28 @@ export class ParkingController {
     return this.parkingService.createParking(buildingId, createParkingDto);
   }
 
-      @Patch('/update/link/:buildingId/:unitId')
-   linkParkingToUnit(
-     @Param('buildingId') buildingId:string,
-     @Param('unitId') unitId:string,
-     @Body() linkParkingToUnitDto:LinkParkingToUnitDto
-   ){
-     return this.parkingService.linkParkingToUnit(buildingId,unitId,linkParkingToUnitDto);
-   }
+  @Patch('/update/link/:buildingId/:unitId')
+  linkParkingToUnit(
+    @Param('buildingId') buildingId: string,
+    @Param('unitId') unitId: string,
+    @Body() linkParkingToUnitDto: LinkParkingToUnitDto,
+  ) {
+    return this.parkingService.linkParkingToUnit(
+      buildingId,
+      unitId,
+      linkParkingToUnitDto,
+    );
+  }
 
-   @Patch('update/:parkingId')
-   updateParking(
-   @Param('parkingId') parkingId: string,
-   @Body() updateParkingDto:UpdateParkingDto
-   )
-   {
-   return this.parkingService.updateParking(parkingId, updateParkingDto);
-   }
+  @Patch('update/:parkingId')
+  updateParking(
+    @Param('parkingId') parkingId: string,
+    @Body() updateParkingDto: UpdateParkingDto,
+  ) {
+    return this.parkingService.updateParking(parkingId, updateParkingDto);
+  }
 
-
-   @Delete(':id')
+  @Delete(':id')
   remove(@Param('id') id: string) {
     return this.parkingService.removeParking(id);
   }
