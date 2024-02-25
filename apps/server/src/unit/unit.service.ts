@@ -86,7 +86,6 @@ export class UnitService {
       isOccupiedByRenter: isOccupiedByRenter,
       fees: fees,
     }); // To return the updated document)
-    console.log(result);
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
     return {
