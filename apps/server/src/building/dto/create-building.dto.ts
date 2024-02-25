@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import {  IsNotEmpty } from 'class-validator';
 
 export class CreateBuildingDto {
   @IsNotEmpty()
@@ -7,13 +7,5 @@ export class CreateBuildingDto {
   @IsNotEmpty()
   address: string;
 
-  @IsNotEmpty()
-  unitCount: number;
-
-  @IsNotEmpty()
-  parkingCount: number;
-
-  @IsNotEmpty()
-  storageCount: number;
 
 }
