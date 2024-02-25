@@ -14,7 +14,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import StatusCell from "@/app/components/table/data-table-status-cell";
 
-export const columns: ColumnDef<UnitInformation>[] = [
+export const unitColumns: ColumnDef<UnitInformation>[] = [
   {
     accessorKey: "unitNumber",
     header: ({ column }) => {

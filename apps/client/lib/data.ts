@@ -1,6 +1,9 @@
-import { PropertyInformation, UnitInformation } from "@/types";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { FaUser, FaRegCalendarAlt } from "react-icons/fa";
+import {
+  ParkingInformation,
+  PropertyInformation,
+  StorageInformation,
+  UnitInformation,
+} from "@/types";
 
 // used for testing, will be removed later
 export const Properties: PropertyInformation[] = [
@@ -59,5 +62,35 @@ export const UnitProperties: UnitInformation[] = [
     size: 300,
     status: true,
     fees: 300,
+  },
+] as const;
+
+export const ParkingProperties: ParkingInformation[] = [
+  {
+    parkingNumber: 1,
+    fees: 1,
+  },
+  {
+    parkingNumber: 2,
+    fees: 1,
+  },
+  {
+    parkingNumber: 3,
+    fees: 1,
+  },
+] as const;
+
+export const StorageProperties: StorageInformation[] = [
+  {
+    storageNumber: 1,
+    fees: 2,
+  },
+  {
+    storageNumber: 2,
+    fees: 2,
+  },
+  {
+    storageNumber: 3,
+    fees: 2,
   },
 ] as const;
