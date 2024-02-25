@@ -13,6 +13,10 @@ import { BuildingModule } from './building/building.module';
 import { BuildingController } from './building/building.controller';
 import { UnitModule } from './unit/unit.module';
 import { UnitController } from './unit/unit.controller';
+import { ParkingModule } from './parking/parking.module';
+import { ParkingController } from './parking/parking.controller';
+import { StorageModule } from './storage/storage.module';
+import { StorageController } from './storage/storage.controller';
 
 @Module({
   imports: [
@@ -25,6 +29,8 @@ import { UnitController } from './unit/unit.controller';
     CloudinaryModule,
     BuildingModule,
     UnitModule,
+    ParkingModule,
+    StorageModule
   ],
   controllers: [
     AppController,
@@ -33,6 +39,8 @@ import { UnitController } from './unit/unit.controller';
     CompanyController,
     BuildingController,
     UnitController,
+    ParkingController,
+    StorageController
   ],
   providers: [AppService],
 })
