@@ -43,7 +43,7 @@ const createEmployeeDtoTestData: CreateEmployeeDto = {
   name: 'Test Manager',
   phoneNumber: '1224567890',
   companyId: 'genetec',
-  role: 'Staff',
+  role: 1,
 };
 
 const createUserDtoTestData: CreateUserDto = {
@@ -51,7 +51,7 @@ const createUserDtoTestData: CreateUserDto = {
   password: 'password',
   name: 'Test Manager',
   phoneNumber: '1224567890',
-  role: 'Owner',
+  role: 4,
 };
 
 const updateUserDtoTestData: UpdateUserDto = {
@@ -64,7 +64,7 @@ const updateUserDtoTestData: UpdateUserDto = {
 const adminInfoTestData = {
   email: 'test@example.com',
   name: 'Test Admin',
-  role: 'Admin',
+  role: 0,
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
@@ -73,7 +73,7 @@ const adminInfoTestData = {
 const userInfoTestData = {
   email: 'user@example.com',
   name: 'Test User',
-  role: 'Owner',
+  role: 4,
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
@@ -371,7 +371,7 @@ describe('UserService', () => {
 
       // Assert
       expect(result).toEqual(
-        expect.objectContaining({ ...adminInfoTestData, role: 3 }),
+        expect.objectContaining({ ...adminInfoTestData, role: 0 }),
       );
     });
   });
@@ -388,7 +388,7 @@ describe('UserService', () => {
       // Assert
       expect(result.length).toBe(users.length);
       expect(result[0]).toEqual(
-        expect.objectContaining({ ...adminInfoTestData, role: 3 }),
+        expect.objectContaining({ ...adminInfoTestData, role: 0 }),
       );
     });
   });
@@ -426,7 +426,7 @@ describe('UserService', () => {
       const result = await service.getPrivilege('userId');
 
       // Assert
-      expect(result).toEqual(3);
+      expect(result).toEqual(0);
     });
   });
 
