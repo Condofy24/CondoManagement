@@ -90,6 +90,7 @@ export class ParkingService {
       { parkingNumber, buildingId },
       {
         unitId: unitId,
+        isOccupied: true,
       },
     );
     return result;
