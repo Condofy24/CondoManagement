@@ -9,5 +9,5 @@ export class UpdateStorageDto {
   isOccupied: boolean;
 
   @IsNotEmpty()
-  fees: Double;
+  fees: Number;
 }

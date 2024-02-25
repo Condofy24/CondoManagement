@@ -9,5 +9,5 @@ export class UpdateParkingDto {
   isOccupied: boolean;
 
   @IsNotEmpty()
-  fees: Double;
+  fees: Number;
 }
