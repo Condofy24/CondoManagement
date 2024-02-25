@@ -1,3 +1,5 @@
+import CreateParking from "@/app/(management)/assets/create-parking";
+import CreateUnit from "@/app/(management)/assets/create-unit";
 import {
   Dialog,
   DialogContent,
@@ -6,26 +8,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/components/ui/dialog";
+import { AssetType } from "@/types";
 
-type AddAssetDialogProps = {
-  assetName: string;
-};
-
-function AddAssetDialog({ assetName }: AddAssetDialogProps) {
+export default function AddAssetDialog({ assetName }: { assetName: AssetType }) {
   return (
     <Dialog>
       <DialogTrigger>+ Add {assetName}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Fill this form and submit</DialogTitle>
+          <DialogTitle>Creating a New {assetName}</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            {getDescription(assetName)}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
   );
-}
+};
 
-export default AddAssetDialog;
+const getDescription = (assetName: AssetType) => {
+  switch (assetName) {
+    case AssetType.unit:
+      return <CreateUnit />;
+    case AssetType.parking:
+      return <CreateParking />;
+    case AssetType.storage:
+      return "Create a new storage";
+  }
+};
