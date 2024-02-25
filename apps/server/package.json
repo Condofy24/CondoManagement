@@ -38,7 +38,7 @@
     "mongodb": "^4.17.2",
     "mongoose": "^6.12.6",
     "multer-storage-cloudinary": "^4.0.0",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
     "streamifier": "^0.1.1",
     "uuid": "^9.0.1",
