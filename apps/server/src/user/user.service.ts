@@ -2,7 +2,9 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -18,6 +20,8 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
 import {VerfService} from '../verf/verf.service';
+import { UnitService } from 'src/unit/unit.service';
+import { LinkUnitToBuidlingDto } from 'src/unit/dto/link-unit-to-building.dto';
 
 @Injectable()
 export class UserService {
@@ -26,6 +30,9 @@ export class UserService {
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
     private verfService :VerfService,
+    @Inject(forwardRef(() => UnitService))
+    private unitService:UnitService,
+  
   ) {}
 
   async uploadImageToCloudinary(file: Express.Multer.File) {
@@ -233,19 +240,28 @@ let assignedRole
       phoneNumber,
       imageUrl,
       imageId,
-    });
-    
+    }); 
     const result = await newUser.save();
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
+   const unitForLink = await this.unitService.findOne(verfExist.unitId);
+   
+   const buildingId = unitForLink.buildingId
+   let linkUnitDto = new LinkUnitToBuidlingDto();
+   linkUnitDto.unitNumber= unitForLink.unitNumber;
+    console.log("hjgkjg")
+   const linkedUnitToUser =  await this.unitService.linkUnitToUser(JSON.stringify(buildingId), JSON.stringify(newUser._id), linkUnitDto);
+   console.log(linkedUnitToUser)
     return response.status(HttpStatus.CREATED);
   }
 
+  
   public async findOne(userEmail: string): Promise<User | undefined | null> {
     return this.userModel.findOne({ email: userEmail }).exec();
   }
   public async findById(id: string): Promise<User | undefined | null> {
+    console.log(id)
     return this.userModel.findById(id).exec();
   }
 

@@ -7,12 +7,15 @@ import { IsValidRole } from './user.validators';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 import {VerfModule} from '../verf/verf.module';
+import { UnitModule } from 'src/unit/unit.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     CloudinaryModule,
     CompanyModule,
     VerfModule,
+    UnitModule,
   ],
   controllers: [UserController],
   providers: [UserService, IsValidRole],

@@ -1,8 +1,10 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
+  forwardRef,
 } from '@nestjs/common';
 import { Unit } from './entities/unit.entity';
 import { Model } from 'mongoose';
@@ -23,6 +25,7 @@ export class UnitService {
     private readonly unitModel: Model<Unit>,
     private readonly verfService: VerfService,
     private readonly buildingService: BuildingService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
@@ -161,6 +164,8 @@ export class UnitService {
     linkUnitToBuildingDto: LinkUnitToBuidlingDto,
   ) {
     const { unitNumber } = linkUnitToBuildingDto;
+
+    //Problem here it says it can not cast to type object
     const user = await this.userService.findById(userId);
     if (!user) {
       throw new HttpException(
