@@ -87,6 +87,7 @@ export class StorageService {
       { storageNumber, buildingId },
       {
         unitId: unitId,
+        isOccupied: true,
       },
     );
     return result;
@@ -173,5 +174,13 @@ export class StorageService {
     );
 
     return response.status(HttpStatus.NO_CONTENT);
+  }
+
+  public async findByUnitId(unitId: string): Promise<Storage[]> {
+    const unit = await this.unitService.findOne(unitId);
+    if (unit) {
+      return this.storageModel.find({ unitId: unitId });
+    }
+    throw new HttpException('Unit does not exist', HttpStatus.NOT_FOUND);
   }
 }
