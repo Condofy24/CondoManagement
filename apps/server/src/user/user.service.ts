@@ -250,9 +250,7 @@ let assignedRole
    const buildingId = unitForLink.buildingId
    let linkUnitDto = new LinkUnitToBuidlingDto();
    linkUnitDto.unitNumber= unitForLink.unitNumber;
-    console.log("hjgkjg")
-   const linkedUnitToUser =  await this.unitService.linkUnitToUser(JSON.stringify(buildingId), JSON.stringify(newUser._id), linkUnitDto);
-   console.log(linkedUnitToUser)
+   const linkedUnitToUser =  await this.unitService.linkUnitToUser(buildingId.toString(), newUser._id.toString(), linkUnitDto);
     return response.status(HttpStatus.CREATED);
   }
 
@@ -260,9 +258,9 @@ let assignedRole
   public async findOne(userEmail: string): Promise<User | undefined | null> {
     return this.userModel.findOne({ email: userEmail }).exec();
   }
+
   public async findById(id: string): Promise<User | undefined | null> {
-    console.log(id)
-    return this.userModel.findById(id).exec();
+    return this.userModel.findOne({_id:id}).exec();
   }
 
   public async getProfile(token: Token): Promise<UserProfile> {

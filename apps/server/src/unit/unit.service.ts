@@ -164,8 +164,6 @@ export class UnitService {
     linkUnitToBuildingDto: LinkUnitToBuidlingDto,
   ) {
     const { unitNumber } = linkUnitToBuildingDto;
-
-    //Problem here it says it can not cast to type object
     const user = await this.userService.findById(userId);
     if (!user) {
       throw new HttpException(
