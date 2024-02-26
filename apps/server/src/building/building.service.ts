@@ -9,8 +9,11 @@ import { Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
-import { CompanyService } from 'src/company/company.service';
+import { CompanyService } from '../company/company.service';
 import { updateBuildingDto } from './dto/update-building.dto';
+import { UnitService } from '../unit/unit.service';
+import { StorageService } from '../storage/storage.service';
+import { ParkingService } from '../parking/parking.service';
 
 /**
  * Service class for managing buildings.
@@ -22,6 +25,9 @@ export class BuildingService {
     private readonly buildingModel: Model<Building>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
+    private unitService: UnitService,
+    private storageService: StorageService,
+    private parkingService: ParkingService,
   ) {}
 
   /**
@@ -300,5 +306,17 @@ export class BuildingService {
       filePublicId: building.filePublicId,
       fileAssetId: building.fileAssetId,
     };
+  }
+  /**
+   * Get all properties for a building.
+   * @param buildingId - The ID of the building.
+   * @returns The building info and arrays of building's properties.
+   */
+  public async findAllProperties(buildingId: string) {
+    const building = await this.findOne(buildingId);
+    const units = await this.unitService.findAll(buildingId);
+    const parkings = await this.parkingService.findAll(buildingId);
+    const storages = await this.storageService.findAll(buildingId);
+    return { building, units, parkings, storages };
   }
 }
