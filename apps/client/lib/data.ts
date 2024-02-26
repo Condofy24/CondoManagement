@@ -1,6 +1,9 @@
-import { PropertyInformation, UnitInformation } from "@/types";
-import { IoMdCheckmarkCircleOutline } from "react-icons/io";
-import { FaUser, FaRegCalendarAlt } from "react-icons/fa";
+import {
+  ParkingInformation,
+  PropertyInformation,
+  StorageInformation,
+  UnitInformation,
+} from "@/types";
 
 // used for testing, will be removed later
 export const Properties: PropertyInformation[] = [
@@ -41,41 +44,53 @@ export const Properties: PropertyInformation[] = [
   },
 ] as const;
 
-export const unitStatuses = [
-  {
-    label: "Available",
-    value: "available",
-    icon: IoMdCheckmarkCircleOutline,
-  },
-  {
-    label: "Owned",
-    value: "owned",
-    icon: FaUser,
-  },
-  {
-    label: "Rented",
-    value: "rented",
-    icon: FaRegCalendarAlt,
-  },
-];
-
 export const UnitProperties: UnitInformation[] = [
   {
     unitNumber: 1,
     size: 100,
-    isOccupied: true,
+    status: true,
     fees: 100,
   },
   {
     unitNumber: 2,
     size: 200,
-    isOccupied: false,
+    status: false,
     fees: 200,
   },
   {
     unitNumber: 3,
     size: 300,
-    isOccupied: true,
+    status: true,
     fees: 300,
+  },
+] as const;
+
+export const ParkingProperties: ParkingInformation[] = [
+  {
+    parkingNumber: 1,
+    fees: 1,
+  },
+  {
+    parkingNumber: 2,
+    fees: 1,
+  },
+  {
+    parkingNumber: 3,
+    fees: 1,
+  },
+] as const;
+
+export const StorageProperties: StorageInformation[] = [
+  {
+    storageNumber: 1,
+    fees: 2,
+  },
+  {
+    storageNumber: 2,
+    fees: 2,
+  },
+  {
+    storageNumber: 3,
+    fees: 2,
   },
 ] as const;
