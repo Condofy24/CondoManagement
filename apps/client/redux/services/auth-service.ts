@@ -99,39 +99,31 @@ export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
 );
 
 interface UpdateUserData {
+  userId: string;
   name: string;
   email: string;
+  newPassword: string;
   phoneNumber: string;
   profilePic: File;
 }
 
-export const updateUserProfile = createAsyncThunk<void, UpdateUserData>(
+export const updateUserProfile = createAsyncThunk<UpdateUserData, UserInfo>(
   "auth/updateUserProfile",
-  async (updateData, { rejectWithValue }) => {
+  async ({userId, name, email, newPassword, phoneNumber, profilePic}, { rejectWithValue }) => {
     try {
-      const formData = new FormData();
-
-      // Append fields to the form data. If the profile picture is optional, check if it's provided.
-      formData.append('name', updateData.name);
-      formData.append('email', updateData.email);
-      formData.append('phoneNumber', updateData.phoneNumber);
-      if (updateData.profilePic) {
-        formData.append('profilePic', updateData.profilePic);
-      }
-
-  
-
-      // Perform the PUT request to update user profile
-      const response = await axios.put(`${API_URL}/user/profile`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', 
-         
-        },
+      const { data } = await axios.patch<UserInfo>(`${API_URL}/user/${userId}`, {
+        userId,
+        name,
+        email,
+        newPassword,
+        phoneNumber,
+        profilePic
       });
+      
 
       // Handle the response accordingly
       toast.success("Profile updated successfully!");
-      return response.data;
+      return data;
     } catch (error: any) {
       if (error.response && error.response.data.message) {
         toast.error(error.response.data.message);
@@ -141,5 +133,5 @@ export const updateUserProfile = createAsyncThunk<void, UpdateUserData>(
         return rejectWithValue(error.message);
       }
     }
-  },
+  }
 );
