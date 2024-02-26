@@ -46,12 +46,6 @@ export class UserService {
   
   ) {}
 
-  /**
-   * Uploads an image file to Cloudinary.
-   * @param file The image file to upload.
-   * @returns The response from Cloudinary.
-   * @throws BadRequestException if the image upload fails.
-   */
   async uploadImageToCloudinary(file: Express.Multer.File) {
     try {
       const imageResponse = await this.cloudinary.uploadFile(file);
@@ -289,27 +283,20 @@ let assignedRole
     return response.status(HttpStatus.CREATED);
   }
 
-<<<<<<< HEAD
-  
-=======
   /**
    * Finds a user by email.
    * @param userEmail The email of the user to find.
    * @returns The found user, or undefined if not found.
    */
->>>>>>> 75fd16aabcbe5c6f3d645ed300313e4c09b18e63
   public async findOne(userEmail: string): Promise<User | undefined | null> {
     return this.userModel.findOne({ email: userEmail }).exec();
   }
 
-<<<<<<< HEAD
-=======
   /**
    * Finds a user by ID.
    * @param id The ID of the user to find.
    * @returns The found user, or undefined if not found.
    */
->>>>>>> 75fd16aabcbe5c6f3d645ed300313e4c09b18e63
   public async findById(id: string): Promise<User | undefined | null> {
     return this.userModel.findOne({_id:id}).exec();
   }
