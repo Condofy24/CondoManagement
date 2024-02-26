@@ -9,6 +9,9 @@ import { CompanyModule } from '../company/company.module';
 import {VerfModule} from '../verf/verf.module';
 import { UnitModule } from 'src/unit/unit.module';
 
+/**
+ * Module for managing users in the application.
+ */
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),

@@ -1,3 +1,6 @@
+/**
+ * Enum representing the roles of a user.
+ */
 export enum UserRolesEnum {
   MANAGER = 0,
   STAFF = 1,
@@ -6,8 +9,14 @@ export enum UserRolesEnum {
   RENTER = 4,
 }
 
+/**
+ * Token type representing the structure of a token.
+ */
 export type Token = { sub: string; iat: number; exp: number };
 
+/**
+ * Interface representing the profile of a user.
+ */
 export interface UserProfile {
   id: string;
   email: string;

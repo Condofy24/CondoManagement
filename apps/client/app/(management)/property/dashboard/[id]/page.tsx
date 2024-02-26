@@ -1,5 +1,5 @@
 import { DataTable } from "@/app/components/table/data-table";
-import { columns } from "./columns";
+import { columns } from "../columns";
 import { Properties } from "@/lib/data";
 
 export default function CompanyDashboard() {
@@ -14,7 +14,7 @@ export default function CompanyDashboard() {
         </div>
         <div className="flex items-center space-x-2"></div>
       </div>
-      <DataTable columns={columns} data={Properties}></DataTable>
+      <DataTable columns={columns} data={Properties} />
     </div>
   );
 }

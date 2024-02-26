@@ -73,7 +73,8 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      {/* @ts-ignore */}
+      <DataTableToolbar table={table} filter={columns[0].accessorKey}/>
       <div className="rounded-md border">
         <Table>
           <TableHeader>

@@ -12,10 +12,11 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import StatusCell from "@/app/components/table/data-table-status-cell";
 
-export const columns: ColumnDef<UnitInformation>[] = [
+export const unitColumns: ColumnDef<UnitInformation>[] = [
   {
-    accessorKey: "Unit Number",
+    accessorKey: "unitNumber",
     header: ({ column }) => {
       return (
         <Button
@@ -29,21 +30,22 @@ export const columns: ColumnDef<UnitInformation>[] = [
     },
   },
   {
-    accessorKey: "Size",
+    accessorKey: "size",
     header: "Size",
   },
   {
-    accessorKey: "Status",
+    accessorKey: "status",
     header: "Status",
+    cell: StatusCell,
   },
   {
-    accessorKey: "Fees",
+    accessorKey: "fees",
     header: "Fees",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const property = row.original;
+      const unit = row.original;
 
       return (
         <DropdownMenu>
@@ -56,8 +58,7 @@ export const columns: ColumnDef<UnitInformation>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit property details</DropdownMenuItem>
-            <DropdownMenuItem>Download property file</DropdownMenuItem>
+            <DropdownMenuItem>Edit Unit details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

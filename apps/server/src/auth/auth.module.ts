@@ -4,6 +4,9 @@ import { AuthController } from './auth.controller';
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 
+/**
+ * Module responsible for handling authentication related functionality.
+ */
 @Module({
   imports: [
     UserModule,
