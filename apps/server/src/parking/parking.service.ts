@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { Parking } from './entities/parking.entity';
 import { Model } from 'mongoose';
 import { CreateParkingDto } from './dto/create-parking.dto';
@@ -14,8 +20,9 @@ export class ParkingService {
   constructor(
     @InjectModel('Parking')
     private readonly parkingModel: Model<Parking>,
-    private readonly buildingService: BuildingService,
     private readonly unitService: UnitService,
+    @Inject(forwardRef(() => BuildingService))
+    private readonly buildingService: BuildingService,
   ) {}
 
   public async createParking(
