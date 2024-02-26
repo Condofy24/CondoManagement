@@ -1,3 +1,6 @@
+/**
+ * Represents a user data transfer object.
+ */
 export class UserDto {
   id: string;
   email: string;

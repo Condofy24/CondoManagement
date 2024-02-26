@@ -2,6 +2,9 @@ import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { isEmail } from 'class-validator';
 
+/**
+ * Defines the schema for the User entity.
+ */
 export const UserSchema = new mongoose.Schema(
   {
     email: {
@@ -23,12 +26,17 @@ export const UserSchema = new mongoose.Schema(
   },
 );
 
+/**
+ * Represents the User model in the database.
+ */
 export const UserModel = mongoose.model(
   'User',
   new mongoose.Schema(UserSchema),
 );
 
-// This middleware will automatically hash the password before saving it to the database
+/**
+ * Middleware function that automatically hashes the password before saving it to the database.
+ */
 UserSchema.pre('save', async function (next) {
   const user = this as any; // 'this' refers to the user document
 
@@ -46,6 +54,9 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
+/**
+ * Represents the User entity.
+ */
 export interface User {
   id: string;
   email: string;

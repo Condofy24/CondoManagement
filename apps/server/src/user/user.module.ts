@@ -7,6 +7,9 @@ import { IsValidRole } from './user.validators';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 
+/**
+ * Module for managing users in the application.
+ */
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),

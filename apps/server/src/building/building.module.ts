@@ -5,6 +5,10 @@ import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
 import { CloudinaryModule } from '../user/cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
+
+/**
+ * Module for managing buildings.
+ */
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Building', schema: BuildingSchema }]),

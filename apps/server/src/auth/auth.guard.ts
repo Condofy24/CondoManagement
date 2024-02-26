@@ -19,6 +19,12 @@ const extractTokenFromHeader = (request: Request): string | undefined => {
 export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
+  /**
+   * Determines whether the request is authorized.
+   * @param context - The execution context.
+   * @returns A boolean indicating whether the request is authorized.
+   * @throws UnauthorizedException if the request is not authorized.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = extractTokenFromHeader(request);
@@ -46,6 +52,13 @@ export class PrivilegeGuard implements CanActivate {
     private userService: UserService,
     private reflector: Reflector,
   ) {}
+
+  /**
+   * Determines whether the request has the required privilege.
+   * @param context - The execution context.
+   * @returns A boolean indicating whether the request has the required privilege.
+   * @throws UnauthorizedException if the request does not have the required privilege.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = extractTokenFromHeader(request);
