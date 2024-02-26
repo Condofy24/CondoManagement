@@ -23,3 +23,26 @@ export type PropertyInformation = {
   parking: number;
   storage: number;
 };
+
+export type UnitInformation = {
+  unitNumber: number;
+  size: number;
+  status: boolean;
+  fees: number;
+};
+
+export type ParkingInformation = {
+  parkingNumber: number;
+  fees: number;
+};
+
+export type StorageInformation = {
+  storageNumber: number;
+  fees: number;
+};
+
+export enum AssetType{
+  unit = "Unit",
+  parking = "Parking",
+  storage = "Storage",
+}

@@ -1,4 +1,3 @@
-import { Double, ObjectId } from 'mongodb';
 import * as mongoose from 'mongoose';
 
 export const UnitSchema = new mongoose.Schema(
@@ -7,6 +6,16 @@ export const UnitSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: 'Building',
       required: true,
+    },
+    ownerId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
+    renterId: {
+      type: mongoose.Types.ObjectId,
+      ref: 'User',
+      required: false,
     },
     unitNumber: { type: Number, required: true },
     size: { type: Number, required: true },
@@ -20,6 +29,8 @@ export const UnitSchema = new mongoose.Schema(
 
 export interface Unit {
   buildingId: mongoose.Types.ObjectId;
+  ownerId?: mongoose.Types.ObjectId;
+  renterId?: mongoose.Types.ObjectId;
   unitNumber: number;
   size: number;
   isOccupiedByRenter: boolean;

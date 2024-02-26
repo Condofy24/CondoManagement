@@ -1,4 +1,4 @@
-import { object, string, z, TypeOf } from "zod";
+import { object, string, z, TypeOf, number } from "zod";
 
 export const MAX_UPLOAD_SIZE = 1024 * 1024 * 5; // 5MB
 export const ACCEPTED_FILE_TYPES = ["image/png", "image/jpg", "image/jpeg"];
@@ -26,7 +26,7 @@ export const managerSignupSchema = signupSchema.and(
     address: string()
       .min(10, { message: "Address must contain at least 10 characters" })
       .max(50, "Address cannot exceed 20 characters"),
-  }),
+  })
 );
 
 export type TManagerSignupSchema = TypeOf<typeof managerSignupSchema>;
@@ -52,3 +52,17 @@ export const updateUserProfileSchema = object({
 });
 
 export type TUpdateUserProfileSchema = TypeOf<typeof updateUserProfileSchema>;
+
+export const propertySchema = object({
+  propertyName: string()
+    .min(3, { message: "Name of property must be at least 3 characters long" })
+    .max(20, { message: "Name of property cannot exceed 20 characters" }),
+  unitCount: number().min(1, { message: "Property must have at least 1 unit" }),
+  parkingCount: number(),
+  lockerCount: number(),
+  address: string()
+    .min(10, { message: "Address must contain at least 10 characters" })
+    .max(50, "Address cannot exceed 20 characters"),
+});
+
+export type TPropertySchema = TypeOf<typeof propertySchema>;

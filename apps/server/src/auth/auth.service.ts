@@ -5,12 +5,26 @@ import { compareSync } from 'bcrypt';
 import { SignInDto } from './dto/signin.dto';
 import { UserDto } from '../user/dto/user.dto';
 
+/**
+ * Service responsible for handling authentication-related operations.
+ *
+ * @export
+ * @class AuthService
+ */
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
   ) {}
+
+  /**
+   * Authenticates a user based on the provided credentials.
+   *
+   * @param {SignInDto} signInDto - The sign-in data containing email and password.
+   * @returns {Promise<any>} - An object containing the JWT token and user information.
+   * @throws {UnauthorizedException} - If the provided credentials are invalid.
+   */
   async signIn(signInDto: SignInDto): Promise<any> {
     const { email, password } = signInDto;
 
@@ -34,8 +48,4 @@ export class AuthService {
 
     throw new UnauthorizedException();
   }
-
-  // test() {
-  //   return 'IN';
-  // }
 }

@@ -33,6 +33,12 @@ export class UserController {
     return this.userService.createUser(createUserDto, image);
   }
 
+  /**
+   * Create a new manager.
+   * @param createManagerDto - The data for creating a manager.
+   * @param image - The uploaded image file.
+   * @returns The created manager.
+   */
   @Post('manager')
   @UseInterceptors(FileInterceptor('image'))
   createManager(
@@ -42,6 +48,11 @@ export class UserController {
     return this.userService.createManager(createManagerDto, image);
   }
 
+  /**
+   * Create a new employee.
+   * @param createEmployeeDto - The data for creating an employee.
+   * @returns The created employee.
+   */
   @Post('employee')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
@@ -49,27 +60,52 @@ export class UserController {
     return this.userService.createEmployee(createEmployeeDto);
   }
 
+  /**
+   * Get all users.
+   * @returns All users.
+   */
   @Get('users')
   findAll() {
     return this.userService.findAll();
   }
 
-  // @UseGuards(AuthGuard) -- Comment for testing
+  /**
+   * Get the profile of the authenticated user.
+   * @param req - The request object.
+   * @returns The profile of the authenticated user.
+   */
   @Get('profile')
   getProfile(@Request() req: any) {
     return this.userService.getProfile(req.user);
   }
 
+  /**
+   * Find a user by email.
+   * @param email - The email of the user to find.
+   * @returns The found user.
+   */
   @Get(':email')
   findOne(@Param('email') email: string) {
     return this.userService.findOne(email);
   }
 
+  /**
+   * Remove a user by ID.
+   * @param id - The ID of the user to remove.
+   * @returns The removed user.
+   */
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
 
+  /**
+   * Update a user by ID.
+   * @param id - The ID of the user to update.
+   * @param updateUserDto - The data for updating the user.
+   * @param image - The uploaded image file.
+   * @returns The updated user.
+   */
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
   updateUser(

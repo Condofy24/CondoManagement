@@ -11,6 +11,7 @@ import { registerUser } from "@/redux/services/auth-service";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
+import { UserRolesEnum } from "@/types";
 
 const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,9 @@ const SignUpNew = () => {
     setLoading(true);
 
     if (profilePic) {
-      dispatch(registerUser({ ...data, profilePic, role: "3" }));
+      dispatch(
+        registerUser({ ...data, profilePic, role: UserRolesEnum.OWNER })
+      );
       router.push("/login");
     } else {
       setProfilePicError("Profile picture is required");
@@ -57,7 +60,7 @@ const SignUpNew = () => {
           className={cn(
             `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
               loading ? "cursor-not-allowed opacity-50" : ""
-            }`,
+            }`
           )}
         >
           {loading ? (
