@@ -25,12 +25,6 @@ export class CreateUserDto {
   name: string;
 
   /**
-   * The role of the user.
-   */
-  @Validate(IsValidRole)
-  role: number;
-
-  /**
    * The phone number of the user.
    */
   @Validate(IsValidPhoneNumber)
