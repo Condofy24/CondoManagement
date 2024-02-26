@@ -39,3 +39,16 @@ export const loginSchema = object({
 });
 
 export type TLoginSchema = TypeOf<typeof loginSchema>;
+
+
+export const updateUserProfileSchema = object({
+  email: string().email({ message: "A valid email is required" }),
+  name: string()
+    .min(3, { message: "Name must be at least 3 characters long" })
+    .max(20, { message: "Name cannot exceed 20 characters" }),
+  phoneNumber: string()
+    .min(10, { message: "Phone number must be valid" })
+    .max(10, { message: "Phone number must be valid" }), 
+});
+
+export type TUpdateUserProfileSchema = TypeOf<typeof updateUserProfileSchema>;
