@@ -13,10 +13,20 @@ import { BuildingService } from './building.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { updateBuildingDto } from './dto/update-building.dto';
 
+/**
+ * Controller for managing building-related operations.
+ */
 @Controller('building')
 export class BuildingController {
   constructor(private readonly buildingService: BuildingService) {}
 
+  /**
+   * Create a new building.
+   * @param companyId - The ID of the company.
+   * @param createBuildingDto - The data for creating a building.
+   * @param file - The uploaded file.
+   * @returns The created building.
+   */
   @Post(':companyId')
   @UseInterceptors(FileInterceptor('file'))
   create(
@@ -30,6 +40,14 @@ export class BuildingController {
       companyId,
     );
   }
+
+  /**
+   * Update an existing building.
+   * @param buildingId - The ID of the building to update.
+   * @param updateBuildingDto - The data for updating the building.
+   * @param file - The uploaded file.
+   * @returns The updated building.
+   */
   @Patch('update/:buildingId')
   update(
     @Param('buildingId') buildingId: string,
@@ -42,6 +60,12 @@ export class BuildingController {
       file,
     );
   }
+
+  /**
+   * Get all buildings for a company.
+   * @param companyId - The ID of the company.
+   * @returns An array of buildings.
+   */
   @Get(':companyId')
   findAll(@Param('companyId') companyId: string) {
     return this.buildingService.findAll(companyId);

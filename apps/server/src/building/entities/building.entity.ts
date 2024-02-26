@@ -1,5 +1,8 @@
 import * as mongoose from 'mongoose';
 
+/**
+ * The Mongoose schema for a building.
+ */
 export const BuildingSchema = new mongoose.Schema(
   {
     companyId: {
@@ -21,6 +24,9 @@ export const BuildingSchema = new mongoose.Schema(
   },
 );
 
+/**
+ * Represents a building
+ */
 export interface Building {
   companyId: mongoose.Types.ObjectId;
   name: string;

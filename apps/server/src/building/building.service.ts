@@ -12,7 +12,9 @@ import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
 import { CompanyService } from 'src/company/company.service';
 import { updateBuildingDto } from './dto/update-building.dto';
 
-//to download the files you can access Cloudinary's Admin API
+/**
+ * Service class for managing buildings.
+ */
 @Injectable()
 export class BuildingService {
   constructor(
@@ -21,6 +23,13 @@ export class BuildingService {
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
   ) {}
+
+  /**
+   * Uploads a file to Cloudinary.
+   * @param file - The file to upload.
+   * @returns The response from Cloudinary.
+   * @throws BadRequestException if the file upload fails.
+   */
   async uploadFileToCloudinary(file: Express.Multer.File) {
     try {
       const fileResponse = await this.cloudinary.uploadFile(file);
@@ -31,6 +40,14 @@ export class BuildingService {
     }
   }
 
+  /**
+   * Creates a new building.
+   * @param createBuildingDto - The data for creating the building.
+   * @param file - The file associated with the building.
+   * @param companyId - The ID of the company the building belongs to.
+   * @returns The created building.
+   * @throws HttpException if the company doesn't exist or the building name is already taken.
+   */
   public async createBuilding(
     createBuildingDto: CreateBuildingDto,
     file: Express.Multer.File,
@@ -68,9 +85,9 @@ export class BuildingService {
       );
     }
     const fileResponse = await this.uploadFileToCloudinary(file);
-    let fileUrl = fileResponse.secure_url;
-    let filePublicId = fileResponse.public_id;
-    let fileAssetId = fileResponse.asset_id;
+    const fileUrl = fileResponse.secure_url;
+    const filePublicId = fileResponse.public_id;
+    const fileAssetId = fileResponse.asset_id;
     const newBuilding = new this.buildingModel({
       companyId: companyExists.id,
       name,
@@ -93,6 +110,14 @@ export class BuildingService {
     };
   }
 
+  /**
+   * Updates an existing building.
+   * @param buildingId - The ID of the building to update.
+   * @param updateBuildingDto - The data for updating the building.
+   * @param file - The file associated with the building (optional).
+   * @returns The updated building.
+   * @throws HttpException if the building doesn't exist.
+   */
   public async updateBuilding(
     buildingId: string,
     updateBuildingDto: updateBuildingDto,
@@ -134,6 +159,11 @@ export class BuildingService {
     };
   }
 
+  /**
+   * Finds a building by ID.
+   * @param buildingId - The ID of the building to find.
+   * @returns The found building or null if not found.
+   */
   public async findOne(buildingId: string) {
     const building = await this.buildingModel.findById(buildingId);
     if (!building) {
@@ -152,6 +182,12 @@ export class BuildingService {
       fileAssetId: building.fileAssetId,
     };
   }
+
+  /**
+   * Finds all buildings belonging to a company.
+   * @param companyId - The ID of the company.
+   * @returns An array of buildings.
+   */
   public async findAll(companyId: string): Promise<Building[]> {
     const buildings = await this.buildingModel.find({ companyId }).exec();
     return buildings.map(
@@ -170,6 +206,12 @@ export class BuildingService {
     );
   }
 
+  /**
+   * Updates the unit count of a building.
+   * @param buildingId - The ID of the building to update.
+   * @param newUnitCount - The new unit count.
+   * @returns The updated building or null if not found.
+   */
   public async findByIdandUpdateUnitCount(
     buildingId: string,
     newUnitCount: number,
@@ -196,6 +238,12 @@ export class BuildingService {
     };
   }
 
+  /**
+   * Updates the parking count of a building.
+   * @param buildingId - The ID of the building to update.
+   * @param newParkingCount - The new parking count.
+   * @returns The updated building or null if not found.
+   */
   public async findByIdandUpdateParkingCount(
     buildingId: string,
     newParkingCount: number,
@@ -222,6 +270,12 @@ export class BuildingService {
     };
   }
 
+  /**
+   * Updates the storage count of a building.
+   * @param buildingId - The ID of the building to update.
+   * @param newStorageCount - The new storage count.
+   * @returns The updated building or null if not found.
+   */
   public async findByIdandUpdateStorageCount(
     buildingId: string,
     newStorageCount: number,

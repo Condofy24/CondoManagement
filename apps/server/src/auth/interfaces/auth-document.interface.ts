@@ -1,5 +1,8 @@
 import { Document } from 'mongoose';
 
+/**
+ * Represents the authentication document interface.
+ */
 export interface AuthDoc extends Document {
   id: string;
   email: string;
