@@ -12,11 +12,11 @@ import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
-import { VerfRolesEnum } from 'src/verf/entities/verf.entity';
+import { VerfRolesEnum } from '../verf/entities/verf.entity';
 import { response } from 'express';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class UnitService {
@@ -24,6 +24,7 @@ export class UnitService {
     @InjectModel('Unit')
     private readonly unitModel: Model<Unit>,
     private readonly verfService: VerfService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,
@@ -71,7 +72,7 @@ export class UnitService {
     let unitCount = buildingExists.unitCount;
     unitCount++;
     this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
-    return result;
+    return { result, verfKeyOwner, verKeyRenter };
   }
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = updateUnitDto;

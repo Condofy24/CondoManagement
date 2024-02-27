@@ -5,14 +5,14 @@ import { UnitController } from './unit.controller';
 import { UnitService } from './unit.service';
 import { VerfModule } from '../verf/verf.module';
 import { BuildingModule } from '../building/building.module';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
     VerfModule,
     forwardRef(() => BuildingModule),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   controllers: [UnitController],
   providers: [UnitService],

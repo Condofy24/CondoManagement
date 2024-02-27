@@ -11,7 +11,7 @@ import { CreateParkingDto } from './dto/create-parking.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
-import { UnitService } from 'src/unit/unit.service';
+import { UnitService } from '../unit/unit.service';
 import { response } from 'express';
 import { UpdateParkingDto } from './dto/update-parking.dto';
 
@@ -20,6 +20,7 @@ export class ParkingService {
   constructor(
     @InjectModel('Parking')
     private readonly parkingModel: Model<Parking>,
+    @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,

@@ -4,7 +4,7 @@ import { ParkingSchema } from './entities/parking.entity';
 import { ParkingController } from './parking.controller';
 import { ParkingService } from './parking.service';
 import { BuildingModule } from '../building/building.module';
-import { UnitModule } from 'src/unit/unit.module';
+import { UnitModule } from '../unit/unit.module';
 
 @Module({
   imports: [
