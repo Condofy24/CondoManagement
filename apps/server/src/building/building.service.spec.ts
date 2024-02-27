@@ -271,4 +271,49 @@ describe('BuildingService', () => {
       await expect(service.findOne('test')).resolves.toBeDefined();
     });
   });
+  describe('updateBuilding', () => {
+    it('should update the building with valid inputs', async () => {
+      // Arrange
+      const buildingId = new ObjectId();
+      mockingoose(BuildingModel).toReturn(buildingInfoTestData, 'findOne');
+      mockingoose(BuildingModel).toReturn(
+        updatedBuildingTest,
+        'findOneAndUpdate',
+      );
+      cloudinaryServiceMock.uploadFile.mockResolvedValue(
+        cloudinaryResponseMock,
+      );
+
+      // Act
+      const result = await service.updateBuilding(
+        buildingId.toString(),
+        updateBuildingDtoTestData,
+        fileMockData,
+      );
+
+      // Assert
+      expect(result).toEqual({
+        name: updatedBuildingTest.name,
+        address: updatedBuildingTest.address,
+        fileUrl: updatedBuildingTest.fileUrl,
+        filePublicId: updatedBuildingTest.filePublicId,
+        fileAssetId: updatedBuildingTest.fileAssetId,
+      });
+    });
+
+    it('should throw an error if building is not found', async () => {
+      // Arrange
+      const buildingId = 'nonExistentBuilding';
+      const updateBuildingDto = {
+        name: 'Updated Building',
+        address: '456 Elm Street',
+      };
+      mockingoose(BuildingModel).toReturn(null, 'findOne');
+
+      // Act and Assert
+      await expect(
+        service.updateBuilding(buildingId, updateBuildingDto),
+      ).rejects.toThrow(HttpException);
+    });
+  });
 });
