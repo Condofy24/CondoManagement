@@ -141,6 +141,42 @@ describe('UnitService', () => {
                 expect.objectContaining({...unitInfoTestData})
             )
         })
+    });
+    describe('findOne',() => {
+        it('should return a unit given its corresponding id',async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn({_id: 'test'},'findOne');
+
+            //Act
+            await service.findOne('test');
+
+            //Arrange
+            await expect(service.findOne('test')).resolves.toBeDefined();
+        });
+        it('should throw an exception when an invalid unit id is given',async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn(null,'findOne');
+
+            //Act
+            expect(service.findOne('test')).rejects.toThrow(
+                HttpException
+            );
+        })
+    });
+    describe('remove',() => {
+        it('remove a unit given its corresponding id',async () => {
+            //Arrange
+            const unitId = new ObjectId();
+            const id = unitInfoTestData.buildingId;
+            mockingoose(UnitModel).toReturn({unitId,...unitInfoTestData},'findById');
+            buildingServiceMock.findOne.mockResolvedValue({id,...buildingInfoTestData});
+
+            //Act
+            const result = await service.remove('test');
+
+            //Assert
+            expect(result).toBeDefined()
+        })
     })
 });
 
