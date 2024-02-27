@@ -316,4 +316,41 @@ describe('BuildingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+  describe('findByIdAndUpdateUnitCount', () => {
+    it('should update the unit count of the building', async () => {
+      // Arrange
+      const buildingId = updatedBuildingTest.id.toString();
+      const newUnitCount = 30;
+
+      // Mock the findByIdAndUpdate function of the buildingModel
+      mockingoose(BuildingModel).toReturn(
+        updatedBuildingTest,
+        'findOneAndUpdate',
+      );
+
+      // Act
+      const result = await service.findByIdandUpdateUnitCount(
+        buildingId,
+        newUnitCount,
+      );
+
+      // Assert
+      await expect(result?.unitCount).toEqual(newUnitCount);
+    });
+
+    it('should return null if building is not found', async () => {
+      // Arrange
+      const nonExistentBuildingId = 'nonExistentBuilding';
+      mockingoose(BuildingModel).toReturn(null, 'findOneAndUpdate');
+
+      // Act
+      const result = await service.findByIdandUpdateUnitCount(
+        nonExistentBuildingId,
+        50,
+      );
+
+      // Assert
+      expect(result).toBeNull();
+    });
+  });
 });
