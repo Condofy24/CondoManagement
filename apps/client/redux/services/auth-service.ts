@@ -3,8 +3,8 @@ import axios from "axios";
 import { User, UserRolesEnum } from "@/types";
 import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
 import toast from "react-hot-toast";
+import { API_URL } from "../store";
 
-const API_URL = "http://127.0.0.1:4000/api";
 
 interface LoginInput {
   email: string;

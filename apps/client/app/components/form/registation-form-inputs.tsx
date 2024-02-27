@@ -16,11 +16,16 @@ type RegistationFormInputsProps = {
     profilePicError: string | null;
     setProfilePicError: React.Dispatch<SetStateAction<string | null>>;
   };
+    // will be used after
+    showImagePreview?: boolean;
+    imageUrl?: string; // URL of the image to be displayed
 };
 export default function RegistationFormInputs({
   register,
   errors,
   profilePic: { setProfilePic, profilePicError, setProfilePicError },
+  showImagePreview = false,
+  imageUrl,
 }: RegistationFormInputsProps) {
   const profilePicInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -45,6 +50,11 @@ export default function RegistationFormInputs({
 
   return (
     <>
+      {showImagePreview && imageUrl && (
+        <div className="w-3/5 object-fill overflow-hidden relative hidden lg:block">
+          <img src={imageUrl} alt="Profile Preview" />
+        </div>
+      )}
       <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
