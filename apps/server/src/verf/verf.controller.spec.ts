@@ -37,8 +37,6 @@ describe('VerfController', () => {
     .useValue({ canActivate: () => true }) .compile();
 
     controller = module.get<VerfController>(VerfController);
-    
-  
   });
   
   describe('findKeysByUnit', () => {
