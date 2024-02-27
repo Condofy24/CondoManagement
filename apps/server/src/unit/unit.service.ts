@@ -1,8 +1,10 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
+  forwardRef,
 } from '@nestjs/common';
 import { Unit } from './entities/unit.entity';
 import { Model } from 'mongoose';
@@ -22,8 +24,9 @@ export class UnitService {
     @InjectModel('Unit')
     private readonly unitModel: Model<Unit>,
     private readonly verfService: VerfService,
-    private readonly buildingService: BuildingService,
     private readonly userService: UserService,
+    @Inject(forwardRef(() => BuildingService))
+    private readonly buildingService: BuildingService,
   ) {}
 
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
