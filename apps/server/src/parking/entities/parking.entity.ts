@@ -21,6 +21,10 @@ export const ParkingSchema = new mongoose.Schema(
   },
 );
 
+export const ParkingModel = mongoose.model(
+  'Parking',
+  new mongoose.Schema(ParkingSchema),
+);
 export interface Parking {
   buildingId: mongoose.Types.ObjectId;
   unitId?: mongoose.Types.ObjectId;

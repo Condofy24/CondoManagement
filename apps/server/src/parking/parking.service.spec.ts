@@ -86,4 +86,42 @@ describe('ParkingService', () => {
         mockingoose(ParkingModel).reset();
         jest.clearAllMocks();
     });
+
+    describe('createParking', () => {
+        it('should create a Parking successfully if information is valid', async () => {
+            //Arrange
+            mockingoose(ParkingModel).toReturn(null,'findOne');
+            const id = new ObjectId();
+            buildingServiceMock.findOne.mockResolvedValue({id,...buildingInfoTestData})
+
+            //Act
+            const result: any = await service.createParking(id.toString(),createParkingDto);
+
+            //Assert
+            expect(buildingServiceMock.findByIdandUpdateParkingCount).toHaveBeenCalled();
+            expect(result).toBeDefined();
+        });
+        it('should throw an error if building does not exist', async () => {
+            //Arrange
+            mockingoose(ParkingModel).toReturn(null,'findOne');
+            const id = new ObjectId();
+            buildingServiceMock.findOne.mockResolvedValue(null)
+
+            //Act and Assert
+            await expect(service.createParking(id.toString(),createParkingDto)).rejects.toThrow(
+                HttpException
+            );
+        })
+        it('should throw an error if parking number already exists', async () => {
+            // Arrange
+            const id = new ObjectId();
+            buildingServiceMock.findOne.mockResolvedValue({ id, ...buildingInfoTestData });
+            mockingoose(ParkingModel).toReturn({...parkingInfoTestData, buildingId: id}, 'findOne');
+
+             // Act and Assert
+            await expect(service.createParking(id.toString(), createParkingDto)).rejects.toThrow(
+                HttpException
+            );
+        }); 
+    })    
 });
