@@ -5,6 +5,9 @@ import { getModelToken } from '@nestjs/mongoose';
 import { CloudinaryService } from './cloudinary/cloudinary.service'; // Import CloudinaryService
 import { CompanyService } from '../company/company.service';
 import { JwtService } from '@nestjs/jwt';
+import { VerfService } from '../verf/verf.service';
+import { UnitService } from '../unit/unit.service';
+import { BuildingService } from '../building/building.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -16,14 +19,29 @@ describe('UserController', () => {
         UserService,
         {
           provide: getModelToken('User'), // Use the correct model token
-          useValue: {}, // Provide a mock value for UserModel
-        },
-        CloudinaryService,
-        CompanyService,
-        {
-          provide: getModelToken('Company'),
           useValue: {},
         },
+        {
+          provide: getModelToken('Unit'), // Use the correct model token
+          useValue: {},
+        },
+        {
+          provide: getModelToken('Company'), // Use the correct model token
+          useValue: {},
+        },
+        {
+          provide: getModelToken('VerificationKey'), // Use the correct model token
+          useValue: {},
+        },
+        {
+          provide: getModelToken('Building'), // Use the correct model token
+          useValue: {},
+        },
+        CloudinaryService,
+        VerfService,
+        CompanyService,
+        BuildingService,
+        UnitService,
         JwtService,
       ],
     }).compile();

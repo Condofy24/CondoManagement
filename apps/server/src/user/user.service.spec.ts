@@ -11,6 +11,11 @@ import { buffer } from 'stream/consumers';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { VerfService } from '../verf/verf.service';
+import { UnitService } from '../unit/unit.service';
+import { VerificationKey } from 'src/verf/entities/verf.entity';
+import { Unit } from 'src/unit/entities/unit.entity';
+import { ObjectId } from 'mongodb';
 
 const mockingoose = require('mockingoose');
 
@@ -21,6 +26,45 @@ const cloudinaryResponseMock = {
 
 const cloudinaryServiceMock = {
   uploadFile: jest.fn().mockResolvedValue(cloudinaryResponseMock),
+};
+
+const unitServiceTestData:Unit & { id: string }  =
+  {
+    id: 'fdd',
+    buildingId: new ObjectId(),
+    ownerId: new ObjectId(),
+    renterId: new ObjectId(),
+    unitNumber: 2,
+    size: 2,
+    isOccupiedByRenter: true,
+    fees: 233,
+  };
+
+ const unitServiceCreateTestData= {
+    buildingId: new ObjectId(),
+    unitNumber:11,
+    size:222,
+    isOccupiedByRenter:false,
+    fees:222,
+  }
+
+const unitServiceMock = {
+  findOne: jest.fn().mockResolvedValue(unitServiceTestData),
+  createUnit: jest.fn().mockResolvedValue(unitServiceCreateTestData),
+  linkUnitToUser: jest.fn().mockResolvedValue(unitServiceTestData),
+};
+
+const verfKeyTestData:VerificationKey & { id: string }  = {
+  id: 'sdsdw',
+  unitId: 'sdsds',
+  key:'sdsddsd',
+  type: 1,
+  claimedBy:'sdsd',
+};
+
+const verfServiceMock = {
+  findByVerfKey: jest.fn().mockResolvedValue(verfKeyTestData),
+  createVerfKey: jest.fn().mockResolvedValue({ verfKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c' }),
 };
 
 const companyServiceMock = {
@@ -51,7 +95,7 @@ const createUserDtoTestData: CreateUserDto = {
   password: 'password',
   name: 'Test Manager',
   phoneNumber: '1224567890',
-  role: 4,
+  verfKey: "95ad47ea-82d1-4761-b283-5d37ef71c88c",
 };
 
 const updateUserDtoTestData: UpdateUserDto = {
@@ -107,6 +151,16 @@ describe('UserService', () => {
         {
           provide: getModelToken('User'),
           useValue: UserModel,
+        },
+        {
+          provide: UnitService,
+          useValue:unitServiceMock,
+
+        },
+        {
+          provide:VerfService,
+          useValue:verfServiceMock,
+
         },
         {
           provide: CloudinaryService,

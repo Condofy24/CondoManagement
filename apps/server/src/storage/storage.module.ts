@@ -4,7 +4,7 @@ import { StorageSchema } from './entities/storage.entity';
 import { StorageController } from './storage.controller';
 import { StorageService } from './storage.service';
 import { BuildingModule } from '../building/building.module';
-import { UnitModule } from 'src/unit/unit.module';
+import { UnitModule } from '../unit/unit.module';
 
 @Module({
   imports: [

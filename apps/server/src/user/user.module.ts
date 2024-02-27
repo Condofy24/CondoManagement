@@ -7,7 +7,7 @@ import { IsValidRole } from './user.validators';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 import {VerfModule} from '../verf/verf.module';
-import { UnitModule } from 'src/unit/unit.module';
+import { UnitModule } from '../unit/unit.module';
 
 /**
  * Module for managing users in the application.

@@ -20,8 +20,8 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
 import {VerfService} from '../verf/verf.service';
-import { UnitService } from 'src/unit/unit.service';
-import { LinkUnitToBuidlingDto } from 'src/unit/dto/link-unit-to-building.dto';
+import { UnitService } from '../unit/unit.service';
+import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
 
 @Injectable()
 /**
