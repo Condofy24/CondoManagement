@@ -250,6 +250,36 @@ describe('UnitService', () => {
             )
         })
     })
-});
+    describe('linkUnitToUser',() => {
+        it('should link a specific unit to a specific building given valid informaiton', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn([unitInfoTestData2],'find');
+            
+            //Act
+            const result = await service.linkUnitToUser(unitInfoTestData2.buildingId.toString(),userInfoTestData.id,linkUnitToBuildingDto);
+    
+            //Assert
+            expect(result).toBeDefined()
+        })
+        it('should throw an exception if unit does not exist', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn([],'find');
 
+            //Act
+            expect(service.linkUnitToUser(unitInfoTestData.buildingId.toString(),userInfoTestData.id,linkUnitToBuildingDto)).rejects.toThrow(
+                HttpException
+            )
+        })
+        it('should throw an exception if user does not exist', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn([unitInfoTestData2],'find');
+            userServiceMock.findById.mockResolvedValue(null);
+
+            //Act
+            expect(service.linkUnitToUser(unitInfoTestData.buildingId.toString(),userInfoTestData.id,linkUnitToBuildingDto)).rejects.toThrow(
+                HttpException
+            )
+        })
+    })
+});
 
