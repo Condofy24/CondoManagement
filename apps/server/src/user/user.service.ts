@@ -278,9 +278,12 @@ export class UserService {
     const unitForLink = await this.unitService.findOne(verfExist.unitId);
 
     const buildingId = unitForLink.buildingId;
-    let linkUnitDto = new LinkUnitToBuidlingDto();
+
+    const linkUnitDto = new LinkUnitToBuidlingDto();
+
     linkUnitDto.unitNumber = unitForLink.unitNumber;
-    const linkedUnitToUser = await this.unitService.linkUnitToUser(
+
+    await this.unitService.linkUnitToUser(
       buildingId.toString(),
       newUser._id.toString(),
       linkUnitDto,
