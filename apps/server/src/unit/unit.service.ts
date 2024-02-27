@@ -30,6 +30,7 @@ export class UnitService {
     private readonly buildingService: BuildingService,
   ) {}
 
+  
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
     const buildingExists = await this.buildingService.findOne(buildingId);
