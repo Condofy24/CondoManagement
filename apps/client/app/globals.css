@@ -42,7 +42,7 @@ body {
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 84% 25%;
     --popover-foreground: 210 40% 98%;
     --primary: hsl(220.91, 39.29%, 10.98%);
     --primary-foreground: hsl(210, 20%, 98.04%);

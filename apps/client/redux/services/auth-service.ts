@@ -1,10 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { UserInfo, UserRolesEnum } from "@/types";
+import { User, UserRolesEnum } from "@/types";
 import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
 import toast from "react-hot-toast";
+import { API_URL } from "../store";
 
-const API_URL = "http://127.0.0.1:4000/api";
 
 interface LoginInput {
   email: string;
@@ -13,7 +13,7 @@ interface LoginInput {
 
 interface LoginResult {
   token: string;
-  userInfo: UserInfo;
+  userInfo: User;
 }
 
 export const login = createAsyncThunk<LoginResult, LoginInput>(
@@ -37,7 +37,7 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
         return rejectWithValue(error.message);
       }
     }
-  }
+  },
 );
 
 type UserRegistationData =
@@ -53,18 +53,18 @@ export const registerUser = createAsyncThunk<void, UserRegistationData>(
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.response.data.message);
       } else {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.message);
       }
     }
     toast.success("Registered successfully");
-  }
+  },
 );
 
 type ManagerRegistrationData =
@@ -84,16 +84,16 @@ export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.response.data.message);
       } else {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.message);
       }
     }
     toast.success("Registered successfully");
-  }
+  },
 );

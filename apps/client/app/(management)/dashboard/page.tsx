@@ -1,8 +1,12 @@
+"use client";
 import { DataTable } from "@/app/components/table/data-table";
-import { columns } from "../columns";
+import { columns } from "./columns";
 import { Properties } from "@/lib/data";
+import { useEffect } from "react";
 
-export default function CompanyDashboard() {
+export default function ManagementDashboardPage() {
+  useEffect(() => {}, []);
+
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
       <div className="flex items-center justify-between space-y-2">
