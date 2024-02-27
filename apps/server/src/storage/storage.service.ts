@@ -11,7 +11,7 @@ import { CreateStorageDto } from './dto/create-storage.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
 import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
-import { UnitService } from 'src/unit/unit.service';
+import { UnitService } from '../unit/unit.service';
 import { response } from 'express';
 import { UpdateStorageDto } from './dto/update-storage.dto';
 
