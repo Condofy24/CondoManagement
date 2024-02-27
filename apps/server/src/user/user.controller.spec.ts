@@ -8,6 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { VerfService } from '../verf/verf.service';
 import { UnitService } from '../unit/unit.service';
 import { BuildingService } from '../building/building.service';
+import { StorageService } from '../storage/storage.service';
+import { ParkingService } from '../parking/parking.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -19,6 +21,14 @@ describe('UserController', () => {
         UserService,
         {
           provide: getModelToken('User'), // Use the correct model token
+          useValue: {},
+        },
+        {
+          provide: getModelToken('Storage'), // Use the correct model token
+          useValue: {},
+        },
+        {
+          provide: getModelToken('Parking'), // Use the correct model token
           useValue: {},
         },
         {
@@ -43,6 +53,8 @@ describe('UserController', () => {
         BuildingService,
         UnitService,
         JwtService,
+        StorageService,
+        ParkingService,
       ],
     }).compile();
 

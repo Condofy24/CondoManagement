@@ -8,6 +8,8 @@ import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
 import { UnitService } from '../unit/unit.service';
 import { BuildingService } from '../building/building.service';
 import { CompanyService } from '../company/company.service';
+import { StorageService } from '../storage/storage.service';
+import { ParkingService } from '../parking/parking.service';
 
 
 describe('VerfController', () => {
@@ -30,6 +32,14 @@ describe('VerfController', () => {
           useValue: {},
         },
         {
+          provide: getModelToken('Storage'), // Use the correct model token
+          useValue: {},
+        },
+        {
+          provide: getModelToken('Parking'), // Use the correct model token
+          useValue: {},
+        },
+        {
           provide: getModelToken('Company'), // Use the correct model token
           useValue: {},
         },
@@ -43,7 +53,9 @@ describe('VerfController', () => {
         BuildingService,
         UnitService,
         JwtService,
-        UserService
+        StorageService,
+        UserService,
+        ParkingService,
       ],
     }).compile();
 
