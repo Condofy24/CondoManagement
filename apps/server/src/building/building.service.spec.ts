@@ -239,4 +239,24 @@ describe('BuildingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+  describe('findAll', () => {
+    it('should return all the users', async () => {
+      // Arrange
+      const building = [
+        buildingInfoTestData,
+        buildingInfoTestData,
+        buildingInfoTestData,
+      ];
+      mockingoose(BuildingModel).toReturn(building, 'find');
+
+      // Act
+      const result = await service.findAll(companyInfoTestData.companyId);
+
+      // Assert
+      expect(result.length).toBe(building.length);
+      expect(result[0]).toEqual(
+        expect.objectContaining({ ...buildingInfoTestData, name: 'PEWPEWWW' }),
+      );
+    });
+  });
 });
