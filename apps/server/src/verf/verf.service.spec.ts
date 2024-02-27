@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { HttpException } from '@nestjs/common';
 import { VerfService } from '../verf/verf.service';
-import {
-  VerfModel,
-  VerfRolesEnum,
-} from '../verf/entities/verf.entity';
+import { VerfModel, VerfRolesEnum } from '../verf/entities/verf.entity';
 import { ObjectId } from 'mongodb';
 
 const mockingoose = require('mockingoose');

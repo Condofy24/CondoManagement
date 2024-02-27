@@ -6,7 +6,7 @@ import { UserSchema } from './entities/user.entity';
 import { IsValidRole } from './user.validators';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
-import {VerfModule} from '../verf/verf.module';
+import { VerfModule } from '../verf/verf.module';
 import { UnitModule } from '../unit/unit.module';
 
 /**

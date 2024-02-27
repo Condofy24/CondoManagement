@@ -33,6 +33,5 @@ export class CreateUserDto {
 
   //To get the verfKey upon signup of a user and checking that its not empty
   @IsNotEmpty()
-  verfKey:string;
-
+  verfKey: string;
 }

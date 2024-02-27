@@ -28,25 +28,24 @@ const cloudinaryServiceMock = {
   uploadFile: jest.fn().mockResolvedValue(cloudinaryResponseMock),
 };
 
-const unitServiceTestData:Unit & { id: string }  =
-  {
-    id: 'fdd',
-    buildingId: new ObjectId(),
-    ownerId: new ObjectId(),
-    renterId: new ObjectId(),
-    unitNumber: 2,
-    size: 2,
-    isOccupiedByRenter: true,
-    fees: 233,
-  };
+const unitServiceTestData: Unit & { id: string } = {
+  id: 'fdd',
+  buildingId: new ObjectId(),
+  ownerId: new ObjectId(),
+  renterId: new ObjectId(),
+  unitNumber: 2,
+  size: 2,
+  isOccupiedByRenter: true,
+  fees: 233,
+};
 
- const unitServiceCreateTestData= {
-    buildingId: new ObjectId(),
-    unitNumber:11,
-    size:222,
-    isOccupiedByRenter:false,
-    fees:222,
-  }
+const unitServiceCreateTestData = {
+  buildingId: new ObjectId(),
+  unitNumber: 11,
+  size: 222,
+  isOccupiedByRenter: false,
+  fees: 222,
+};
 
 const unitServiceMock = {
   findOne: jest.fn().mockResolvedValue(unitServiceTestData),
@@ -54,17 +53,19 @@ const unitServiceMock = {
   linkUnitToUser: jest.fn().mockResolvedValue(unitServiceTestData),
 };
 
-const verfKeyTestData:VerificationKey & { id: string }  = {
+const verfKeyTestData: VerificationKey & { id: string } = {
   id: 'sdsdw',
   unitId: 'sdsds',
-  key:'sdsddsd',
+  key: 'sdsddsd',
   type: 1,
-  claimedBy:'sdsd',
+  claimedBy: 'sdsd',
 };
 
 const verfServiceMock = {
   findByVerfKey: jest.fn().mockResolvedValue(verfKeyTestData),
-  createVerfKey: jest.fn().mockResolvedValue({ verfKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c' }),
+  createVerfKey: jest
+    .fn()
+    .mockResolvedValue({ verfKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c' }),
 };
 
 const companyServiceMock = {
@@ -95,7 +96,7 @@ const createUserDtoTestData: CreateUserDto = {
   password: 'password',
   name: 'Test Manager',
   phoneNumber: '1224567890',
-  verfKey: "95ad47ea-82d1-4761-b283-5d37ef71c88c",
+  verfKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c',
 };
 
 const updateUserDtoTestData: UpdateUserDto = {
@@ -154,13 +155,11 @@ describe('UserService', () => {
         },
         {
           provide: UnitService,
-          useValue:unitServiceMock,
-
+          useValue: unitServiceMock,
         },
         {
-          provide:VerfService,
-          useValue:verfServiceMock,
-
+          provide: VerfService,
+          useValue: verfServiceMock,
         },
         {
           provide: CloudinaryService,

@@ -19,7 +19,7 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
-import {VerfService} from '../verf/verf.service';
+import { VerfService } from '../verf/verf.service';
 import { UnitService } from '../unit/unit.service';
 import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
 
@@ -40,10 +40,9 @@ export class UserService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
-    private verfService :VerfService,
+    private verfService: VerfService,
     @Inject(forwardRef(() => UnitService))
-    private unitService:UnitService,
-  
+    private unitService: UnitService,
   ) {}
 
   async uploadImageToCloudinary(file: Express.Multer.File) {
@@ -172,8 +171,6 @@ export class UserService {
       );
     }
 
-
-    
     // Check company exists
     const companyExists = await this.companyService.findByCompanyId(companyId);
     if (!companyExists) {
@@ -224,7 +221,7 @@ export class UserService {
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
-    
+
     if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
@@ -239,7 +236,7 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
-      //check if Key exists:
+    //check if Key exists:
     const verfExist = await this.verfService.findByVerfKey(verfKey);
     if (!verfExist) {
       throw new HttpException(
@@ -256,9 +253,13 @@ export class UserService {
       imageUrl = imageResponse.secure_url;
       imageId = imageResponse.public_id;
     }
-let assignedRole
-      if(verfExist.type==0){assignedRole=3 }
-      if (verfExist.type==1){assignedRole= 4}
+    let assignedRole;
+    if (verfExist.type == 0) {
+      assignedRole = 3;
+    }
+    if (verfExist.type == 1) {
+      assignedRole = 4;
+    }
 
     // Create user
     const newUser = new this.userModel({
@@ -269,17 +270,21 @@ let assignedRole
       phoneNumber,
       imageUrl,
       imageId,
-    }); 
+    });
     const result = await newUser.save();
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
-   const unitForLink = await this.unitService.findOne(verfExist.unitId);
-   
-   const buildingId = unitForLink.buildingId
-   let linkUnitDto = new LinkUnitToBuidlingDto();
-   linkUnitDto.unitNumber= unitForLink.unitNumber;
-   const linkedUnitToUser =  await this.unitService.linkUnitToUser(buildingId.toString(), newUser._id.toString(), linkUnitDto);
+    const unitForLink = await this.unitService.findOne(verfExist.unitId);
+
+    const buildingId = unitForLink.buildingId;
+    let linkUnitDto = new LinkUnitToBuidlingDto();
+    linkUnitDto.unitNumber = unitForLink.unitNumber;
+    const linkedUnitToUser = await this.unitService.linkUnitToUser(
+      buildingId.toString(),
+      newUser._id.toString(),
+      linkUnitDto,
+    );
     return response.status(HttpStatus.CREATED);
   }
 
@@ -298,7 +303,7 @@ let assignedRole
    * @returns The found user, or undefined if not found.
    */
   public async findById(id: string): Promise<User | undefined | null> {
-    return this.userModel.findOne({_id:id}).exec();
+    return this.userModel.findOne({ _id: id }).exec();
   }
 
   /**

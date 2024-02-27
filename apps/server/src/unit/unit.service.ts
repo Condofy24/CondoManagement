@@ -30,7 +30,6 @@ export class UnitService {
     private readonly buildingService: BuildingService,
   ) {}
 
-  
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
     const buildingExists = await this.buildingService.findOne(buildingId);
@@ -73,7 +72,7 @@ export class UnitService {
     let unitCount = buildingExists.unitCount;
     unitCount++;
     this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
-    return {result,verfKeyOwner,verKeyRenter};
+    return { result, verfKeyOwner, verKeyRenter };
   }
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = updateUnitDto;
