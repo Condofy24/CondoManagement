@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { login } from "@/redux/services/auth-service";
-import { UserInfo } from "@/types";
+import { User } from "@/types";
 
 type InitialState = {
   value: AuthState;
@@ -8,7 +8,7 @@ type InitialState = {
 
 type AuthState = {
   loading: boolean;
-  userInfo: UserInfo;
+  userInfo: User;
   token: string | null;
   error: string | undefined;
   success: boolean;

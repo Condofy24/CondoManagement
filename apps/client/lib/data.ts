@@ -1,12 +1,7 @@
-import {
-  ParkingInformation,
-  PropertyInformation,
-  StorageInformation,
-  UnitInformation,
-} from "@/types";
+import { Parking, Property, Storage, Unit } from "@/types";
 
 // used for testing, will be removed later
-export const Properties: PropertyInformation[] = [
+export const Properties: Property[] = [
   {
     name: "Larson-Jones",
     address: "174 Jaime Underpass, Margaretberg, MO 57717",
@@ -44,7 +39,7 @@ export const Properties: PropertyInformation[] = [
   },
 ] as const;
 
-export const UnitProperties: UnitInformation[] = [
+export const UnitProperties: Unit[] = [
   {
     unitNumber: 1,
     size: 100,
@@ -65,7 +60,7 @@ export const UnitProperties: UnitInformation[] = [
   },
 ] as const;
 
-export const ParkingProperties: ParkingInformation[] = [
+export const ParkingProperties: Parking[] = [
   {
     parkingNumber: 1,
     fees: 1,
@@ -80,7 +75,7 @@ export const ParkingProperties: ParkingInformation[] = [
   },
 ] as const;
 
-export const StorageProperties: StorageInformation[] = [
+export const StorageProperties: Storage[] = [
   {
     storageNumber: 1,
     fees: 2,
