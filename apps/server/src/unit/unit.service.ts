@@ -10,11 +10,11 @@ import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
-import { VerfRolesEnum } from 'src/verf/entities/verf.entity';
+import { VerfRolesEnum } from '../verf/entities/verf.entity';
 import { response } from 'express';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class UnitService {
