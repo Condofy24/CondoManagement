@@ -14,8 +14,8 @@ type AssetManagementContextType = {
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   mode: Mode;
   setMode: Dispatch<SetStateAction<Mode>>;
-  asset: Asset | null;
-  setAsset: Dispatch<SetStateAction<Asset>>;
+  asset: BuildingAsset | null;
+  setAsset: Dispatch<SetStateAction<BuildingAsset | null>>;
 } | null;
 
 type AssetManagementContextProviderProps = {
