@@ -20,6 +20,7 @@ export class StorageService {
   constructor(
     @InjectModel('Storage')
     private readonly storageModel: Model<Storage>,
+    @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,

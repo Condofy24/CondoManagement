@@ -1,9 +1,12 @@
 {
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "prettier:format": "prettier --write \"**/*.{ts,tsx,js,md,mdx,css,yaml}\"",
+    "prettier:check:ci": "prettier --check \"**/*.{ts,tsx,js,md,mdx,css,yaml}\""
   },
   "devDependencies": {
+    "prettier": "^3.0.0",
     "turbo": "^1.8.3"
   },
   "packageManager": "pnpm@8.15.3"

@@ -26,7 +26,7 @@ export const managerSignupSchema = signupSchema.and(
     address: string()
       .min(10, { message: "Address must contain at least 10 characters" })
       .max(50, "Address cannot exceed 20 characters"),
-  })
+  }),
 );
 
 export type TManagerSignupSchema = TypeOf<typeof managerSignupSchema>;
@@ -39,7 +39,6 @@ export const loginSchema = object({
 });
 
 export type TLoginSchema = TypeOf<typeof loginSchema>;
-
 
 export const propertySchema = object({
   propertyName: string()

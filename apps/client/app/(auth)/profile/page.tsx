@@ -7,7 +7,7 @@ import { TSignupSchema, signupSchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { updateUserProfile } from "@/redux/services/user-service"; 
+import { updateUserProfile } from "@/redux/services/user-service";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
@@ -18,13 +18,15 @@ const UserProfile = () => {
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(undefined);
+  const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
+    undefined,
+  );
 
-
-  
   const currentUserData = {}; // Replace with actual data fetching logic
 
-  const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePicChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
       setProfilePic(file);
@@ -45,12 +47,12 @@ const UserProfile = () => {
     reset,
   } = useForm<TSignupSchema>({
     defaultValues: currentUserData, // Set the default values as the current user data
-    resolver: zodResolver(signupSchema), 
+    resolver: zodResolver(signupSchema),
   });
 
   const onSubmit = async (data: TSignupSchema) => {
     setLoading(true);
-  
+
     try {
       if (profilePic) {
         //await dispatch(updateUserProfile({ ...data, profilePic, id }));
@@ -60,7 +62,7 @@ const UserProfile = () => {
       }
     } catch (error) {
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 

@@ -12,7 +12,7 @@ import { UserModule } from '../user/user.module';
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
     VerfModule,
     forwardRef(() => BuildingModule),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   controllers: [UnitController],
   providers: [UnitService],
