@@ -17,7 +17,7 @@ import { VerificationKey } from 'src/verf/entities/verf.entity';
 import { Unit } from 'src/unit/entities/unit.entity';
 import { ObjectId } from 'mongodb';
 
-const mockingoose = require('mockingoose');
+const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
 const cloudinaryResponseMock = {
   secure_url: 'https://example.com/image.jpg',
