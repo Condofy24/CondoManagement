@@ -20,6 +20,7 @@ export class ParkingService {
   constructor(
     @InjectModel('Parking')
     private readonly parkingModel: Model<Parking>,
+    @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,

@@ -24,6 +24,7 @@ export class UnitService {
     @InjectModel('Unit')
     private readonly unitModel: Model<Unit>,
     private readonly verfService: VerfService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,

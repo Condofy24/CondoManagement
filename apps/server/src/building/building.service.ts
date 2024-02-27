@@ -2,7 +2,9 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
+  forwardRef,
 } from '@nestjs/common';
 import { Building } from './entities/building.entity';
 import { Model } from 'mongoose';
@@ -25,8 +27,11 @@ export class BuildingService {
     private readonly buildingModel: Model<Building>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
+    @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
+    @Inject(forwardRef(() => StorageService))
     private storageService: StorageService,
+    @Inject(forwardRef(() => ParkingService))
     private parkingService: ParkingService,
   ) {}
 

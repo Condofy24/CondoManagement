@@ -5,9 +5,9 @@ import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
 import { CloudinaryModule } from '../user/cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
-import { UnitModule } from 'src/unit/unit.module';
-import { ParkingModule } from 'src/parking/parking.module';
-import { StorageModule } from 'src/storage/storage.module';
+import { UnitModule } from '../unit/unit.module';
+import { ParkingModule } from '../parking/parking.module';
+import { StorageModule } from '../storage/storage.module';
 
 /**
  * Module for managing buildings.
