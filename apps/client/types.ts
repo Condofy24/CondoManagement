@@ -1,4 +1,4 @@
-export interface UserInfo {
+export interface User {
   email: string;
   id: string;
   name: string;
@@ -16,7 +16,7 @@ export enum UserRolesEnum {
   RENTER = 4,
 }
 
-export type PropertyInformation = {
+export type Property = {
   name: string;
   address: string;
   units: number;
@@ -24,24 +24,28 @@ export type PropertyInformation = {
   storage: number;
 };
 
-export type UnitInformation = {
+export type Unit = {
   unitNumber: number;
   size: number;
   status: boolean;
   fees: number;
 };
 
-export type ParkingInformation = {
+export type Parking = {
   parkingNumber: number;
   fees: number;
 };
 
-export type StorageInformation = {
+export type Storage = {
   storageNumber: number;
   fees: number;
 };
 
-export enum AssetType{
+export type BuildingAsset = Unit | Asset;
+
+export type Asset = Parking | Storage;
+
+export enum BuildingAssetType {
   unit = "Unit",
   parking = "Parking",
   storage = "Storage",
