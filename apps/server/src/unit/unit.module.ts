@@ -11,8 +11,8 @@ import { UserModule } from '../user/user.module';
   imports: [
     MongooseModule.forFeature([{ name: 'Unit', schema: UnitSchema }]),
     VerfModule,
-    BuildingModule,
-     forwardRef(() => UserModule),
+    forwardRef(() => BuildingModule),
+    UserModule,
   ],
   controllers: [UnitController],
   providers: [UnitService],

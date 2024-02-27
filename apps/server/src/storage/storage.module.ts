@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { StorageSchema } from './entities/storage.entity';
 import { StorageController } from './storage.controller';
@@ -9,7 +9,7 @@ import { UnitModule } from '../unit/unit.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Storage', schema: StorageSchema }]),
-    BuildingModule,
+    forwardRef(() =>BuildingModule),
     UnitModule,
   ],
   controllers: [StorageController],
