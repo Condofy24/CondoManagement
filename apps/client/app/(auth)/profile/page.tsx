@@ -3,11 +3,11 @@
 import RegistationFormInputs from "@/app/components/form/registation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
-import { TSignupSchema, updateUserProfileSchema } from "@/lib/validation-schemas";
+import { TSignupSchema, signupSchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { updateUserProfile } from "@/redux/services/auth-service"; 
+import { updateUserProfile } from "@/redux/services/user-service"; 
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
@@ -45,7 +45,7 @@ const UserProfile = () => {
     reset,
   } = useForm<TSignupSchema>({
     defaultValues: currentUserData, // Set the default values as the current user data
-    resolver: zodResolver(updateUserProfileSchema), 
+    resolver: zodResolver(signupSchema), 
   });
 
   const onSubmit = async (data: TSignupSchema) => {
@@ -53,7 +53,7 @@ const UserProfile = () => {
   
     try {
       if (profilePic) {
-        await dispatch(updateUserProfile({ ...data, profilePic }));
+        //await dispatch(updateUserProfile({ ...data, profilePic, id }));
         router.push("/profile"); // Redirect to the profile page
       } else {
         setProfilePicError("Profile picture is required");

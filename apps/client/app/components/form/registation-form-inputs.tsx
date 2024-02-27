@@ -16,6 +16,7 @@ type RegistationFormInputsProps = {
     profilePicError: string | null;
     setProfilePicError: React.Dispatch<SetStateAction<string | null>>;
   };
+    // will be used after
     showImagePreview?: boolean;
     imageUrl?: string; // URL of the image to be displayed
 };
