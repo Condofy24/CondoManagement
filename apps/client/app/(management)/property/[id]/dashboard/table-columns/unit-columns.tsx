@@ -15,6 +15,38 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import StatusCell from "@/app/components/table/data-table-status-cell";
 import { useAssetManagement } from "@/context/asset-management-context";
 
+type UnitActionsMenuProps = {
+  unit: Unit;
+};
+
+const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
+  const { setAsset, setMode, setShowDialog } = useAssetManagement();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={() => {
+            setShowDialog(true);
+            setAsset(unit);
+            setMode("edit");
+          }}
+        >
+          Edit Unit details
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 export const unitColumns: ColumnDef<Unit>[] = [
   {
     accessorKey: "unitNumber",
@@ -47,31 +79,7 @@ export const unitColumns: ColumnDef<Unit>[] = [
     id: "actions",
     cell: ({ row }) => {
       const unit = row.original;
-      const { setAsset, setMode, setShowDialog } = useAssetManagement();
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                setShowDialog(true);
-                setAsset(unit);
-                setMode("edit");
-              }}
-            >
-              Edit Unit details
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <UnitActionsMenu unit={unit} />;
     },
   },
 ];
