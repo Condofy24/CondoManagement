@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { AssetType, ParkingInformation, StorageInformation } from "@/types";
+import { BuildingAssetType, Asset } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -12,12 +12,13 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { useAssetManagement } from "@/context/asset-management-context";
 
 export const assetsColumns = (
   assetIdKey: string,
-  assetName: AssetType
-): ColumnDef<ParkingInformation | StorageInformation>[] => {
-  const columns: ColumnDef<ParkingInformation | StorageInformation>[] = [
+  assetName: BuildingAssetType,
+): ColumnDef<Asset>[] => {
+  const columns: ColumnDef<Asset>[] = [
     {
       accessorKey: assetIdKey,
       header: ({ column }) => {
@@ -41,6 +42,8 @@ export const assetsColumns = (
       cell: ({ row }) => {
         const asset = row.original;
 
+        const { setAsset, setMode, setShowDialog } = useAssetManagement();
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -52,7 +55,15 @@ export const assetsColumns = (
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Edit {assetName} details</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setShowDialog(true);
+                  setAsset(asset);
+                  setMode("edit");
+                }}
+              >
+                Edit {assetName} details
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
