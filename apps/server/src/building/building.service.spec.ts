@@ -353,4 +353,42 @@ describe('BuildingService', () => {
       expect(result).toBeNull();
     });
   });
+  describe('findByIdAndUpdateParkingCount', () => {
+    it('should update the parking count of the building', async () => {
+      // Arrange
+      const buildingId = updatedBuildingTest.id.toString();
+      const newParkingCount = 10;
+
+      // Mock the findByIdAndUpdate function of the buildingModel
+      mockingoose(BuildingModel).toReturn(
+        updatedBuildingTest,
+        'findOneAndUpdate',
+      );
+
+      // Act
+      const result = await service.findByIdandUpdateParkingCount(
+        buildingId,
+        newParkingCount,
+      );
+
+      // Assert
+      await expect(result?.parkingCount).toEqual(newParkingCount);
+    });
+
+    it('should return null if building is not found', async () => {
+      // Arrange
+      const nonExistentBuildingId = 'nonExistentBuilding';
+      mockingoose(BuildingModel).toReturn(null, 'findOneAndUpdate');
+
+      // Act
+      const result = await service.findByIdandUpdateParkingCount(
+        nonExistentBuildingId,
+        50,
+      );
+
+      // Assert
+      expect(result).toBeNull();
+    });
+  });
+
 });
