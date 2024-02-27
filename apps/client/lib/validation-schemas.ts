@@ -40,6 +40,7 @@ export const loginSchema = object({
 
 export type TLoginSchema = TypeOf<typeof loginSchema>;
 
+
 export const propertySchema = object({
   propertyName: string()
     .min(3, { message: "Name of property must be at least 3 characters long" })
