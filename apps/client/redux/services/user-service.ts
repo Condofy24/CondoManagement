@@ -2,8 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { User} from "@/types";
 import toast from "react-hot-toast";
-import { API_URL } from "../store";
-
+import { API_URL } from "@/global";
 
 interface UpdateUserData {
     id: string;

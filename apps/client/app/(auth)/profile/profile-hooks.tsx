@@ -4,38 +4,27 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { updateUserProfile } from "@/redux/services/user-service";
 import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { useRouter } from "next/navigation";
+import { AppDispatch } from "@/redux/store";
 import { UserRolesEnum } from "@/types";
+import toast from "react-hot-toast";
 
 export default function UseProfile() {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
   const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
     undefined
   );
-  const user = useAppSelector((state) => state.authReducer.value.user);
 
-  const isManager = user.role === UserRolesEnum.MANAGER;
+  let user = null;
+  if (typeof window !== "undefined") {
+    user = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user") as string)
+      : null;
+  }
 
-  const handleProfilePicChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
-      setProfilePic(file);
-
-      // Create a URL for the file
-      const fileUrl = URL.createObjectURL(file);
-      setImagePreviewUrl(fileUrl); // Set the image preview URL
-
-      // Clean up the URL after the component is unmounted
-      return () => URL.revokeObjectURL(fileUrl);
-    }
-  };
+  const isManager = user?.role === UserRolesEnum.MANAGER;
 
   const {
     register,
@@ -53,11 +42,11 @@ export default function UseProfile() {
     try {
       if (profilePic) {
         //await dispatch(updateUserProfile({ ...data, profilePic, id }));
-        router.push("/profile"); // Redirect to the profile page
       } else {
         setProfilePicError("Profile picture is required");
       }
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -66,6 +55,22 @@ export default function UseProfile() {
   // If the user cancels the update
   const handleCancel = () => {
     reset();
+  };
+
+  const handleProfilePicChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      setProfilePic(file);
+
+      // Create a URL for the file
+      const fileUrl = URL.createObjectURL(file);
+      setImagePreviewUrl(fileUrl); // Set the image preview URL
+
+      // Clean up the URL after the component is unmounted
+      return () => URL.revokeObjectURL(fileUrl);
+    }
   };
 
   return {
