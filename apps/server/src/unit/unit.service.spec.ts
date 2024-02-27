@@ -81,6 +81,17 @@ const userInfoTestData:User = {
     imageId: 'image123',
   };
 
+  const userInfoTestData2:User = {
+    id:'test',
+    password:'test',
+    email: 'user@example.com',
+    name: 'Test User',
+    role: 3,
+    phoneNumber: '1234567890',
+    imageUrl: 'https://example.com/image.jpg',
+    imageId: 'image123',
+  };
+
 
 
 const verfServiceMock = {
@@ -280,6 +291,29 @@ describe('UnitService', () => {
                 HttpException
             )
         })
-    })
+    });
+    describe('findOwnerUnits',() => {
+        it('should return all units for a given user given valid information', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn([unitInfoTestData],'find')
+            userServiceMock.findById.mockResolvedValue(userInfoTestData2);
+
+            //Act
+            const result = await service.findOwnerUnits(userInfoTestData.id);
+
+            //Assert
+            expect(result).toBeDefined()
+        })
+        it('should throw an error if user does not exist',async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn([],'find');
+            userServiceMock.findById.mockResolvedValue(null);
+
+            //Act
+            expect(service.findOwnerUnits(userInfoTestData.id)).rejects.toThrow(
+                HttpException
+            )
+        })
+    });
 });
 
