@@ -53,7 +53,6 @@ const buildingServiceMock = {
 
 const userServiceMock = {
     findById: jest.fn().mockResolvedValue(null),
-
 }
 
 describe('UnitService', () => {
@@ -124,6 +123,23 @@ describe('UnitService', () => {
             await expect(service.createUnit(id.toString(),createUnitDto)).rejects.toThrow(
                 HttpException
             );
+        })
+    });
+    describe('findAll', () =>{
+        it('should return all the units in a specific building given a valid buildingId', async () => {
+            //Arrange
+            const units = [unitInfoTestData];
+            mockingoose(UnitModel).toReturn(units,'find');
+            const id = unitInfoTestData.buildingId;
+            
+            //Act
+            const result = await service.findAll(id.toString());
+            
+            //Assert
+            expect(result.length).toBe(units.length);
+            expect(result[0]).toEqual(
+                expect.objectContaining({...unitInfoTestData})
+            )
         })
     })
 });
