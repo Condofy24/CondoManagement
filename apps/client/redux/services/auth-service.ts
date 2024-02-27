@@ -99,7 +99,7 @@ export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
 );
 
 interface UpdateUserData {
-  userId: string;
+  id: string;
   name: string;
   email: string;
   newPassword: string;
@@ -109,10 +109,10 @@ interface UpdateUserData {
 
 export const updateUserProfile = createAsyncThunk<UpdateUserData, UserInfo>(
   "auth/updateUserProfile",
-  async ({userId, name, email, newPassword, phoneNumber, profilePic}, { rejectWithValue }) => {
+  async ({id, name, email, newPassword, phoneNumber, profilePic}, { rejectWithValue }) => {
     try {
-      const { data } = await axios.patch<UserInfo>(`${API_URL}/user/${userId}`, {
-        userId,
+      const { data } = await axios.patch<UserInfo>(`${API_URL}/user/${id}`, {
+        id,
         name,
         email,
         newPassword,
