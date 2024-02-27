@@ -54,7 +54,6 @@ export const propertySchema = object({
 
 export type TPropertySchema = TypeOf<typeof propertySchema>;
 
-
 export const updateUserProfileSchema = object({
   email: string().email({ message: "A valid email is required" }),
   name: string()
@@ -62,7 +61,7 @@ export const updateUserProfileSchema = object({
     .max(20, { message: "Name cannot exceed 20 characters" }),
   phoneNumber: string()
     .min(10, { message: "Phone number must be valid" })
-    .max(10, { message: "Phone number must be valid" }), 
+    .max(10, { message: "Phone number must be valid" }),
 });
 
 export type TUpdateUserProfileSchema = TypeOf<typeof updateUserProfileSchema>;
