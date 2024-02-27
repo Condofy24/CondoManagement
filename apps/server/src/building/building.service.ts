@@ -44,7 +44,6 @@ export class BuildingService {
       const fileResponse = await this.cloudinary.uploadFile(file);
       return fileResponse;
     } catch (error) {
-      console.error('Error uploading file to Cloudinary:', error);
       throw new BadRequestException('Failed to upload file to Cloudinary.');
     }
   }
@@ -105,10 +104,11 @@ export class BuildingService {
       filePublicId,
       fileAssetId,
     });
-    const result = await newBuilding.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-
+    try {
+      await newBuilding.save();
+    } catch (e) {
+      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return {
       companyId,
       name,

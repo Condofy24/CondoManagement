@@ -1,5 +1,4 @@
 import { IsNotEmpty } from 'class-validator';
-import { Double } from 'mongodb';
 
 export class UpdateParkingDto {
   @IsNotEmpty()
