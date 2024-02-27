@@ -427,5 +427,18 @@ describe('BuildingService', () => {
       expect(result).toBeNull();
     });
   });
+  describe('findAllProperties', () => {
+    it('should return building info and arrays of building properties', async () => {
+      // Arrange
 
+      mockingoose(BuildingModel).toReturn(buildingInfoTestData, 'findOne');
+      // Call the method
+      const result = await service.findAllProperties('421');
+
+      // Assertions
+      expect(result).toMatchObject({
+        building: buildingInfoTestData,
+      });
+    });
+  });
 });
