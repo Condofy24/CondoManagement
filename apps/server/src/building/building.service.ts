@@ -230,7 +230,6 @@ export class BuildingService {
     if (!building) {
       return null;
     }
-    console.log('unitcount', building.unitCount);
     return {
       id: building.id,
       companyId: building.companyId,
