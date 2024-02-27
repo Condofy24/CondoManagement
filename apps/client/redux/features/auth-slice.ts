@@ -32,24 +32,24 @@ export const auth = createSlice({
       return initialState;
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(login.pending, (state) => {
-        state.value.loading = true;
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.value.loading = false;
-        state.value.userInfo = action.payload.userInfo;
-        state.value.token = action.payload.token;
-        state.value.error = undefined;
-        state.value.success = true;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.value.loading = false;
-        state.value.error = action.error.message;
-        state.value.success = false;
-      });
-  },
+  // extraReducers: (builder) => {
+  //   builder
+  //     .addCase(login.pending, (state) => {
+  //       state.value.loading = true;
+  //     })
+  //     .addCase(login.fulfilled, (state, action) => {
+  //       state.value.loading = false;
+  //       state.value.userInfo = action.payload.userInfo;
+  //       state.value.token = action.payload.token;
+  //       state.value.error = undefined;
+  //       state.value.success = true;
+  //     })
+  //     .addCase(login.rejected, (state, action) => {
+  //       state.value.loading = false;
+  //       state.value.error = action.error.message;
+  //       state.value.success = false;
+  //     });
+  // },
 });
 
 export default auth.reducer;

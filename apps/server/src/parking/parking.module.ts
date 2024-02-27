@@ -9,7 +9,7 @@ import { UnitModule } from 'src/unit/unit.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Parking', schema: ParkingSchema }]),
-    forwardRef(() =>BuildingModule),
+    forwardRef(() => BuildingModule),
     UnitModule,
   ],
   controllers: [ParkingController],

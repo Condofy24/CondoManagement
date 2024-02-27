@@ -5,7 +5,6 @@ import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
 import toast from "react-hot-toast";
 import { API_URL } from "../store";
 
-
 interface LoginInput {
   email: string;
   password: string;
