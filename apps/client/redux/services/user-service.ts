@@ -17,7 +17,7 @@ export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
   "auth/updateUserProfile",
   async (
     { id, name, email, newPassword, phoneNumber, profilePic },
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
     try {
       const { data } = await axios.patch<User>(`${API_URL}/user/${id}`, {
@@ -41,5 +41,5 @@ export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
         return rejectWithValue(error.message);
       }
     }
-  }
+  },
 );

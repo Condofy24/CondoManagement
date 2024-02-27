@@ -14,7 +14,7 @@ export default function UseProfile() {
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   let user = null;
@@ -58,7 +58,7 @@ export default function UseProfile() {
   };
 
   const handleProfilePicChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
