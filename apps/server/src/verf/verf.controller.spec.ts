@@ -14,7 +14,7 @@ const verfKeyResponseMock = {
   claimedBy: 'EA',
 };
 
-const mockYourService = {
+const VerfServiceMock = {
   findByUnitId: jest.fn().mockResolvedValue([verfKeyResponseMock])
 };
 
@@ -29,11 +29,11 @@ describe('VerfController', () => {
       providers: [
 
         {
-          provide: VerfService, // Use the correct model token
-          useValue: mockYourService,
+          provide: VerfService,
+          useValue: VerfServiceMock,
         },
       ],
-    }).overrideGuard(PrivilegeGuard) // Override the actual PrivilegeGuard
+    }).overrideGuard(PrivilegeGuard)
     .useValue({ canActivate: () => true }) .compile();
 
     controller = module.get<VerfController>(VerfController);
@@ -46,7 +46,7 @@ describe('VerfController', () => {
 
       await controller.findKeysByUnit(unitId);
 
-      expect(mockYourService.findByUnitId).toHaveBeenCalledWith(unitId);
+      expect(VerfServiceMock.findByUnitId).toHaveBeenCalledWith(unitId);
     });
   });
 

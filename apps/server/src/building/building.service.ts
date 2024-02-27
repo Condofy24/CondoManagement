@@ -29,9 +29,7 @@ export class BuildingService {
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
-    @Inject(forwardRef(() => StorageService))
     private storageService: StorageService,
-    @Inject(forwardRef(() => ParkingService))
     private parkingService: ParkingService,
   ) {}
 
