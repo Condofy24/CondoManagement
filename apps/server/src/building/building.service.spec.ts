@@ -12,6 +12,7 @@ import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { ParkingService } from '../parking/parking.service';
 import { StorageService } from '../storage/storage.service';
+import { BadRequestException } from '@nestjs/common';
 
 const mockingoose = require('mockingoose');
 
@@ -134,5 +135,22 @@ describe('BuildingService', () => {
     cloudinaryServiceMock.uploadFile.mockResolvedValue(cloudinaryResponseMock);
     jest.clearAllMocks();
   });
-  
+  describe('uploadfileToCloudinary', () => {
+    it('should upload file to cloudinary successfully', async () => {
+      // Act
+      const result = await service.uploadFileToCloudinary(fileMockData);
+      // Assert
+      expect(result).toEqual(cloudinaryResponseMock);
+    });
+
+    it('should fail to upload file to cloudinary ', async () => {
+      // Arrange
+      cloudinaryServiceMock.uploadFile.mockRejectedValue(new Error());
+
+      // Act
+      await expect(
+        service.uploadFileToCloudinary(fileMockData),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
 });
