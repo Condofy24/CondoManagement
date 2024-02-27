@@ -12,6 +12,8 @@ import { UserService } from '../user/user.service';
 import { VerfService } from '../verf/verf.service';
 import { ObjectId } from 'mongodb';
 import { Building } from 'src/building/entities/building.entity';
+import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
+import { User } from 'src/user/entities/user.entity';
 
 const mockingoose = require('mockingoose')
 
@@ -20,6 +22,10 @@ const createUnitDto: CreateUnitDto = {
     size:4,
     isOccupiedByRenter: false,
     fees:4
+}
+
+const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
+    unitNumber:4
 }
 
 const buildingInfoTestData: Building = {   
@@ -34,13 +40,48 @@ const buildingInfoTestData: Building = {
     fileAssetId:"dc1dc5cbafbe598f40a9c1c8938e51c7"
 }
 
+const buildingInfoTestData2 = {
+    id:new ObjectId(),
+    companyId: new ObjectId(), 
+    name:"khaled",
+    address:"aslkdjfalk",
+    unitCount:56,
+    parkingCount:53,
+    storageCount:52,
+    fileUrl:"https://res.cloudinary.com/dzu5t20lr/image/upload/v1708240883/wfypsvm",
+    filePublicId:"wfypsvm4kykgjtxxolbn",
+    fileAssetId:"dc1dc5cbafbe598f40a9c1c8938e51c7"
+}
+
 const unitInfoTestData:Unit = {
-    buildingId: new ObjectId(),
+    buildingId: buildingInfoTestData2.id,
     unitNumber: 4,
     size: 4,
     isOccupiedByRenter: false,
     fees: 4
 }
+
+const unitInfoTestData2 = {
+    id:new ObjectId(),
+    buildingId: buildingInfoTestData2.id,
+    unitNumber: 4,
+    size: 4,
+    isOccupiedByRenter: false,
+    fees: 4
+}
+
+const userInfoTestData:User = {
+    id:'test',
+    password:'test',
+    email: 'user@example.com',
+    name: 'Test User',
+    role: 4,
+    phoneNumber: '1234567890',
+    imageUrl: 'https://example.com/image.jpg',
+    imageId: 'image123',
+  };
+
+
 
 const verfServiceMock = {
     createVerfKey: jest.fn().mockResolvedValue({verificationkeyId:'mockVerificationKeyId'})
@@ -52,7 +93,7 @@ const buildingServiceMock = {
 }
 
 const userServiceMock = {
-    findById: jest.fn().mockResolvedValue(null),
+    findById: jest.fn().mockResolvedValue(userInfoTestData),
 }
 
 describe('UnitService', () => {
@@ -166,16 +207,47 @@ describe('UnitService', () => {
     describe('remove',() => {
         it('remove a unit given its corresponding id',async () => {
             //Arrange
-            const unitId = new ObjectId();
-            const id = unitInfoTestData.buildingId;
-            mockingoose(UnitModel).toReturn({unitId,...unitInfoTestData},'findById');
-            buildingServiceMock.findOne.mockResolvedValue({id,...buildingInfoTestData});
 
+            mockingoose(UnitModel).toReturn(unitInfoTestData2,'findOne');
+            const buildingId = unitInfoTestData2.buildingId.toString();
+            buildingServiceMock.findOne.mockResolvedValue({buildingId,...buildingInfoTestData});
+            
             //Act
-            const result = await service.remove('test');
-
+            
+            const result = await service.remove(unitInfoTestData2.id.toString());
+            console.log("ljkdsf")
             //Assert
             expect(result).toBeDefined()
+        })
+        it('should throw an exception given an incorrect unit id', async () => {
+                    //     //Arrange
+            const unitId = new ObjectId();
+            const id = unitInfoTestData.buildingId;
+            const unit = {
+                id,
+                ...unitInfoTestData
+            }
+
+            mockingoose(UnitModel).toReturn({_id: 'test'},'findById');
+            
+            //Act
+            expect(service.remove('test')).rejects.toThrow(
+                HttpException
+            );
+
+            //Assert
+
+        })
+        it('should throw an exception if building does not exist',async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn(unitInfoTestData2,'findOne');
+            const buildingId = unitInfoTestData2.buildingId.toString();
+            buildingServiceMock.findOne.mockResolvedValue(null);
+
+            //Act
+            expect(service.remove('test')).rejects.toThrow(
+                HttpException
+            )
         })
     })
 });
