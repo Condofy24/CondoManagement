@@ -11,7 +11,11 @@ export class VerfService {
     @InjectModel('VerificationKey')
     private readonly verfModel: Model<VerificationKey>,
   ) {}
-  public async createVerfKey(unitId: string, type: VerfRolesEnum, claimedBy: string) {
+  public async createVerfKey(
+    unitId: string,
+    type: VerfRolesEnum,
+    claimedBy: string,
+  ) {
     const key = uuidv4();
     const newKey = new this.verfModel({
       unitId,

@@ -30,7 +30,7 @@ import { StorageController } from './storage/storage.controller';
     BuildingModule,
     UnitModule,
     ParkingModule,
-    StorageModule
+    StorageModule,
   ],
   controllers: [
     AppController,
@@ -40,7 +40,7 @@ import { StorageController } from './storage/storage.controller';
     BuildingController,
     UnitController,
     ParkingController,
-    StorageController
+    StorageController,
   ],
   providers: [AppService],
 })
