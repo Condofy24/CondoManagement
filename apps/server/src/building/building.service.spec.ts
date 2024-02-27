@@ -259,4 +259,16 @@ describe('BuildingService', () => {
       );
     });
   });
+  describe('findOne', () => {
+    it('should find a building by id', async () => {
+      // Arrange
+      mockingoose(BuildingModel).toReturn({ _id: 'test' }, 'findOne');
+
+      // Act
+      await service.findOne('test');
+
+      // Arrange
+      await expect(service.findOne('test')).resolves.toBeDefined();
+    });
+  });
 });
