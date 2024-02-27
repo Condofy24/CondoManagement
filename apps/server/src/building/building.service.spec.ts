@@ -12,7 +12,7 @@ import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { ParkingService } from '../parking/parking.service';
 import { StorageService } from '../storage/storage.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, HttpException } from '@nestjs/common';
 
 const mockingoose = require('mockingoose');
 
@@ -151,6 +151,92 @@ describe('BuildingService', () => {
       await expect(
         service.uploadFileToCloudinary(fileMockData),
       ).rejects.toThrow(BadRequestException);
+    });
+  });
+  describe('createBuilding', () => {
+    it('should create a building successfully if information is valid', async () => {
+      //Arrange
+      mockingoose(BuildingModel).toReturn(null, 'findOne');
+      mockingoose(BuildingModel).toReturn(null, 'exists');
+      const id = new ObjectId();
+      companyServiceMock.findByCompanyId.mockResolvedValue({
+        id,
+        ...companyInfoTestData,
+      });
+
+      //Act
+      const result: any = await service.createBuilding(
+        createBuildingDto,
+        fileMockData,
+        id.toString(),
+      );
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+    it('should throw an error if building does not exist', async () => {
+      //Arrange
+      mockingoose(BuildingModel).toReturn(null, 'findOne');
+      const id = new ObjectId();
+      companyServiceMock.findByCompanyId.mockResolvedValue(null);
+
+      //Act and Assert
+      await expect(
+        service.createBuilding(createBuildingDto, fileMockData, id.toString()),
+      ).rejects.toThrow(HttpException);
+    });
+    it('should throw HttpException if address already exists', async () => {
+      const id = new ObjectId();
+      companyServiceMock.findByCompanyId.mockResolvedValue({
+        id,
+        ...companyInfoTestData,
+      });
+      const finderMock = (query: any) => {
+        if (query.getQuery().address) {
+          return buildingInfoTestData;
+        }
+        return null;
+      };
+
+      mockingoose(BuildingModel).toReturn(finderMock, 'findOne'); // findById is findOne
+
+      // Act & Assert
+      await expect(
+        service.createBuilding(createBuildingDto, fileMockData, id.toString()),
+      ).rejects.toThrow(HttpException);
+    });
+    it('should throw HttpException if building already exists', async () => {
+      const id = new ObjectId();
+      companyServiceMock.findByCompanyId.mockResolvedValue({
+        id,
+        ...companyInfoTestData,
+      });
+      mockingoose(BuildingModel).toReturn(
+        { ...buildingInfoTestData, companyId: id },
+        'findOne',
+      ); // findById is findOne
+
+      // Act & Assert
+      await expect(
+        service.createBuilding(createBuildingDto, fileMockData, id.toString()),
+      ).rejects.toThrow(HttpException);
+    });
+
+    it('should throw an error if saving building fails', async () => {
+      // Arrange
+      mockingoose(BuildingModel).toReturn(null, 'findOne');
+      const id = new ObjectId();
+      companyServiceMock.findByCompanyId.mockResolvedValue({
+        id,
+        ...companyInfoTestData,
+      });
+
+      mockingoose(BuildingModel).toReturn(new Error(), 'save');
+
+      // Act & Assert
+      await expect(
+        service.createBuilding(createBuildingDto, fileMockData, id.toString()),
+      ).rejects.toThrow(HttpException);
     });
   });
 });
