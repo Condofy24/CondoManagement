@@ -1,15 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
 import { VerfService } from '../verf/verf.service';
 import { VerfController } from './verf.controller';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
-import { UnitService } from '../unit/unit.service';
-import { BuildingService } from '../building/building.service';
-import { CompanyService } from '../company/company.service';
-import { StorageService } from '../storage/storage.service';
-import { ParkingService } from '../parking/parking.service';
+import { ObjectId } from 'mongodb';
+import { VerfRolesEnum } from './entities/verf.entity';
+import { PrivilegeGuard } from '../auth/auth.guard';
+
+
+const verfKeyResponseMock = {
+  id: new ObjectId(),
+  unitId: new ObjectId('65dd47046d122514e4ccc0b6'),
+  key: 'qwerty',
+  type: VerfRolesEnum.OWNER,
+  claimedBy: 'EA',
+};
+
+const mockYourService = {
+  findByUnitId: jest.fn().mockResolvedValue([verfKeyResponseMock])
+};
 
 
 describe('VerfController', () => {
@@ -17,52 +24,37 @@ describe('VerfController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+
       controllers: [VerfController],
       providers: [
+
         {
-          provide: getModelToken('VerificationKey'), // Use the correct model token
-          useValue: {},
+          provide: VerfService, // Use the correct model token
+          useValue: mockYourService,
         },
-        {
-          provide: getModelToken('User'), // Use the correct model token
-          useValue: {},
-        },
-        {
-          provide: getModelToken('Building'), // Use the correct model token
-          useValue: {},
-        },
-        {
-          provide: getModelToken('Storage'), // Use the correct model token
-          useValue: {},
-        },
-        {
-          provide: getModelToken('Parking'), // Use the correct model token
-          useValue: {},
-        },
-        {
-          provide: getModelToken('Company'), // Use the correct model token
-          useValue: {},
-        },
-        {
-          provide: getModelToken('Unit'), // Use the correct model token
-          useValue: {},
-        },
-        CloudinaryService,
-        VerfService,
-        CompanyService,
-        BuildingService,
-        UnitService,
-        JwtService,
-        StorageService,
-        UserService,
-        ParkingService,
       ],
-    }).compile();
+    }).overrideGuard(PrivilegeGuard) // Override the actual PrivilegeGuard
+    .useValue({ canActivate: () => true }) .compile();
 
     controller = module.get<VerfController>(VerfController);
+    
+  
+  });
+  
+  describe('findKeysByUnit', () => {
+    it('should call verfService.findByUnitId with correct unitId', async() => {
+      
+      const unitId = '65dd47046d122514e4ccc0b6';
+
+      await controller.findKeysByUnit(unitId);
+
+      expect(mockYourService.findByUnitId).toHaveBeenCalledWith(unitId);
+    });
   });
 
   it('should be defined', () => {
+    
     expect(controller).toBeDefined();
   });
 });
+

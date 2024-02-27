@@ -1,13 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { BadRequestException, HttpException } from '@nestjs/common';
-import { Readable } from 'stream';
-import { buffer } from 'stream/consumers';
+import { HttpException } from '@nestjs/common';
 import { VerfService } from '../verf/verf.service';
 import {
   VerfModel,
   VerfRolesEnum,
-  VerificationKey,
 } from '../verf/entities/verf.entity';
 import { ObjectId } from 'mongodb';
 

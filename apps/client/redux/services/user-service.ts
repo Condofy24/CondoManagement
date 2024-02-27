@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { UserInfo} from "@/types";
+import { User} from "@/types";
 import toast from "react-hot-toast";
 import { API_URL } from "../store";
 
@@ -14,11 +14,11 @@ interface UpdateUserData {
     profilePic: File;
   }
   
-  export const updateUserProfile = createAsyncThunk<UserInfo, UpdateUserData>(
+  export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
     "auth/updateUserProfile",
     async ({id, name, email, newPassword, phoneNumber, profilePic}, { rejectWithValue }) => {
       try {
-        const { data } = await axios.patch<UserInfo>(`${API_URL}/user/${id}`, {
+        const { data } = await axios.patch<User>(`${API_URL}/user/${id}`, {
           id,
           name,
           email,
