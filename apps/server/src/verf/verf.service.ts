@@ -11,7 +11,6 @@ export class VerfService {
     @InjectModel('VerificationKey')
     private readonly verfModel: Model<VerificationKey>,
   ) {}
-
   public async createVerfKey(
     unitId: string,
     type: VerfRolesEnum,

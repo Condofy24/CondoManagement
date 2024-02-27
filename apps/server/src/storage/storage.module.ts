@@ -9,8 +9,8 @@ import { UnitModule } from '../unit/unit.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Storage', schema: StorageSchema }]),
-    forwardRef(() =>BuildingModule),
-    forwardRef(() =>UnitModule),
+    forwardRef(() => BuildingModule),
+    UnitModule,
   ],
   controllers: [StorageController],
   providers: [StorageService],
