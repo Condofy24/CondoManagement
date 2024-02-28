@@ -2,16 +2,16 @@
 
 import React from "react";
 import { notFound } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
+import { useAppSelector } from "@/redux/store";
 
 type ManagementLayoutProps = {
   children: React.ReactNode;
 };
 
 export default function ManagementLayout({ children }: ManagementLayoutProps) {
-  const { isLoggedIn } = useAuth();
+  const { loggedIn } = useAppSelector((state) => state.auth.value);
 
-  if (!isLoggedIn) return notFound();
+  if (!loggedIn) return notFound();
 
   return <div>{children}</div>;
 }

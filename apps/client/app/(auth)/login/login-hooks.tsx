@@ -13,9 +13,7 @@ function LoginHooks() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const { user, success } = useAppSelector(
-    (state) => state.authReducer.value.user,
-  );
+  const { loggedIn } = useAppSelector((state) => state.auth.value);
 
   const {
     register,
@@ -32,7 +30,7 @@ function LoginHooks() {
 
     setLoading(false);
 
-    if (success) {
+    if (loggedIn) {
       toast.success("Login successful");
       router.push("/");
     } else {

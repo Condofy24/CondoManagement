@@ -19,7 +19,7 @@ import {
 } from "./components/ui/carousel";
 
 export default function Home() {
-  const user = useAppSelector((state) => state.authReducer.value.user);
+  const user = useAppSelector((state) => state.auth.value.user);
 
   return (
     <main className="relative">

@@ -14,11 +14,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { useAppSelector } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export function UserNav() {
-  const user = useAppSelector((state) => state.authReducer.value.user);
+  const user = useAppSelector((state) => state.auth.value.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  const logout = () => {
+    dispatch({ type: "auth/reset" });
+    router.push("/");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,7 +54,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
