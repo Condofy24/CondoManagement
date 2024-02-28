@@ -8,6 +8,7 @@ import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { Parking } from './entities/parking.entity';
 import { ParkingService } from './parking.service';
 import { HttpStatus } from '@nestjs/common';
+import { Unit } from 'src/unit/entities/unit.entity';
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
@@ -19,6 +20,7 @@ const parkingServiceMock = {
   createParking: jest.fn(),
   linkParkingToUnit: jest.fn(),
   removeParking: jest.fn(),
+  findAll: jest.fn(),
 };
 
 const linkParkingToUnitDto: LinkParkingToUnitDto = {
@@ -67,26 +69,14 @@ const parkingInfoTestData2 = {
   fees: 4,
 };
 
-const userInfoTestData: User = {
-  id: 'test',
-  password: 'test',
-  email: 'user@example.com',
-  name: 'Test User',
-  role: 4,
-  phoneNumber: '1234567890',
-  imageUrl: 'https://example.com/image.jpg',
-  imageId: 'image123',
-};
-
-const userInfoTestData2: User = {
-  id: 'test',
-  password: 'test',
-  email: 'user@example.com',
-  name: 'Test User',
-  role: 3,
-  phoneNumber: '1234567890',
-  imageUrl: 'https://example.com/image.jpg',
-  imageId: 'image123',
+const occupiedUnitInfoTestData: Unit = {
+  buildingId: buildingInfoTestData2.id,
+  ownerId: new ObjectId(),
+  renterId: new ObjectId(),
+  unitNumber: 5,
+  size: 4.5,
+  isOccupiedByRenter: true,
+  fees: 500,
 };
 
 describe('ParkingController', () => {
@@ -155,6 +145,20 @@ describe('ParkingController', () => {
 
       //Assert
       expect(result).toEqual(HttpStatus.NO_CONTENT);
+    });
+  });
+  describe('findAll', () => {
+    it('should forward call to parking service', async () => {
+      //Arrange
+      parkingServiceMock.findAll.mockResolvedValue([parkingInfoTestData]);
+
+      //Act
+      const result = await controller.findAll(
+        parkingInfoTestData2.buildingId.toString(),
+      );
+
+      //Assert
+      expect(result).toEqual([parkingInfoTestData]);
     });
   });
 });
