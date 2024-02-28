@@ -1,25 +1,26 @@
 "use client";
-import Link from "next/link";
+import div from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import logo from "@/public/logo.png";
 
 import { cn } from "@/lib/utils";
 
 export function MainNav() {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <div className="mr-2 md:mr-4 flex">
-      <Link
-        href="/"
+      <div
+        onClick={() => router.push("/")}
         className="hidden md:flex mr-6 items-center space-x-2 size-10"
       >
         <Image src={logo} alt="website logo" quality={100} objectFit="cover" />
-      </Link>
+      </div>
       <nav className="flex items-center gap-6 text-sm">
-        <Link
-          href="/property/dashboard"
+        <div
+          onClick={() => router.push("/property/dashboard")}
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname.includes("dashboard")
@@ -28,9 +29,9 @@ export function MainNav() {
           )}
         >
           Properties
-        </Link>
-        <Link
-          href="/"
+        </div>
+        <div
+          onClick={() => router.push("/property/dashboard")}
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/docs/components")
@@ -39,9 +40,9 @@ export function MainNav() {
           )}
         >
           Reservations
-        </Link>
-        <Link
-          href="/"
+        </div>
+        <div
+          onClick={() => router.push("/property/dashboard")}
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname?.startsWith("/requests")
@@ -50,7 +51,7 @@ export function MainNav() {
           )}
         >
           Requests
-        </Link>
+        </div>
       </nav>
     </div>
   );
