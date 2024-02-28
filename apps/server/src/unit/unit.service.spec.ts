@@ -261,7 +261,7 @@ describe('UnitService', () => {
         })
     })
     describe('linkUnitToUser',() => {
-        it('should link a specific unit to a specific building given valid informaiton', async () => {
+        it('should link a specific unit to a specific user given valid informaiton', async () => {
             //Arrange
             mockingoose(UnitModel).toReturn([unitInfoTestData2],'find');
             
