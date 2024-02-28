@@ -230,5 +230,21 @@ describe('StorageService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
-});
+  describe('findAll', () => {
+    it('should return all the storages in a specific building given a valid buildingId', async () => {
+      //Arrange
+      const storages = [storageInfoTestData];
+      mockingoose(StorageModel).toReturn(storages, 'find');
+      const id = storageInfoTestData.buildingId;
 
+      //Act
+      const result = await service.findAll(id.toString());
+
+      //Assert
+      expect(result.length).toBe(storages.length);
+      expect(result[0]).toEqual(
+        expect.objectContaining({ ...storageInfoTestData }),
+      );
+    });
+  });
+});
