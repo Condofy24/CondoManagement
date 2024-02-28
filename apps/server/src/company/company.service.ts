@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -25,18 +24,16 @@ export class CompanyService {
     }
 
     // Create company
-    const companyId = uuidv4();
     const newCompany = new this.companyModel({
       companyName,
       companyLocation,
-      companyId,
     });
 
     const result = await newCompany.save();
     if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
-    return { id: result._id, companyName, companyLocation, companyId };
+    return newCompany;
   }
 
   public async updateCompany(id: string, updateCompanyDto: UpdateCompanyDto) {
@@ -58,7 +55,6 @@ export class CompanyService {
       id: company.id,
       companyName: company.companyName,
       companyLocation: company.companyLocation,
-      companyId: company.companyId,
     };
   }
 
@@ -74,20 +70,6 @@ export class CompanyService {
       id: company._id,
       companyName: company.companyName,
       companyLocation: company.companyLocation,
-      companyId: company.companyId,
-    };
-  }
-
-  public async findByCompanyId(companyId: string) {
-    const company = await this.companyModel.findById(companyId).exec();
-    if (!company) {
-      return false;
-    }
-    return {
-      id: company._id,
-      companyName: company.companyName,
-      companyLocation: company.companyLocation,
-      companyId: company.companyId,
     };
   }
 
@@ -100,7 +82,6 @@ export class CompanyService {
       id: company._id,
       companyName: company.companyName,
       companyLocation: company.companyLocation,
-      companyId: company.companyId,
     };
   }
 
@@ -110,7 +91,6 @@ export class CompanyService {
       id: company._id,
       companyName: company.companyName,
       companyLocation: company.companyLocation,
-      companyId: company.companyId,
     }));
   }
 }

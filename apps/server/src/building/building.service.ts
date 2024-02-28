@@ -17,6 +17,7 @@ import { UnitService } from '../unit/unit.service';
 import { StorageService } from '../storage/storage.service';
 import { ParkingService } from '../parking/parking.service';
 import { UserService } from '../user/user.service';
+import { ObjectId } from 'mongodb';
 
 /**
  * Service class for managing buildings.
@@ -65,7 +66,7 @@ export class BuildingService {
     companyId: string,
   ) {
     const { name, address } = createBuildingDto;
-    const companyExists = await this.companyService.findByCompanyId(companyId);
+    const companyExists = await this.companyService.findOne(companyId);
     if (!companyExists) {
       throw new HttpException(
         { error: "Company doesn't exists", status: HttpStatus.BAD_REQUEST },
@@ -201,7 +202,9 @@ export class BuildingService {
    * @returns An array of buildings.
    */
   public async findAll(companyId: string): Promise<Building[]> {
-    const buildings = await this.buildingModel.find({ companyId }).exec();
+    const buildings = await this.buildingModel
+      .find({ companyId: new ObjectId(companyId) })
+      .exec();
     return buildings.map(
       (building: Building) =>
         ({

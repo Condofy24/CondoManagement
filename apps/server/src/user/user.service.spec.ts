@@ -70,7 +70,7 @@ const verfServiceMock = {
 
 const companyServiceMock = {
   findByCompanyName: jest.fn().mockResolvedValue(null),
-  findByCompanyId: jest.fn().mockResolvedValue(null),
+  findOne: jest.fn().mockResolvedValue(null),
   createCompany: jest.fn().mockResolvedValue({ companyId: 'mockCompanyId' }),
 };
 
@@ -291,7 +291,7 @@ describe('UserService', () => {
     it('should create employee successfully if information is valid', async () => {
       // Arrange
       mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyId.mockResolvedValue({
+      companyServiceMock.findOne.mockResolvedValue({
         companyName: 'genetec',
       });
       mockingoose(UserModel).toReturn(adminInfoTestData, 'save');
@@ -306,7 +306,7 @@ describe('UserService', () => {
     it('should throw an error if saving employee fails', async () => {
       // Arrange
       mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyId.mockResolvedValue({
+      companyServiceMock.findOne.mockResolvedValue({
         companyName: 'genetec',
       });
       mockingoose(UserModel).toReturn(new Error(), 'save');
@@ -330,7 +330,7 @@ describe('UserService', () => {
     it('should throw an error if company doesnt exist', async () => {
       // Arrange
       mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyId.mockResolvedValue(false);
+      companyServiceMock.findOne.mockResolvedValue(false);
 
       // Act & Assert
       await expect(

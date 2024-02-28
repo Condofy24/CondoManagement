@@ -8,7 +8,6 @@ interface CompanyDTO {
   _id?: string;
   companyName?: string;
   companyLocation?: string;
-  companyId?: string;
 }
 
 const testCompany1 = 'Test Company 1';
@@ -28,19 +27,19 @@ describe('Company Controller', () => {
           useValue: {
             findAll: jest.fn<Company[], unknown[]>().mockImplementation(() => [
               {
+                _id: 'a strange id',
                 companyName: testCompany1,
                 companyLocation: testLocation1,
-                companyId: '1',
               },
               {
+                _id: 'a different id',
                 companyName: 'Test Company 2',
                 companyLocation: 'Test Location 2',
-                companyId: '2',
               },
               {
+                _id: 'a third id',
                 companyName: 'Test Company 3',
                 companyLocation: 'Test Location 3',
-                companyId: '3',
               },
             ]),
             findOne: jest
@@ -49,7 +48,6 @@ describe('Company Controller', () => {
                 Promise.resolve({
                   companyName: testCompany1,
                   companyLocation: testLocation1,
-                  companyId: '1',
                   _id: id,
                 }),
               ),
@@ -59,16 +57,6 @@ describe('Company Controller', () => {
                 return Promise.resolve({
                   companyName,
                   companyLocation: testLocation1,
-                  companyId: '1',
-                });
-              }),
-            findByCompanyId: jest
-              .fn<Promise<CompanyDTO>, string[]>()
-              .mockImplementation((companyId) => {
-                return Promise.resolve({
-                  companyName: testCompany1,
-                  companyLocation: testLocation1,
-                  companyId,
                 });
               }),
             createCompany: jest
@@ -93,19 +81,19 @@ describe('Company Controller', () => {
     it('should get an array of companies', () => {
       expect(controller.getAllComapnies()).toEqual([
         {
+          _id: 'a strange id',
           companyName: testCompany1,
           companyLocation: testLocation1,
-          companyId: '1',
         },
         {
+          _id: 'a different id',
           companyName: 'Test Company 2',
           companyLocation: 'Test Location 2',
-          companyId: '2',
         },
         {
+          _id: 'a third id',
           companyName: 'Test Company 3',
           companyLocation: 'Test Location 3',
-          companyId: '3',
         },
       ]);
     });
@@ -116,13 +104,11 @@ describe('Company Controller', () => {
       expect(controller.getCompany('a strange id')).resolves.toEqual({
         companyName: testCompany1,
         companyLocation: testLocation1,
-        companyId: '1',
         _id: 'a strange id',
       });
       expect(controller.getCompany('a different id')).resolves.toEqual({
         companyName: testCompany1,
         companyLocation: testLocation1,
-        companyId: '1',
         _id: 'a different id',
       });
     });
@@ -133,17 +119,6 @@ describe('Company Controller', () => {
       await expect(controller.getByCompanyName(testCompany1)).resolves.toEqual({
         companyName: testCompany1,
         companyLocation: testLocation1,
-        companyId: '1',
-      });
-    });
-  });
-
-  describe('getByCompanyId', () => {
-    it('should get a company back', async () => {
-      await expect(controller.getByCompanyId('1')).resolves.toEqual({
-        companyName: testCompany1,
-        companyLocation: testLocation1,
-        companyId: '1',
       });
     });
   });

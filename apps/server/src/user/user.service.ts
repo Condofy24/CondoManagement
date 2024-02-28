@@ -102,18 +102,6 @@ export class UserService {
       companyLocation,
     });
 
-    if (!('companyId' in companyRes)) {
-      throw new HttpException(
-        {
-          error: "Couldn't create company",
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
-    const companyId = companyRes.id;
-
     let imageUrl =
       'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
     let imageId = 'default_user';
@@ -128,7 +116,7 @@ export class UserService {
       email,
       password,
       name,
-      companyId,
+      companyId: companyRes._id,
       role: 0,
       phoneNumber,
       imageUrl,
@@ -172,7 +160,7 @@ export class UserService {
     }
 
     // Check company exists
-    const companyExists = await this.companyService.findByCompanyId(companyId);
+    const companyExists = await this.companyService.findOne(companyId);
     if (!companyExists) {
       throw new HttpException(
         { error: "Company doesn't exists", status: HttpStatus.BAD_REQUEST },
