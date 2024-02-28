@@ -226,7 +226,6 @@ describe('UnitService', () => {
             //Act
             
             const result = await service.remove(unitInfoTestData2.id.toString());
-            console.log("ljkdsf")
             //Assert
             expect(result).toBeDefined()
         })
@@ -315,5 +314,39 @@ describe('UnitService', () => {
             )
         })
     });
+    describe('findRenterUnit',() => {
+        it('should return the unit a renter rents given valid information', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn(unitInfoTestData,'findOne');
+            userServiceMock.findById.mockResolvedValue(userInfoTestData)
+
+            //Act
+            const result = await service.findRenterUnit(userInfoTestData.id);
+
+            //Assert
+            expect(result).toBeDefined()
+        })
+        it('should throw an exception if user does not exist', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn(unitInfoTestData,'findOne');
+            userServiceMock.findById.mockResolvedValue(null)
+
+            //Act
+            expect(service.findRenterUnit(userInfoTestData.id)).rejects.toThrow(
+                HttpException
+            )
+        })
+        it('should throw an exception if unit does not exist', async () => {
+            //Arrange
+            mockingoose(UnitModel).toReturn(null,'findOne');
+            userServiceMock.findById.mockResolvedValue(userInfoTestData)
+
+            //Act
+            const result = await service.findRenterUnit(userInfoTestData.id);
+
+            //Act
+            expect(result).toBeNull()
+        })
+    })
 });
 
