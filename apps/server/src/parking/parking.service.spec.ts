@@ -230,4 +230,22 @@ describe('ParkingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+
+  describe('findAll', () => {
+    it('should return all the parkings in a specific building given a valid buildingId', async () => {
+      //Arrange
+      const parkings = [parkingInfoTestData];
+      mockingoose(ParkingModel).toReturn(parkings, 'find');
+      const id = parkingInfoTestData.buildingId;
+
+      //Act
+      const result = await service.findAll(id.toString());
+
+      //Assert
+      expect(result.length).toBe(parkings.length);
+      expect(result[0]).toEqual(
+        expect.objectContaining({ ...parkingInfoTestData }),
+      );
+    });
+  });
 });
