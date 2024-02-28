@@ -7,6 +7,7 @@ import { CreateParkingDto } from './dto/create-parking.dto';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { Parking } from './entities/parking.entity';
 import { ParkingService } from './parking.service';
+import { HttpStatus } from '@nestjs/common';
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
@@ -17,6 +18,7 @@ const createParkingDto: CreateParkingDto = {
 const parkingServiceMock = {
   createParking: jest.fn(),
   linkParkingToUnit: jest.fn(),
+  removeParking: jest.fn(),
 };
 
 const linkParkingToUnitDto: LinkParkingToUnitDto = {
@@ -139,6 +141,20 @@ describe('ParkingController', () => {
 
       //Assert
       expect(result).toEqual(parkingInfoTestData);
+    });
+  });
+  describe('removeParking', () => {
+    it('should forward call to parking service', async () => {
+      //Arrange
+      parkingServiceMock.removeParking.mockResolvedValue(HttpStatus.NO_CONTENT);
+
+      //Act
+      const result = await controller.remove(
+        parkingInfoTestData2.id.toString(),
+      );
+
+      //Assert
+      expect(result).toEqual(HttpStatus.NO_CONTENT);
     });
   });
 });
