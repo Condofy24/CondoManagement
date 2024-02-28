@@ -22,10 +22,10 @@ function LoginHooks() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: TLoginSchema) => {
+  const onSubmit = async (data: TLoginSchema) => {
     setLoading(true);
 
-    dispatch(login(data));
+    await dispatch(login(data));
 
     setLoading(false);
 
