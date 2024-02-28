@@ -247,4 +247,40 @@ describe('StorageService', () => {
       );
     });
   });
+
+  describe('linkStorageToUnit', () => {
+    it('should link a specific storage to a specific user given valid informaiton', async () => {
+      // Arrange
+      mockingoose(StorageModel)
+        .toReturn(storageInfoTestData, 'findOne')
+        .toReturn(storageInfoTestData, 'findOneAndUpdate');
+
+      const unitId: ObjectId = new ObjectId();
+
+      // Act
+      const result = await service.linkStorageToUnit(
+        storageInfoTestData2.buildingId.toString(),
+        unitId.toString(),
+        linkStorageToUnitDto,
+      );
+
+      // Assert
+      expect(result).toBeDefined();
+    });
+
+    it('should throw an exception if user does not exist', async () => {
+      //Arrange
+      mockingoose(StorageModel).toReturn([storageInfoTestData], 'find');
+      unitServiceMock.findOne.mockResolvedValue(null);
+      const unitId: ObjectId = new ObjectId();
+      //Act
+      expect(
+        service.linkStorageToUnit(
+          storageInfoTestData.buildingId.toString(),
+          unitId.toString(),
+          linkStorageToUnitDto,
+        ),
+      ).rejects.toThrow(HttpException);
+    });
+  });
 });
