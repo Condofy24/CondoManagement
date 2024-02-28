@@ -78,8 +78,11 @@ export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
       const { company, address, ...managerData } =
         userData as TManagerSignupSchema;
 
-      await axios.post(`${API_URL}/company`, { company, address });
-      await axios.post(`${API_URL}/user/manager`, managerData);
+      await axios.post(`${API_URL}/user/manager`, {
+        companyName: company,
+        companyLocation: address,
+        ...managerData,
+      });
     } catch (error: any) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
