@@ -86,4 +86,23 @@ describe('StorageController', () => {
       expect(result).toEqual(storageInfoTestData);
     });
   });
+  describe('linkStorageToUnit', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      storageServiceMock.linkStorageToUnit.mockResolvedValue(
+        storageInfoTestData,
+      );
+      const unitId = new ObjectId();
+      //Act
+
+      const result = await controller.linkStorageToUnit(
+        storageInfoTestData.buildingId.toString(),
+        unitId.toString(),
+        linkStorageToUnitDto,
+      );
+
+      //Assert
+      expect(result).toEqual(storageInfoTestData);
+    });
+  });  
 });
