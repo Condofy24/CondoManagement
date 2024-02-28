@@ -124,7 +124,7 @@ describe('CompanyService', () => {
       companyId: mockCompanyId,
     });
 
-    jest.spyOn(model, 'findOne').mockReturnValue({
+    jest.spyOn(model, 'findById').mockReturnValue({
       exec: jest.fn().mockResolvedValueOnce(mockCompany),
     } as any);
 
