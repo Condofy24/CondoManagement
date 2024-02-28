@@ -6,6 +6,7 @@ export interface User {
   phoneNumber: string;
   imageUrl: string;
   imageId: string;
+  companyId?: string;
 }
 
 export enum UserRolesEnum {

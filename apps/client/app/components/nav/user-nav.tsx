@@ -1,3 +1,4 @@
+"use client";
 import {
   Avatar,
   AvatarFallback,
@@ -13,26 +14,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export function UserNav() {
+  const user = useAppSelector((state) => state.auth.value.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+
+  const logout = () => {
+    dispatch({ type: "auth/reset" });
+    router.push("/");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
             <AvatarImage src="/avatars/03.png" alt="@shadcn" />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarFallback>
+              {user?.name?.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Bob</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              Bob@gmail.com
-            </p>
+            <p className="text-sm font-medium leading-none">{user?.name}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -42,7 +54,7 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

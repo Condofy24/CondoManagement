@@ -70,12 +70,18 @@ importers:
       framer-motion:
         specifier: ^11.0.3
         version: 11.0.3(react-dom@18.2.0)(react@18.2.0)
+      jsondiffpatch:
+        specifier: ^0.6.0
+        version: 0.6.0
       lucide-react:
         specifier: ^0.316.0
         version: 0.316.0(react@18.2.0)
       next:
         specifier: 14.1.0
         version: 14.1.0(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
+      next-redux-wrapper:
+        specifier: ^8.1.0
+        version: 8.1.0(next@14.1.0)(react-redux@9.1.0)(react@18.2.0)
       next-themes:
         specifier: ^0.2.1
         version: 0.2.1(next@14.1.0)(react-dom@18.2.0)(react@18.2.0)
@@ -100,6 +106,9 @@ importers:
       react-wrap-balancer:
         specifier: ^1.1.0
         version: 1.1.0(react@18.2.0)
+      redux-persist:
+        specifier: ^6.0.0
+        version: 6.0.0(react@18.2.0)(redux@5.0.1)
       sharp:
         specifier: ^0.33.2
         version: 0.33.2
@@ -6276,6 +6285,13 @@ packages:
       }
     dev: true
 
+  /@types/diff-match-patch@1.0.36:
+    resolution:
+      {
+        integrity: sha512-xFdR6tkm0MWvBfO8xXCSsinYxHcqkQUlcHeSpMC2ukzOb6lwQAfDmW+Qt0AvlGd8HpsS28qKsB+oPeJn9I39jg==,
+      }
+    dev: false
+
   /@types/eslint-scope@3.7.7:
     resolution:
       {
@@ -8101,7 +8117,6 @@ packages:
         integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==,
       }
     engines: { node: ^12.17.0 || ^14.13 || >=16.0.0 }
-    dev: true
 
   /char-regex@1.0.2:
     resolution:
@@ -9031,6 +9046,13 @@ packages:
       {
         integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==,
       }
+
+  /diff-match-patch@1.0.5:
+    resolution:
+      {
+        integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==,
+      }
+    dev: false
 
   /diff-sequences@29.6.3:
     resolution:
@@ -12484,6 +12506,19 @@ packages:
       }
     dev: true
 
+  /jsondiffpatch@0.6.0:
+    resolution:
+      {
+        integrity: sha512-3QItJOXp2AP1uv7waBkao5nCvhEv+QmJAd38Ybq7wNI74Q+BBmnLn4EDKz6yI9xGAIQoUF87qHt+kc1IVxB4zQ==,
+      }
+    engines: { node: ^18.0.0 || >=20.0.0 }
+    hasBin: true
+    dependencies:
+      "@types/diff-match-patch": 1.0.36
+      chalk: 5.3.0
+      diff-match-patch: 1.0.5
+    dev: false
+
   /jsonfile@6.1.0:
     resolution:
       {
@@ -13357,6 +13392,21 @@ packages:
         integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==,
       }
     dev: true
+
+  /next-redux-wrapper@8.1.0(next@14.1.0)(react-redux@9.1.0)(react@18.2.0):
+    resolution:
+      {
+        integrity: sha512-2hIau0hcI6uQszOtrvAFqgc0NkZegKYhBB7ZAKiG3jk7zfuQb4E7OV9jfxViqqojh3SEHdnFfPkN9KErttUKuw==,
+      }
+    peerDependencies:
+      next: ">=9"
+      react: "*"
+      react-redux: "*"
+    dependencies:
+      next: 14.1.0(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-redux: 9.1.0(@types/react@18.2.48)(react@18.2.0)(redux@5.0.1)
+    dev: false
 
   /next-themes@0.2.1(next@14.1.0)(react-dom@18.2.0)(react@18.2.0):
     resolution:
@@ -14652,6 +14702,22 @@ packages:
       indent-string: 4.0.0
       strip-indent: 3.0.0
     dev: true
+
+  /redux-persist@6.0.0(react@18.2.0)(redux@5.0.1):
+    resolution:
+      {
+        integrity: sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==,
+      }
+    peerDependencies:
+      react: ">=16"
+      redux: ">4.0.0"
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      redux: 5.0.1
+    dev: false
 
   /redux-thunk@3.1.0(redux@5.0.1):
     resolution:

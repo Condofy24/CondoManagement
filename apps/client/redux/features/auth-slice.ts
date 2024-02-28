@@ -5,22 +5,28 @@ import { User } from "@/types";
 type InitialState = {
   value: AuthState;
 };
+type Admin = {
+  role: number;
+  companyId: string;
+} | null;
 
 type AuthState = {
   loading: boolean;
   user: User;
+  admin: Admin;
   token: string | null;
   error: string | undefined;
-  success: boolean;
+  loggedIn: boolean;
 };
 
 const initialState = {
   value: {
     loading: false,
     user: {},
+    admin: null,
     token: null,
     error: undefined,
-    success: false,
+    loggedIn: false,
   } as AuthState,
 } as InitialState;
 
@@ -42,12 +48,19 @@ export const auth = createSlice({
         state.value.user = action.payload.user;
         state.value.token = action.payload.token;
         state.value.error = undefined;
-        state.value.success = true;
+        state.value.loggedIn = true;
+
+        if (action.payload.user.role <= 2) {
+          state.value.admin = {
+            role: action.payload.user.role,
+            companyId: action.payload.user.companyId as string,
+          };
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.value.loading = false;
         state.value.error = action.error.message;
-        state.value.success = false;
+        state.value.loggedIn = false;
       });
   },
 });

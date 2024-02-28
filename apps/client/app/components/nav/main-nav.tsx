@@ -1,25 +1,16 @@
 "use client";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import logo from "@/public/logo.png";
-
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function MainNav() {
   const pathname = usePathname();
 
   return (
     <div className="mr-2 md:mr-4 flex">
-      <Link
-        href="/"
-        className="hidden md:flex mr-6 items-center space-x-2 size-10"
-      >
-        <Image src={logo} alt="website logo" quality={100} objectFit="cover" />
-      </Link>
       <nav className="flex items-center gap-6 text-sm">
         <Link
-          href="/property/dashboard"
+          href="/dashboard"
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname.includes("dashboard")
