@@ -27,6 +27,11 @@ export const UnitSchema = new mongoose.Schema(
   },
 );
 
+export const UnitModel = mongoose.model(
+  'Unit',
+  new mongoose.Schema(UnitSchema),
+);
+
 export interface Unit {
   buildingId: mongoose.Types.ObjectId;
   ownerId?: mongoose.Types.ObjectId;
