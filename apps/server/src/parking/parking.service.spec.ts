@@ -118,4 +118,8 @@ describe('ParkingService', () => {
     }).compile();
     service = module.get<ParkingService>(ParkingService);
   });
+  afterEach(() => {
+    mockingoose(ParkingModel).reset();
+    jest.clearAllMocks();
+  });
 });
