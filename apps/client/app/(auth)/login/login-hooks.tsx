@@ -13,7 +13,7 @@ function LoginHooks() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const { loggedIn } = useAppSelector((state) => state.auth.value);
+  const { loggedIn, error } = useAppSelector((state) => state.auth.value);
 
   const {
     register,
@@ -30,11 +30,11 @@ function LoginHooks() {
 
     setLoading(false);
 
-    if (loggedIn) {
+    if (error) {
+      toast.error("Wrong credentials. Please try again.");
+    } else if (loggedIn) {
       toast.success("Login successful");
       router.push("/");
-    } else {
-      toast.error("Login failed");
     }
   };
 
