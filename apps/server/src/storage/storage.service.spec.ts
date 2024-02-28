@@ -6,7 +6,7 @@ import { MongoServerError, ObjectId } from 'mongodb';
 import { Building } from '../building/entities/building.entity';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { StorageService } from './storage.service';
-import { Storage, StorageModel} from './entities/storage.entity';
+import { Storage, StorageModel } from './entities/storage.entity';
 import { Unit } from '../unit/entities/unit.entity';
 import { UpdateStorageDto } from './dto/update-storage.dto';
 import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
@@ -73,14 +73,14 @@ const occupiedUnitInfoTestData: Unit = {
   fees: 500,
 };
 
-const StorageInfoTestData: Storage = {
+const storageInfoTestData: Storage = {
   buildingId: buildingInfoTestData2.id,
   storageNumber: 7,
   isOccupied: false,
   fees: 10,
 };
 
-const StorageInfoTestData2: Storage = {
+const storageInfoTestData2: Storage = {
   buildingId: buildingInfoTestData2.id,
   storageNumber: 7,
   isOccupied: false,
@@ -165,7 +165,7 @@ describe('StorageService', () => {
         ...buildingInfoTestData,
       });
       mockingoose(StorageModel).toReturn(
-        { ...StorageInfoTestData, buildingId: id },
+        { ...storageInfoTestData, buildingId: id },
         'findOne',
       );
 
@@ -175,6 +175,60 @@ describe('StorageService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
-});
 
+  describe('updateStorage', () => {
+    it('should update Storage if valid fields are inputted', async () => {
+      // Arrange
+      const StorageId = new ObjectId();
+      mockingoose(StorageModel).toReturn(storageInfoTestData, 'findOne');
+      mockingoose(StorageModel).toReturn(updateStorageTest, 'findOneAndUpdate');
+
+      // Act
+      const result = await service.updateStorage(
+        StorageId.toString(),
+        updateStorageDtoTestData,
+      );
+
+      // Asssert
+      expect(result).toEqual({
+        storageNumber: updateStorageDtoTestData.storageNumber,
+        isOccupied: updateStorageDtoTestData.isOccupied,
+        fees: updateStorageDtoTestData.fees,
+      });
+    });
+    it('should throw an error if the Storage does not exsit', async () => {
+      // Arrange
+      const StorageId = new ObjectId();
+      mockingoose(StorageModel).toReturn(null, 'findOne');
+
+      await expect(
+        service.updateStorage(StorageId.toString(), updateStorageDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+    //DO this after incase of not enough coverage
+    it('should throw an error if the new Storage number is already taken', async () => {
+      // Arrange
+      const StorageId = new ObjectId();
+
+      const mongoException: MongoServerError = {
+        addErrorLabel: (_) => {},
+        hasErrorLabel: (_) => false,
+        name: 'test',
+        message: 'etst',
+        errmsg: 'duplicate ID',
+        errorLabels: [],
+        code: 110000,
+      };
+
+      mockingoose(StorageModel)
+        .toReturn(storageInfoTestData, 'findOne')
+        .toReturn(new Error(), 'findOneAndUpdate');
+
+      // Act & Assert
+      await expect(
+        service.updateStorage(StorageId.toString(), updateStorageDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+  });
+});
 
