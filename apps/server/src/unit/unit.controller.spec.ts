@@ -21,7 +21,8 @@ const unitServiceMock = {
     linkUnitToUser:jest.fn(),
     remove:jest.fn(),
     findAll:jest.fn(),
-    findOne:jest.fn()
+    findOne:jest.fn(),
+    findOwnerUnits:jest.fn()
 }
 
 const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
@@ -192,6 +193,22 @@ describe('UnitController',() => {
 
             //Assert
             expect(result).toEqual(unitInfoTestData);
+        });
+    })
+    describe('findOwnerUnits',() => {
+        it('should forward call to unit service', async () => {
+            //Arrange
+            unitServiceMock.findOwnerUnits.mockResolvedValue(
+                [unitInfoTestData]
+            )
+
+            //Act
+            const result = await controller.findOwnerUnits(
+                userInfoTestData.id
+            )
+
+            //Assert
+            expect(result).toEqual([unitInfoTestData]);
         });
     })
 })
