@@ -10,33 +10,29 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export interface MyCompany {
   companyName: string;
   companyLocation: string;
-  companyId: string;
   id: string;
 }
 
 const mockCompany = (
   companyName = 'Test Company',
   companyLocation = 'test',
-  companyId = '1',
   id = '1',
 ): MyCompany => ({
   companyName,
   companyLocation,
-  companyId,
   id,
 });
 
 const mockCompanyDoc = (mock?: Partial<MyCompany>): Partial<CompanyDoc> => ({
   companyName: mock?.companyName || 'Test Company',
   companyLocation: mock?.companyLocation || 'test',
-  companyId: mock?.companyId || '1',
   _id: mock?.id || '1',
 });
 
 const companyArray = [
   mockCompany(),
-  mockCompany('Test Company 1', 'test', '2', '2'),
-  mockCompany('Test Company 2', 'test', '3', '3'),
+  mockCompany('Test Company 1', 'test', '2'),
+  mockCompany('Test Company 2', 'test', '3'),
 ];
 
 const companyDocArray: Partial<CompanyDoc>[] = [
@@ -44,13 +40,11 @@ const companyDocArray: Partial<CompanyDoc>[] = [
   mockCompanyDoc({
     companyName: 'Test Company 1',
     companyLocation: 'test',
-    companyId: '2',
     id: '2',
   }),
   mockCompanyDoc({
     companyName: 'Test Company 2',
     companyLocation: 'test',
-    companyId: '3',
     id: '3',
   }),
 ];
@@ -113,28 +107,6 @@ describe('CompanyService', () => {
       id: mockCompany._id,
       companyName: mockCompany.companyName,
       companyLocation: mockCompany.companyLocation,
-      companyId: mockCompany.companyId,
-    });
-  });
-
-  it('should getOne by CompanyId', async () => {
-    const mockCompanyId = '3';
-    const mockCompany = mockCompanyDoc({
-      companyName: 'Test Company 2',
-      companyId: mockCompanyId,
-    });
-
-    jest.spyOn(model, 'findById').mockReturnValue({
-      exec: jest.fn().mockResolvedValueOnce(mockCompany),
-    } as any);
-
-    const foundCompany = await service.findByCompanyId(mockCompanyId);
-
-    expect(foundCompany).toEqual({
-      id: mockCompany._id,
-      companyName: mockCompany.companyName,
-      companyLocation: mockCompany.companyLocation,
-      companyId: mockCompany.companyId,
     });
   });
 
@@ -142,7 +114,6 @@ describe('CompanyService', () => {
     const mockCompanyName = 'test';
     const mockCompany = mockCompanyDoc({
       companyName: mockCompanyName,
-      companyId: '1',
     });
 
     jest.spyOn(model, 'findOne').mockReturnValue({
@@ -155,7 +126,6 @@ describe('CompanyService', () => {
       id: mockCompany._id,
       companyName: mockCompany.companyName,
       companyLocation: mockCompany.companyLocation,
-      companyId: mockCompany.companyId,
     });
   });
 
@@ -198,30 +168,4 @@ describe('CompanyService', () => {
       expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
     }
   });
-
-  /*  it('should update a company successfully', async () => {
-    jest.spyOn(model, 'findOne').mockReturnValueOnce(
-      createMock<Query<CompanyDoc, CompanyDoc>>({
-        exec: jest.fn().mockResolvedValueOnce({
-          id: '1',
-          companyName: 'Original Company',
-          companyLocation: 'Original Location',
-          companyId: '1',
-        }),
-      }),
-    );
-
-    const updateCompanyDto: UpdateCompanyDto = {
-      companyName: 'Updated Company',
-      companyLocation: 'Updated Location',
-    };
-
-    const updatedCat = await service.updateCompany('1', updateCompanyDto);
-    expect(updatedCat).toEqual({
-      id: '1',
-      ...updateCompanyDto,
-      companyId: '1',
-    });
-  });
-*/
 });
