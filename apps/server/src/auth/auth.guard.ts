@@ -87,6 +87,11 @@ export class PrivilegeGuard implements CanActivate {
           user?.role === this.reflector.get(Roles, context.getHandler()) &&
           user?.companyId === building?.companyId
         );
+      } else if (params?.companyId) {
+        return (
+          user?.role === this.reflector.get(Roles, context.getHandler()) &&
+          user?.companyId === params?.companyId
+        );
       }
     }
     return user?.role === this.reflector.get(Roles, context.getHandler());
