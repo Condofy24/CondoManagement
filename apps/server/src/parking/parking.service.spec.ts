@@ -248,4 +248,40 @@ describe('ParkingService', () => {
       );
     });
   });
+
+  describe('linkParkingToUnit', () => {
+    it('should link a specific parking to a specific user given valid informaiton', async () => {
+      // Arrange
+      mockingoose(ParkingModel)
+        .toReturn(parkingInfoTestData, 'findOne')
+        .toReturn(parkingInfoTestData, 'findOneAndUpdate');
+
+      const unitId: ObjectId = new ObjectId();
+
+      // Act
+      const result = await service.linkParkingToUnit(
+        parkingInfoTestData2.buildingId.toString(),
+        unitId.toString(),
+        linkParkingToUnitDto,
+      );
+
+      // Assert
+      expect(result).toBeDefined();
+    });
+
+    it('should throw an exception if user does not exist', async () => {
+      //Arrange
+      mockingoose(ParkingModel).toReturn([parkingInfoTestData], 'find');
+      unitServiceMock.findOne.mockResolvedValue(null);
+      const unitId: ObjectId = new ObjectId();
+      //Act
+      expect(
+        service.linkParkingToUnit(
+          parkingInfoTestData.buildingId.toString(),
+          unitId.toString(),
+          linkParkingToUnitDto,
+        ),
+      ).rejects.toThrow(HttpException);
+    });
+  });
 });
