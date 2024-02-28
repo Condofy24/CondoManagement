@@ -31,10 +31,12 @@ export default function RootLayout({
         )}
       >
         <ThemeContextProvider>
-          <SiteHeader />
-          <Toaster position="top-right" />
+          <ReduxProvider>
+            <SiteHeader />
+            <Toaster position="top-right" />
 
-          <ReduxProvider>{children}</ReduxProvider>
+            {children}
+          </ReduxProvider>
         </ThemeContextProvider>
       </body>
     </html>

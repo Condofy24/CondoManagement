@@ -1,18 +1,21 @@
+"use client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TLoginSchema, loginSchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/redux/store";
 import { login } from "@/redux/services/auth-service";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { useAppSelector, AppDispatch } from "@/redux/store";
 
 function LoginHooks() {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(false);
-  const { error, success } = useAppSelector((state) => state.authReducer.value);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user, success } = useAppSelector(
+    (state) => state.authReducer.value.user,
+  );
 
   const {
     register,
@@ -29,11 +32,11 @@ function LoginHooks() {
 
     setLoading(false);
 
-    if (error) {
-      toast.error(error + ": wrong credentials or non-existing user");
-    } else if (success) {
+    if (success) {
       toast.success("Login successful");
       router.push("/");
+    } else {
+      toast.error("Login failed");
     }
   };
 

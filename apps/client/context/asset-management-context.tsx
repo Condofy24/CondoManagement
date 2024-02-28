@@ -1,4 +1,4 @@
-import { BuildingAsset, Parking, Unit } from "@/types";
+import { BuildingAsset } from "@/types";
 import {
   Dispatch,
   SetStateAction,

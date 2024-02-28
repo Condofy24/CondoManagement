@@ -14,7 +14,6 @@ interface LoginResult {
   token: string;
   user: User;
 }
-
 export const login = createAsyncThunk<LoginResult, LoginInput>(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
@@ -26,7 +25,7 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
 
       // store user's token in local storage
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // localStorage.setItem("user", JSON.stringify(data.user));
 
       return data;
     } catch (error: any) {

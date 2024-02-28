@@ -1,5 +1,4 @@
 "use client";
-import div from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import logo from "@/public/logo.png";
@@ -20,7 +19,9 @@ export function MainNav() {
       </div>
       <nav className="flex items-center gap-6 text-sm">
         <div
-          onClick={() => router.push("/property/dashboard")}
+          onClick={() => {
+            router.push("/property/dashboard");
+          }}
           className={cn(
             "transition-colors hover:text-foreground/80",
             pathname.includes("dashboard")
