@@ -19,7 +19,8 @@ const createUnitDto: CreateUnitDto = {
 const unitServiceMock = {
     createUnit:jest.fn(),
     linkUnitToUser:jest.fn(),
-    remove:jest.fn()
+    remove:jest.fn(),
+    findAll:jest.fn()
 }
 
 const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
@@ -158,6 +159,22 @@ describe('UnitController',() => {
 
             //Assert
             expect(result).toEqual(HttpStatus.NO_CONTENT);
+        });
+    })
+    describe('findAll',() => {
+        it('should forward call to unit service', async () => {
+            //Arrange
+            unitServiceMock.findAll.mockResolvedValue(
+                [unitInfoTestData]
+            )
+
+            //Act
+            const result = await controller.findAll(
+                unitInfoTestData2.buildingId.toString()
+            )
+
+            //Assert
+            expect(result).toEqual([unitInfoTestData]);
         });
     })
 })
