@@ -18,6 +18,7 @@ const storageServiceMock = {
   createStorage: jest.fn(),
   linkStorageToUnit: jest.fn(),
   remove: jest.fn(),
+  findAll: jest.fn(),
 };
 
 const linkStorageToUnitDto: LinkStorageToUnitDto = {
@@ -121,5 +122,18 @@ describe('StorageController', () => {
       expect(result).toEqual(HttpStatus.NO_CONTENT);
     });
   });
+  describe('findAll', () => {
+    it('should forward call to Storage service', async () => {
+      //Arrange
+      storageServiceMock.findAll.mockResolvedValue([storageInfoTestData]);
 
+      //Act
+      const result = await controller.findAll(
+        storageInfoTestData2.buildingId.toString(),
+      );
+
+      //Assert
+      expect(result).toEqual([storageInfoTestData]);
+    });
+  });
 });
