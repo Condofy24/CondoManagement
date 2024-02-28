@@ -283,4 +283,21 @@ describe('StorageService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+
+  describe('remove', () => {
+    it('should remove a Storage given its corresponding id', async () => {
+      mockingoose(StorageModel).toReturn(storageInfoTestData2, 'findOne');
+      const buildingId = storageInfoTestData2.buildingId.toString();
+      buildingServiceMock.findOne.mockResolvedValue({
+        buildingId,
+        ...buildingInfoTestData,
+      });
+
+      //Act
+      const storageId = new ObjectId();
+      const result = await service.remove(storageId.toString());
+      //Assert
+      expect(result).toBeDefined();
+    });
+  });
 });
