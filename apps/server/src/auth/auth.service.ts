@@ -39,6 +39,7 @@ export class AuthService {
         phoneNumber: user.phoneNumber,
         imageUrl: user.imageUrl,
         imageId: user.imageId,
+        companyId: user.companyId,
       };
       return {
         token: await this.jwtService.signAsync(payload),
