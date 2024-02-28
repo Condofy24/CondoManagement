@@ -5,6 +5,8 @@ import { Readable } from 'stream';
 import { BuildingController } from './building.controller';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { ObjectId } from 'mongodb';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
 
 const buildingServiceMock = {
   createBuilding: jest.fn(),
@@ -44,6 +46,13 @@ const buildingInfoTestData = {
   fileAssetId: 'Image212344124',
 };
 
+const jwtServiceMock = {
+  signAsync: jest.fn(),
+};
+const userServiceMock = {
+  findOne: jest.fn(),
+};
+
 describe('BuidlingController', () => {
   let buildingController: BuildingController;
 
@@ -54,6 +63,14 @@ describe('BuidlingController', () => {
         {
           provide: BuildingService,
           useValue: buildingServiceMock,
+        },
+        {
+          provide: UserService,
+          useValue: userServiceMock,
+        },
+        {
+          provide: JwtService,
+          useValue: jwtServiceMock,
         },
       ],
     }).compile();

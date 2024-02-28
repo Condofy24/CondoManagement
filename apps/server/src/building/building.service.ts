@@ -16,6 +16,7 @@ import { updateBuildingDto } from './dto/update-building.dto';
 import { UnitService } from '../unit/unit.service';
 import { StorageService } from '../storage/storage.service';
 import { ParkingService } from '../parking/parking.service';
+import { UserService } from '../user/user.service';
 
 /**
  * Service class for managing buildings.
@@ -29,6 +30,8 @@ export class BuildingService {
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
     private storageService: StorageService,
     private parkingService: ParkingService,
   ) {}

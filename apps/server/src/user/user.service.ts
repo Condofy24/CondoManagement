@@ -112,7 +112,7 @@ export class UserService {
       );
     }
 
-    const companyId = companyRes.companyId;
+    const companyId = companyRes.id;
 
     let imageUrl =
       'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';

@@ -8,6 +8,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 import { VerfModule } from '../verf/verf.module';
 import { UnitModule } from '../unit/unit.module';
+import { BuildingModule } from '../building/building.module';
 
 /**
  * Module for managing users in the application.
@@ -18,6 +19,7 @@ import { UnitModule } from '../unit/unit.module';
     CloudinaryModule,
     CompanyModule,
     VerfModule,
+    BuildingModule,
     UnitModule,
   ],
   controllers: [UserController],
