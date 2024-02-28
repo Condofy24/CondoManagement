@@ -3,8 +3,7 @@ import axios from "axios";
 import { User, UserRolesEnum } from "@/types";
 import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
 import toast from "react-hot-toast";
-
-const API_URL = "http://127.0.0.1:4000/api";
+import { API_URL } from "@/global";
 
 interface LoginInput {
   email: string;
@@ -13,7 +12,7 @@ interface LoginInput {
 
 interface LoginResult {
   token: string;
-  userInfo: User;
+  user: User;
 }
 
 export const login = createAsyncThunk<LoginResult, LoginInput>(
@@ -27,6 +26,7 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
 
       // store user's token in local storage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       return data;
     } catch (error: any) {

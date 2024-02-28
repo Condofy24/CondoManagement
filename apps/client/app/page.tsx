@@ -19,13 +19,13 @@ import {
 } from "./components/ui/carousel";
 
 export default function Home() {
-  const user = useAppSelector((state) => state.authReducer.value.userInfo);
+  const user = useAppSelector((state) => state.authReducer.value.user);
 
   return (
     <main className="relative">
       <PageHeader>
         <PageHeaderHeading className="hidden md:block">
-          Welcome to Condofy
+          Welcome to Condofy {user?.name}
         </PageHeaderHeading>
         <PageHeaderHeading className="md:hidden">Condofy</PageHeaderHeading>
         <PageHeaderDescription>

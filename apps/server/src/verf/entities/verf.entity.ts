@@ -15,6 +15,14 @@ export const VerificationKeySchema = new mongoose.Schema(
   },
 );
 
+/**
+ * Represents the Verification model in the database.
+ */
+export const VerfModel = mongoose.model(
+  'Verification',
+  new mongoose.Schema(VerificationKeySchema),
+);
+
 export interface VerificationKey {
   unitId: string;
   key: string;
