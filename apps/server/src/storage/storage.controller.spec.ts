@@ -17,6 +17,7 @@ const createStorageDto: CreateStorageDto = {
 const storageServiceMock = {
   createStorage: jest.fn(),
   linkStorageToUnit: jest.fn(),
+  remove: jest.fn(),
 };
 
 const linkStorageToUnitDto: LinkStorageToUnitDto = {
@@ -72,7 +73,7 @@ describe('StorageController', () => {
     expect(controller).toBeDefined();
   });
   describe('create', () => {
-    it('should forward call to Parking service', async () => {
+    it('should forward call to Storage service', async () => {
       //Arrange
       storageServiceMock.createStorage.mockResolvedValue(storageInfoTestData);
 
@@ -87,7 +88,7 @@ describe('StorageController', () => {
     });
   });
   describe('linkStorageToUnit', () => {
-    it('should forward call to unit service', async () => {
+    it('should forward call to Storage service', async () => {
       //Arrange
       storageServiceMock.linkStorageToUnit.mockResolvedValue(
         storageInfoTestData,
@@ -104,5 +105,21 @@ describe('StorageController', () => {
       //Assert
       expect(result).toEqual(storageInfoTestData);
     });
-  });  
+  });
+
+  describe('remove', () => {
+    it('should forward call to Storage service', async () => {
+      //Arrange
+      storageServiceMock.remove.mockResolvedValue(HttpStatus.NO_CONTENT);
+
+      //Act
+      const result = await controller.remove(
+        storageInfoTestData2.id.toString(),
+      );
+
+      //Assert
+      expect(result).toEqual(HttpStatus.NO_CONTENT);
+    });
+  });
+
 });
