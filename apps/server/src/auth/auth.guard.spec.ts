@@ -10,11 +10,14 @@ const jwtServiceMock = {
 };
 
 const userServiceMock = {
-  getPrivilege: jest.fn().mockResolvedValue('admin'),
+  getPrivilege: jest.fn().mockResolvedValue(0),
+  findById: jest
+    .fn()
+    .mockResolvedValue({ id: 'user123', companyId: 'company-id', role: 0 }),
 };
 
 const reflectorMock = {
-  get: jest.fn().mockReturnValue('admin'),
+  get: jest.fn().mockReturnValue(0),
 };
 
 describe('PrivilegeGuard', () => {
@@ -43,6 +46,24 @@ describe('PrivilegeGuard', () => {
   });
 
   it('should allow access for valid privileges', async () => {
+    // Arrange
+    const mockExecutionContext = {
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: { authorization: 'Bearer valid.token.here' },
+          params: { companyId: 'company-id' },
+        }),
+      }),
+      getHandler: () => ({}),
+    } as unknown as ExecutionContext;
+
+    // Act & Assert
+    await expect(
+      privilegeGuard.canActivate(mockExecutionContext),
+    ).resolves.toBeTruthy();
+  });
+
+  it('should allow access for public users', async () => {
     // Arrange
     const mockExecutionContext = {
       switchToHttp: () => ({

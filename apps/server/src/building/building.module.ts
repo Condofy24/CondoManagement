@@ -8,6 +8,7 @@ import { CompanyModule } from '../company/company.module';
 import { UnitModule } from '../unit/unit.module';
 import { ParkingModule } from '../parking/parking.module';
 import { StorageModule } from '../storage/storage.module';
+import { UserModule } from 'src/user/user.module';
 
 /**
  * Module for managing buildings.
@@ -18,6 +19,7 @@ import { StorageModule } from '../storage/storage.module';
     CompanyModule,
     CloudinaryModule,
     forwardRef(() => UnitModule),
+    forwardRef(()=>UserModule),
     ParkingModule,
     StorageModule,
   ],
