@@ -8,9 +8,8 @@ import {
   TSignupSchema,
   managerSignupSchema,
 } from "@/lib/validation-schemas";
-import { registerUser } from "@/redux/services/auth-service";
+import { registerManager } from "@/redux/services/auth-service";
 import { AppDispatch } from "@/redux/store";
-import { UserRolesEnum } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -36,9 +35,7 @@ export default function ManagerRegistrationPage() {
     setLoading(true);
 
     if (profilePic) {
-      dispatch(
-        registerUser({ ...data, profilePic, role: UserRolesEnum.MANAGER }),
-      );
+      dispatch(registerManager({ ...data, profilePic }));
       router.push("/login");
     } else {
       setProfilePicError("Profile picture is required");

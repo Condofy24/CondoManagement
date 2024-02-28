@@ -9,4 +9,5 @@ export class UserDto {
   phoneNumber: string;
   imageUrl: string;
   imageId: string;
+  companyId?: string;
 }
