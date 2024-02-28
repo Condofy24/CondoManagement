@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { UnitInformation } from "@/types";
+import { Property } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -12,40 +12,42 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import StatusCell from "@/app/components/table/data-table-status-cell";
 
-export const unitColumns: ColumnDef<UnitInformation>[] = [
+export const columns: ColumnDef<Property>[] = [
   {
-    accessorKey: "unitNumber",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Unit Number
+          Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "size",
-    header: "Size",
+    accessorKey: "address",
+    header: "Address",
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: StatusCell,
+    accessorKey: "units",
+    header: "Units",
   },
   {
-    accessorKey: "fees",
-    header: "Fees",
+    accessorKey: "parking",
+    header: "Parkings",
+  },
+  {
+    accessorKey: "storage",
+    header: "Storage",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const unit = row.original;
+      const property = row.original;
 
       return (
         <DropdownMenu>
@@ -58,7 +60,8 @@ export const unitColumns: ColumnDef<UnitInformation>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit Unit details</DropdownMenuItem>
+            <DropdownMenuItem>Edit property details</DropdownMenuItem>
+            <DropdownMenuItem>Download property file</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -2,7 +2,9 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
+  forwardRef,
 } from '@nestjs/common';
 import { Building } from './entities/building.entity';
 import { Model } from 'mongoose';
@@ -11,6 +13,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
 import { CompanyService } from '../company/company.service';
 import { updateBuildingDto } from './dto/update-building.dto';
+import { UnitService } from '../unit/unit.service';
+import { StorageService } from '../storage/storage.service';
+import { ParkingService } from '../parking/parking.service';
 
 /**
  * Service class for managing buildings.
@@ -22,6 +27,10 @@ export class BuildingService {
     private readonly buildingModel: Model<Building>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
+    @Inject(forwardRef(() => UnitService))
+    private unitService: UnitService,
+    private storageService: StorageService,
+    private parkingService: ParkingService,
   ) {}
 
   /**
@@ -35,7 +44,6 @@ export class BuildingService {
       const fileResponse = await this.cloudinary.uploadFile(file);
       return fileResponse;
     } catch (error) {
-      console.error('Error uploading file to Cloudinary:', error);
       throw new BadRequestException('Failed to upload file to Cloudinary.');
     }
   }
@@ -96,10 +104,11 @@ export class BuildingService {
       filePublicId,
       fileAssetId,
     });
-    const result = await newBuilding.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-
+    try {
+      await newBuilding.save();
+    } catch (e) {
+      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return {
       companyId,
       name,
@@ -300,5 +309,17 @@ export class BuildingService {
       filePublicId: building.filePublicId,
       fileAssetId: building.fileAssetId,
     };
+  }
+  /**
+   * Get all properties for a building.
+   * @param buildingId - The ID of the building.
+   * @returns The building info and arrays of building's properties.
+   */
+  public async findAllProperties(buildingId: string) {
+    const building = await this.findOne(buildingId);
+    const units = await this.unitService.findAll(buildingId);
+    const parkings = await this.parkingService.findAll(buildingId);
+    const storages = await this.storageService.findAll(buildingId);
+    return { building, units, parkings, storages };
   }
 }

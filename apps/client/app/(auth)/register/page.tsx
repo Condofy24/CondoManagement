@@ -13,7 +13,7 @@ import { AppDispatch } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { UserRolesEnum } from "@/types";
 
-const SignUpNew = () => {
+export default function RegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
@@ -33,7 +33,7 @@ const SignUpNew = () => {
 
     if (profilePic) {
       dispatch(
-        registerUser({ ...data, profilePic, role: UserRolesEnum.OWNER })
+        registerUser({ ...data, profilePic, role: UserRolesEnum.OWNER }),
       );
       router.push("/login");
     } else {
@@ -60,7 +60,7 @@ const SignUpNew = () => {
           className={cn(
             `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
               loading ? "cursor-not-allowed opacity-50" : ""
-            }`
+            }`,
           )}
         >
           {loading ? (
@@ -72,6 +72,4 @@ const SignUpNew = () => {
       </div>
     </form>
   );
-};
-
-export default SignUpNew;
+}

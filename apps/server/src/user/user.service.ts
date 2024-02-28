@@ -2,7 +2,9 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,6 +19,9 @@ import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
+import { VerfService } from '../verf/verf.service';
+import { UnitService } from '../unit/unit.service';
+import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
 
 @Injectable()
 /**
@@ -35,14 +40,11 @@ export class UserService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
+    private verfService: VerfService,
+    @Inject(forwardRef(() => UnitService))
+    private unitService: UnitService,
   ) {}
 
-  /**
-   * Uploads an image file to Cloudinary.
-   * @param file The image file to upload.
-   * @returns The response from Cloudinary.
-   * @throws BadRequestException if the image upload fails.
-   */
   async uploadImageToCloudinary(file: Express.Multer.File) {
     try {
       const imageResponse = await this.cloudinary.uploadFile(file);
@@ -212,13 +214,14 @@ export class UserService {
     createUserDto: CreateUserDto,
     image?: Express.Multer.File,
   ) {
-    const { email, password, name, role, phoneNumber } = createUserDto;
+    const { email, password, name, phoneNumber, verfKey } = createUserDto;
 
     // Check user doesn't already exist
     const emailInUse = await this.userModel.exists({ email: email });
     const phoneNumberInUse = await this.userModel.exists({
       phoneNumber: phoneNumber,
     });
+
     if (emailInUse?._id || phoneNumberInUse?._id) {
       const errorMessage =
         emailInUse && phoneNumberInUse
@@ -233,6 +236,15 @@ export class UserService {
         HttpStatus.CONFLICT,
       );
     }
+    //check if Key exists:
+    const verfExist = await this.verfService.findByVerfKey(verfKey);
+    if (!verfExist) {
+      throw new HttpException(
+        { error: "Key doesn't exists", status: HttpStatus.BAD_REQUEST },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     let imageUrl =
       'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
     let imageId = 'default_user';
@@ -241,13 +253,20 @@ export class UserService {
       imageUrl = imageResponse.secure_url;
       imageId = imageResponse.public_id;
     }
+    let assignedRole;
+    if (verfExist.type == 0) {
+      assignedRole = 3;
+    }
+    if (verfExist.type == 1) {
+      assignedRole = 4;
+    }
 
     // Create user
     const newUser = new this.userModel({
       email,
       password,
       name,
-      role,
+      role: assignedRole,
       phoneNumber,
       imageUrl,
       imageId,
@@ -256,6 +275,19 @@ export class UserService {
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
+    const unitForLink = await this.unitService.findOne(verfExist.unitId);
+
+    const buildingId = unitForLink.buildingId;
+
+    const linkUnitDto = new LinkUnitToBuidlingDto();
+
+    linkUnitDto.unitNumber = unitForLink.unitNumber;
+
+    await this.unitService.linkUnitToUser(
+      buildingId.toString(),
+      newUser._id.toString(),
+      linkUnitDto,
+    );
     return response.status(HttpStatus.CREATED);
   }
 
@@ -274,7 +306,7 @@ export class UserService {
    * @returns The found user, or undefined if not found.
    */
   public async findById(id: string): Promise<User | undefined | null> {
-    return this.userModel.findById(id).exec();
+    return this.userModel.findOne({ _id: id }).exec();
   }
 
   /**

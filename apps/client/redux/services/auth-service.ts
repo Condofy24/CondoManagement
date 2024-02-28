@@ -1,10 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { UserInfo, UserRolesEnum } from "@/types";
+import { User, UserRolesEnum } from "@/types";
 import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
 import toast from "react-hot-toast";
-
-const API_URL = "http://127.0.0.1:4000/api";
+import { API_URL } from "@/global";
 
 interface LoginInput {
   email: string;
@@ -13,7 +12,7 @@ interface LoginInput {
 
 interface LoginResult {
   token: string;
-  userInfo: UserInfo;
+  user: User;
 }
 
 export const login = createAsyncThunk<LoginResult, LoginInput>(
@@ -27,6 +26,7 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
 
       // store user's token in local storage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       return data;
     } catch (error: any) {
@@ -37,7 +37,7 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
         return rejectWithValue(error.message);
       }
     }
-  }
+  },
 );
 
 type UserRegistationData =
@@ -53,18 +53,18 @@ export const registerUser = createAsyncThunk<void, UserRegistationData>(
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.response.data.message);
       } else {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.message);
       }
     }
     toast.success("Registered successfully");
-  }
+  },
 );
 
 type ManagerRegistrationData =
@@ -78,22 +78,25 @@ export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
       const { company, address, ...managerData } =
         userData as TManagerSignupSchema;
 
-      await axios.post(`${API_URL}/company`, { company, address });
-      await axios.post(`${API_URL}/user/manager`, managerData);
+      await axios.post(`${API_URL}/user/manager`, {
+        companyName: company,
+        companyLocation: address,
+        ...managerData,
+      });
     } catch (error: any) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.response.data.message);
       } else {
         toast.error(
-          "An error occured when creating your account. Please try again!"
+          "An error occured when creating your account. Please try again!",
         );
         return rejectWithValue(error.message);
       }
     }
     toast.success("Registered successfully");
-  }
+  },
 );

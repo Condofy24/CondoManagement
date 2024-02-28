@@ -70,4 +70,13 @@ export class BuildingController {
   findAll(@Param('companyId') companyId: string) {
     return this.buildingService.findAll(companyId);
   }
+  /**
+   * Get all properties for a building.
+   * @param buildingId - The ID of the building.
+   * @returns The building info and arrays of building's properties.
+   */
+  @Get('allProperties/:buildingId')
+  findAllProperties(@Param('buildingId') buildingId: string) {
+    return this.buildingService.findAllProperties(buildingId);
+  }
 }

@@ -6,6 +6,8 @@ import { UserSchema } from './entities/user.entity';
 import { IsValidRole } from './user.validators';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
+import { VerfModule } from '../verf/verf.module';
+import { UnitModule } from '../unit/unit.module';
 
 /**
  * Module for managing users in the application.
@@ -15,6 +17,8 @@ import { CompanyModule } from '../company/company.module';
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     CloudinaryModule,
     CompanyModule,
+    VerfModule,
+    UnitModule,
   ],
   controllers: [UserController],
   providers: [UserService, IsValidRole],
