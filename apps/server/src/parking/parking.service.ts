@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { Parking } from './entities/parking.entity';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
@@ -14,6 +14,7 @@ import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { UnitService } from '../unit/unit.service';
 import { response } from 'express';
 import { UpdateParkingDto } from './dto/update-parking.dto';
+import { MongoServerError } from 'mongodb';
 
 @Injectable()
 export class ParkingService {
@@ -137,12 +138,15 @@ export class ParkingService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (parking.parkingNumber != parkingNumber) {
-      const duplicateParkingNumber = await this.parkingModel.findOne({
-        buildingId: parking.buildingId,
+
+    try {
+      const result = await this.parkingModel.findByIdAndUpdate(parkingId, {
         parkingNumber: parkingNumber,
+        isOccupied: isOccupied,
+        fees: fees,
       });
-      if (duplicateParkingNumber) {
+    } catch (error) {
+      if (error instanceof MongoServerError && error.code === 11000) {
         throw new HttpException(
           {
             error: 'Parking number already taken',
@@ -150,15 +154,11 @@ export class ParkingService {
           },
           HttpStatus.BAD_REQUEST,
         );
+      } else if (error instanceof Error) {
+        throw new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
-    const result = await this.parkingModel.findByIdAndUpdate(parkingId, {
-      parkingNumber: parkingNumber,
-      isOccupied: isOccupied,
-      fees: fees,
-    });
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+
     return {
       parkingNumber,
       isOccupied,

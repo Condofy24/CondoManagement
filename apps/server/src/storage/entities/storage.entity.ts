@@ -21,6 +21,15 @@ export const StorageSchema = new mongoose.Schema(
   },
 );
 
+StorageSchema.index(
+  { storageNumberNumber: 1, buildingId: 1 },
+  { unique: true },
+);
+
+export const StorageModel = mongoose.model(
+  'Storage',
+  new mongoose.Schema(StorageSchema),
+);
 export interface Storage {
   buildingId: mongoose.Types.ObjectId;
   unitId?: mongoose.Types.ObjectId;

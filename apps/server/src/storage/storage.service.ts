@@ -14,6 +14,7 @@ import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { UnitService } from '../unit/unit.service';
 import { response } from 'express';
 import { UpdateStorageDto } from './dto/update-storage.dto';
+import { MongoServerError } from 'mongodb';
 
 @Injectable()
 export class StorageService {
@@ -119,20 +120,23 @@ export class StorageService {
     updateStorageDto: UpdateStorageDto,
   ) {
     const { storageNumber, isOccupied, fees } = updateStorageDto;
+
     const storage = await this.storageModel.findById(storageId);
-    //FindOne by the storage number and the building id
     if (!storage) {
       throw new HttpException(
         { error: "Storage doesn't exists", status: HttpStatus.BAD_REQUEST },
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (storage.storageNumber != storageNumber) {
-      const duplicateStorageNumber = await this.storageModel.findOne({
-        buildingId: storage.buildingId,
+
+    try {
+      const result = await this.storageModel.findByIdAndUpdate(storageId, {
         storageNumber: storageNumber,
+        isOccupied: isOccupied,
+        fees: fees,
       });
-      if (duplicateStorageNumber) {
+    } catch (error) {
+      if (error instanceof MongoServerError && error.code === 11000) {
         throw new HttpException(
           {
             error: 'Storage number already taken',
@@ -140,15 +144,11 @@ export class StorageService {
           },
           HttpStatus.BAD_REQUEST,
         );
+      } else if (error instanceof Error) {
+        throw new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
       }
     }
-    const result = await this.storageModel.findByIdAndUpdate(storageId, {
-      storageNumber: storageNumber,
-      isOccupied: isOccupied,
-      fees: fees,
-    }); // To return the updated document)
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+
     return {
       storageNumber,
       isOccupied,
