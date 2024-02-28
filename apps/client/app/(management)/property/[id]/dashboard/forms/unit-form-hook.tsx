@@ -1,20 +1,17 @@
-import {
-  TCreateUnitSchema,
-  createUnitSchema,
-} from "@/lib/unit-validation-schemas";
+import { TUnitSchema, unitSchema } from "@/lib/unit-validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-export default function UseCreateUnit() {
+export default function useUnitForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TCreateUnitSchema>({
-    resolver: zodResolver(createUnitSchema),
+  } = useForm<TUnitSchema>({
+    resolver: zodResolver(unitSchema),
   });
 
-  const onSubmit = (data: TCreateUnitSchema) => {
+  const onSubmit = (data: TUnitSchema) => {
     console.log(data);
   };
 

@@ -16,7 +16,7 @@ const SignUpNew = () => {
   const [loading, setLoading] = useState(false);
   const [propertyFile, setPropertyFile] = useState<File | null>(null);
   const [propertyFileError, setPropertyFileError] = useState<string | null>(
-    null
+    null,
   );
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -68,7 +68,7 @@ const SignUpNew = () => {
             className={cn(
               `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
                 loading ? "cursor-not-allowed opacity-50" : ""
-              }`
+              }`,
             )}
           >
             {loading ? (

@@ -25,15 +25,13 @@ export class CreateUserDto {
   name: string;
 
   /**
-   * The role of the user.
-   */
-  @Validate(IsValidRole)
-  role: number;
-
-  /**
    * The phone number of the user.
    */
   @Validate(IsValidPhoneNumber)
   @IsNotEmpty()
   phoneNumber: string;
+
+  //To get the verfKey upon signup of a user and checking that its not empty
+  @IsNotEmpty()
+  verfKey: string;
 }

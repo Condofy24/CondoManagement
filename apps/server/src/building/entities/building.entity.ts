@@ -24,6 +24,11 @@ export const BuildingSchema = new mongoose.Schema(
   },
 );
 
+export const BuildingModel = mongoose.model(
+  'Building',
+  new mongoose.Schema(BuildingSchema),
+);
+
 /**
  * Represents a building
  */
