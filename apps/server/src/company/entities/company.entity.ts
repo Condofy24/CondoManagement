@@ -11,6 +11,7 @@ export const CompanySchema = new mongoose.Schema(
 );
 
 export interface Company {
+  _id: string;
   companyName: string;
   companyLocation: string;
 }

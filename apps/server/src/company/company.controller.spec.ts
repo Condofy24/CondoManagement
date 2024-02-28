@@ -27,14 +27,17 @@ describe('Company Controller', () => {
           useValue: {
             findAll: jest.fn<Company[], unknown[]>().mockImplementation(() => [
               {
+                _id: 'a strange id',
                 companyName: testCompany1,
                 companyLocation: testLocation1,
               },
               {
+                _id: 'a different id',
                 companyName: 'Test Company 2',
                 companyLocation: 'Test Location 2',
               },
               {
+                _id: 'a third id',
                 companyName: 'Test Company 3',
                 companyLocation: 'Test Location 3',
               },
@@ -78,14 +81,17 @@ describe('Company Controller', () => {
     it('should get an array of companies', () => {
       expect(controller.getAllComapnies()).toEqual([
         {
+          _id: 'a strange id',
           companyName: testCompany1,
           companyLocation: testLocation1,
         },
         {
+          _id: 'a different id',
           companyName: 'Test Company 2',
           companyLocation: 'Test Location 2',
         },
         {
+          _id: 'a third id',
           companyName: 'Test Company 3',
           companyLocation: 'Test Location 3',
         },

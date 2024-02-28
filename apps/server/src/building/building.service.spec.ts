@@ -34,7 +34,7 @@ const createBuildingDto: CreateBuildingDto = {
 };
 
 const companyInfoTestData: Company = {
-  companyId: '2d04c8e7-dd56-46de-826f-f7c4194f5644',
+  _id: new ObjectId().toString(),
   companyName: 'PEWPEW',
   companyLocation: 'PEWPew Address',
 };
@@ -84,7 +84,7 @@ const buildingInfoTestData = {
   fileAssetId: 'Image212344124',
 };
 const companyServiceMock = {
-  findByCompanyId: jest.fn().mockResolvedValue(companyInfoTestData),
+  findOne: jest.fn().mockResolvedValue(companyInfoTestData),
 };
 const unitServiceMock = {
   findAll: jest.fn().mockResolvedValue([]),
@@ -175,7 +175,7 @@ describe('BuildingService', () => {
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       mockingoose(BuildingModel).toReturn(null, 'exists');
       const id = new ObjectId();
-      companyServiceMock.findByCompanyId.mockResolvedValue({
+      companyServiceMock.findOne.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -194,7 +194,7 @@ describe('BuildingService', () => {
       //Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      companyServiceMock.findByCompanyId.mockResolvedValue(null);
+      companyServiceMock.findOne.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
@@ -203,7 +203,7 @@ describe('BuildingService', () => {
     });
     it('should throw HttpException if address already exists', async () => {
       const id = new ObjectId();
-      companyServiceMock.findByCompanyId.mockResolvedValue({
+      companyServiceMock.findOne.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -223,7 +223,7 @@ describe('BuildingService', () => {
     });
     it('should throw HttpException if building already exists', async () => {
       const id = new ObjectId();
-      companyServiceMock.findByCompanyId.mockResolvedValue({
+      companyServiceMock.findOne.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -242,7 +242,7 @@ describe('BuildingService', () => {
       // Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      companyServiceMock.findByCompanyId.mockResolvedValue({
+      companyServiceMock.findOne.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -266,7 +266,7 @@ describe('BuildingService', () => {
       mockingoose(BuildingModel).toReturn(building, 'find');
 
       // Act
-      const result = await service.findAll(companyInfoTestData.companyId);
+      const result = await service.findAll(companyInfoTestData._id);
 
       // Assert
       expect(result.length).toBe(building.length);
