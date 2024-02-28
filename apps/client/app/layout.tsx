@@ -27,7 +27,7 @@ export default function RootLayout({
       <body
         className={cn(
           "bg-primary text-primary dark:text-opacity-90",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <ThemeContextProvider>

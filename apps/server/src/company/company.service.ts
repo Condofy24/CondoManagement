@@ -79,7 +79,7 @@ export class CompanyService {
   }
 
   public async findByCompanyId(companyId: string) {
-    const company = await this.companyModel.findOne({ companyId }).exec();
+    const company = await this.companyModel.findById(companyId).exec();
     if (!company) {
       return false;
     }

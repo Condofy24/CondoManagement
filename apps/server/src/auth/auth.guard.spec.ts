@@ -4,17 +4,25 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard, PrivilegeGuard } from './auth.guard';
+import { BuildingService } from '../building/building.service';
 
 const jwtServiceMock = {
   verifyAsync: jest.fn().mockResolvedValue({ sub: 'user123' }),
 };
 
 const userServiceMock = {
-  getPrivilege: jest.fn().mockResolvedValue('admin'),
+  getPrivilege: jest.fn().mockResolvedValue(0),
+  findById: jest
+    .fn()
+    .mockResolvedValue({ id: 'user123', companyId: 'company-id', role: 0 }),
 };
 
 const reflectorMock = {
-  get: jest.fn().mockReturnValue('admin'),
+  get: jest.fn().mockReturnValue(0),
+};
+
+const buildingServiceMock = {
+  findOne: jest.fn(),
 };
 
 describe('PrivilegeGuard', () => {
@@ -28,6 +36,7 @@ describe('PrivilegeGuard', () => {
           provide: JwtService,
           useValue: jwtServiceMock,
         },
+        { provide: BuildingService, useValue: buildingServiceMock },
         {
           provide: UserService,
           useValue: userServiceMock,
@@ -43,6 +52,24 @@ describe('PrivilegeGuard', () => {
   });
 
   it('should allow access for valid privileges', async () => {
+    // Arrange
+    const mockExecutionContext = {
+      switchToHttp: () => ({
+        getRequest: () => ({
+          headers: { authorization: 'Bearer valid.token.here' },
+          params: { companyId: 'company-id' },
+        }),
+      }),
+      getHandler: () => ({}),
+    } as unknown as ExecutionContext;
+
+    // Act & Assert
+    await expect(
+      privilegeGuard.canActivate(mockExecutionContext),
+    ).resolves.toBeTruthy();
+  });
+
+  it('should allow access for public users', async () => {
     // Arrange
     const mockExecutionContext = {
       switchToHttp: () => ({

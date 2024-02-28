@@ -1,11 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { Storage } from './entities/storage.entity';
 import { Model } from 'mongoose';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
 import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
-import { UnitService } from 'src/unit/unit.service';
+import { UnitService } from '../unit/unit.service';
 import { response } from 'express';
 import { UpdateStorageDto } from './dto/update-storage.dto';
 
@@ -14,8 +20,10 @@ export class StorageService {
   constructor(
     @InjectModel('Storage')
     private readonly storageModel: Model<Storage>,
-    private readonly buildingService: BuildingService,
+    @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
+    @Inject(forwardRef(() => BuildingService))
+    private readonly buildingService: BuildingService,
   ) {}
 
   public async createStorage(
