@@ -175,4 +175,59 @@ describe('ParkingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+
+  describe('updateParking', () => {
+    it('should update parking if valid fields are inputted', async () => {
+      // Arrange
+      const parkingId = new ObjectId();
+      mockingoose(ParkingModel).toReturn(parkingInfoTestData, 'findOne');
+      mockingoose(ParkingModel).toReturn(updateParkingTest, 'findOneAndUpdate');
+
+      // Act
+      const result = await service.updateParking(
+        parkingId.toString(),
+        updateParkingDtoTestData,
+      );
+
+      // Asssert
+      expect(result).toEqual({
+        parkingNumber: updateParkingDtoTestData.parkingNumber,
+        isOccupied: updateParkingDtoTestData.isOccupied,
+        fees: updateParkingDtoTestData.fees,
+      });
+    });
+    it('should throw an error if the parking does not exsit', async () => {
+      // Arrange
+      const parkingId = new ObjectId();
+      mockingoose(ParkingModel).toReturn(null, 'findOne');
+
+      await expect(
+        service.updateParking(parkingId.toString(), updateParkingDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+    //DO this after incase of not enough coverage
+    it('should throw an error if the new parking number is already taken', async () => {
+      // Arrange
+      const parkingId = new ObjectId();
+
+      const mongoException: MongoServerError = {
+        addErrorLabel: (_) => {},
+        hasErrorLabel: (_) => false,
+        name: 'test',
+        message: 'etst',
+        errmsg: 'duplicate ID',
+        errorLabels: [],
+        code: 110000,
+      };
+
+      mockingoose(ParkingModel)
+        .toReturn(parkingInfoTestData, 'findOne')
+        .toReturn(new Error(), 'findOneAndUpdate');
+
+      // Act & Assert
+      await expect(
+        service.updateParking(parkingId.toString(), updateParkingDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+  });
 });
