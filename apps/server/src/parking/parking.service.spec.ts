@@ -284,4 +284,20 @@ describe('ParkingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+  describe('removeParking', () => {
+    it('should remove a parking given its corresponding id', async () => {
+      mockingoose(ParkingModel).toReturn(parkingInfoTestData2, 'findOne');
+      const buildingId = parkingInfoTestData2.buildingId.toString();
+      buildingServiceMock.findOne.mockResolvedValue({
+        buildingId,
+        ...buildingInfoTestData,
+      });
+
+      //Act
+      const parkingId = new ObjectId();
+      const result = await service.removeParking(parkingId.toString());
+      //Assert
+      expect(result).toBeDefined();
+    });
+  });
 });
