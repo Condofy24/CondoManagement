@@ -7,6 +7,7 @@ import { ObjectId } from 'mongodb';
 import { User } from '../user/entities/user.entity';
 import { Unit } from './entities/unit.entity';
 import { Building } from '../building/entities/building.entity';
+import { HttpStatus } from '@nestjs/common';
 
 const createUnitDto: CreateUnitDto = {
     unitNumber:4,
@@ -17,7 +18,8 @@ const createUnitDto: CreateUnitDto = {
 
 const unitServiceMock = {
     createUnit:jest.fn(),
-    linkUnitToUser:jest.fn()
+    linkUnitToUser:jest.fn(),
+    remove:jest.fn()
 }
 
 const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
@@ -140,6 +142,22 @@ describe('UnitController',() => {
 
             //Assert
             expect(result).toEqual(unitInfoTestData);
+        });
+    })
+    describe('remove',() => {
+        it('should forward call to unit service', async () => {
+            //Arrange
+            unitServiceMock.remove.mockResolvedValue(
+                HttpStatus.NO_CONTENT
+            )
+
+            //Act
+            const result = await controller.remove(
+                unitInfoTestData2.id.toString()
+            )
+
+            //Assert
+            expect(result).toEqual(HttpStatus.NO_CONTENT);
         });
     })
 })
