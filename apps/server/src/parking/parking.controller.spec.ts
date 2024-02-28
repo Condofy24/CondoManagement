@@ -16,7 +16,7 @@ const createParkingDto: CreateParkingDto = {
 
 const parkingServiceMock = {
   createParking: jest.fn(),
-  linkParkingToUser: jest.fn(),
+  linkParkingToUnit: jest.fn(),
 };
 
 const linkParkingToUnitDto: LinkParkingToUnitDto = {
@@ -122,5 +122,23 @@ describe('ParkingController', () => {
     });
   });
 
+  describe('linkParkingToUnit', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      parkingServiceMock.linkParkingToUnit.mockResolvedValue(
+        parkingInfoTestData,
+      );
+      const unitId = new ObjectId();
+      //Act
 
+      const result = await controller.linkParkingToUnit(
+        parkingInfoTestData.buildingId.toString(),
+        unitId.toString(),
+        linkParkingToUnitDto,
+      );
+
+      //Assert
+      expect(result).toEqual(parkingInfoTestData);
+    });
+  });
 });
