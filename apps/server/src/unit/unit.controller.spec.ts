@@ -124,4 +124,22 @@ describe('UnitController',() => {
             expect(result).toEqual(unitInfoTestData);
         });
     })
+    describe('linkUnitToUser',() => {
+        it('should forward call to unit service', async () => {
+            //Arrange
+            unitServiceMock.linkUnitToUser.mockResolvedValue(
+                unitInfoTestData
+            )
+
+            //Act
+            const result = await controller.linkUnitToUser(
+                unitInfoTestData.buildingId.toString(),
+                userInfoTestData.id,
+                createUnitDto
+            )
+
+            //Assert
+            expect(result).toEqual(unitInfoTestData);
+        });
+    })
 })
