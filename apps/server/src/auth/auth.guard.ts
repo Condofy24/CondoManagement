@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Roles } from './decorators/roles.decorator';
 import { UserService } from '../user/user.service';
+import { BuildingService } from '../building/building.service';
 
 const extractTokenFromHeader = (request: Request): string | undefined => {
   const [type, token] = request.headers.authorization?.split(' ') ?? [];
@@ -51,6 +52,7 @@ export class PrivilegeGuard implements CanActivate {
     private jwtService: JwtService,
     private userService: UserService,
     private reflector: Reflector,
+    private buildingService: BuildingService,
   ) {}
 
   /**
@@ -76,13 +78,17 @@ export class PrivilegeGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     const user = await this.userService.findById(request.user.sub);
-    if (user?.role === 0 && request?.params?.companyId) {
-      return (
-        user?.role === this.reflector.get(Roles, context.getHandler()) &&
-        user?.companyId === request.params.companyId
-      );
+    const params = request?.params;
+    if (user?.role === 0) {
+      if (params?.buildingId) {
+        // Accessing building
+        const building = await this.buildingService.findOne(params?.buildingId);
+        return (
+          user?.role === this.reflector.get(Roles, context.getHandler()) &&
+          user?.companyId === building?.companyId
+        );
+      }
     }
-    console.log(user?.role);
     return user?.role === this.reflector.get(Roles, context.getHandler());
   }
 }

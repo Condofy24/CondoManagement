@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard, PrivilegeGuard } from './auth.guard';
+import { BuildingService } from '../building/building.service';
 
 const jwtServiceMock = {
   verifyAsync: jest.fn().mockResolvedValue({ sub: 'user123' }),
@@ -20,6 +21,10 @@ const reflectorMock = {
   get: jest.fn().mockReturnValue(0),
 };
 
+const buildingServiceMock = {
+  findOne: jest.fn(),
+};
+
 describe('PrivilegeGuard', () => {
   let privilegeGuard: PrivilegeGuard;
 
@@ -31,6 +36,7 @@ describe('PrivilegeGuard', () => {
           provide: JwtService,
           useValue: jwtServiceMock,
         },
+        { provide: BuildingService, useValue: buildingServiceMock },
         {
           provide: UserService,
           useValue: userServiceMock,
