@@ -13,6 +13,8 @@ import { UnitService } from '../unit/unit.service';
 import { ParkingService } from '../parking/parking.service';
 import { StorageService } from '../storage/storage.service';
 import { BadRequestException, HttpException } from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
 
 const mockingoose = require('mockingoose');
 
@@ -93,6 +95,12 @@ const parkingServiceMock = {
 const storageServiceMock = {
   findAll: jest.fn().mockResolvedValue([]),
 };
+const userServiceMock = {
+  findOne: jest.fn(),
+};
+const jwtServiceMock = {
+  signAsync: jest.fn(),
+};
 
 describe('BuildingService', () => {
   let service: BuildingService;
@@ -102,12 +110,20 @@ describe('BuildingService', () => {
       providers: [
         BuildingService,
         {
+          provide: JwtService,
+          useValue: jwtServiceMock,
+        },
+        {
           provide: getModelToken('Building'),
           useValue: BuildingModel,
         },
         {
           provide: CloudinaryService,
           useValue: cloudinaryServiceMock,
+        },
+        {
+          provide: UserService,
+          useValue: userServiceMock,
         },
         {
           provide: CompanyService,
