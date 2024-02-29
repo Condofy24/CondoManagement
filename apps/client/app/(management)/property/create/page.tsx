@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createProperty } from "@/action";
@@ -22,15 +22,13 @@ export default function PropertyCreationPage () {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  const companyID = "65dffe02c12d801d7fe8faff";
+  const companyID = "65df95a194e0af6b900c6aed";
+  const {token} = useAppSelector((state) => state.auth.value);
 
   const onSubmit = async (data: TPropertySchema) => {
-    if (propertyFile) {
+    if (propertyFile && token) {
 
-      const result = await createProperty(companyID, data, propertyFile);
-      console.log(companyID);
-      console.log(data);
-      console.log(propertyFile);
+      const result = await createProperty(companyID, data, propertyFile, token);
       if (result instanceof Error) {
         toast.error("Error creating desired property");
       }
