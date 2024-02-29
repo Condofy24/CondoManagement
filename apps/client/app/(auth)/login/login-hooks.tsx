@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TLoginSchema, loginSchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,9 +10,8 @@ import { useAppSelector, AppDispatch } from "@/redux/store";
 
 function LoginHooks() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const { loggedIn, error } = useAppSelector((state) => state.auth.value);
+  const { loading } = useAppSelector((state) => state.auth.value);
 
   const {
     register,
@@ -24,15 +22,10 @@ function LoginHooks() {
   });
 
   const onSubmit = async (data: TLoginSchema) => {
-    setLoading(true);
-
-    await dispatch(login(data));
-
-    setLoading(false);
-
-    if (error) {
+    const result = await dispatch(login(data));
+    if (result.type == "auth/login/rejected") {
       toast.error("Wrong credentials. Please try again.");
-    } else if (loggedIn) {
+    } else {
       toast.success("Login successful");
       router.push("/");
     }
