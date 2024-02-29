@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { login } from "@/redux/services/auth-service";
 import { User } from "@/types";
+import { updateUserProfile } from "../services/user-service";
 
 type InitialState = {
   value: AuthState;
@@ -61,6 +62,18 @@ export const auth = createSlice({
         state.value.loading = false;
         state.value.error = action.error.message;
         state.value.loggedIn = false;
+      })
+      .addCase(updateUserProfile.pending, (state) => {
+        state.value.loading = true;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.value.loading = false;
+        state.value.user = action.payload;
+        state.value.error = undefined;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.value.loading = false;
+        state.value.error = action.error.message;
       });
   },
 });

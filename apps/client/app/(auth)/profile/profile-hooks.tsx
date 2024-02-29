@@ -6,7 +6,6 @@ import { updateUserProfile } from "@/redux/services/user-service";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import toast from "react-hot-toast";
-import { User } from "@/types";
 
 export default function UseProfile() {
   const [loading, setLoading] = useState(false);
@@ -16,13 +15,14 @@ export default function UseProfile() {
   const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
     undefined,
   );
-  const { user, error } = useAppSelector((state) => state.auth.value);
+  const { user } = useAppSelector((state) => state.auth.value);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    formState,
   } = useForm<TSignupSchema>({
     defaultValues: user, // Set the default values as the current user data
     resolver: zodResolver(signupSchema),
@@ -30,11 +30,10 @@ export default function UseProfile() {
 
   const onSubmit = async (data: TSignupSchema) => {
     setLoading(true);
-
     try {
-      if (!data && !profilePic) {
+      if (!formState.isDirty) {
         toast.error("Please fill in the form");
-      } else if (checkDataChanged(data, user) || profilePic) {
+      } else if (formState.isDirty || profilePic) {
         await dispatch(
           updateUserProfile({
             id: user.id,
@@ -88,11 +87,3 @@ export default function UseProfile() {
     loading,
   };
 }
-
-const checkDataChanged = (data: TSignupSchema, user: User) => {
-  return (
-    data.email !== user.email ||
-    data.name !== user.name ||
-    data.phoneNumber !== user.phoneNumber
-  );
-};

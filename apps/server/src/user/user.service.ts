@@ -377,7 +377,6 @@ export class UserService {
     image?: Express.Multer.File,
   ): Promise<UserDto> {
     const { name, email, newPassword, phoneNumber } = updateUserDto;
-    console.log(updateUserDto);
     // Find the user by id
     const user = await this.userModel.findById(id);
     if (!user) {
