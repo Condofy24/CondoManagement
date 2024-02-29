@@ -1,4 +1,4 @@
-import { combineReducers, configureStore, createStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./features/auth-slice";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
@@ -16,7 +16,7 @@ const rootReducer = combineReducers({
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: persistedReducer as typeof rootReducer,
 });
 export const persistor = persistStore(store);
 

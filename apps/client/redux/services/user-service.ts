@@ -10,14 +10,14 @@ interface UpdateUserData {
   email: string;
   newPassword: string;
   phoneNumber: string;
-  profilePic: File;
+  profilePic: File | null;
 }
 
 export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
   "auth/updateUserProfile",
   async (
     { id, name, email, newPassword, phoneNumber, profilePic },
-    { rejectWithValue },
+    { rejectWithValue }
   ) => {
     try {
       const { data } = await axios.patch<User>(`${API_URL}/user/${id}`, {
@@ -26,7 +26,7 @@ export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
         email,
         newPassword,
         phoneNumber,
-        profilePic,
+        profilePic: profilePic ?? undefined,
       });
 
       // Handle the response accordingly
@@ -41,5 +41,5 @@ export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
         return rejectWithValue(error.message);
       }
     }
-  },
+  }
 );

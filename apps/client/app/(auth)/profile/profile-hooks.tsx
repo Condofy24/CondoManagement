@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { updateUserProfile } from "@/redux/services/user-service";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { UserRolesEnum } from "@/types";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import toast from "react-hot-toast";
+import { User } from "@/types";
 
 export default function UseProfile() {
   const [loading, setLoading] = useState(false);
@@ -14,17 +14,9 @@ export default function UseProfile() {
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
-    undefined,
+    undefined
   );
-
-  let user = null;
-  if (typeof window !== "undefined") {
-    user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user") as string)
-      : null;
-  }
-
-  const isManager = user?.role === UserRolesEnum.MANAGER;
+  const { user, error } = useAppSelector((state) => state.auth.value);
 
   const {
     register,
@@ -40,10 +32,21 @@ export default function UseProfile() {
     setLoading(true);
 
     try {
-      if (profilePic) {
-        //await dispatch(updateUserProfile({ ...data, profilePic, id }));
-      } else {
-        setProfilePicError("Profile picture is required");
+      if (!data && !profilePic) {
+        toast.error("Please fill in the form");
+      } else if (checkDataChanged(data, user) || profilePic) {
+        await dispatch(
+          updateUserProfile({
+            id: user.id,
+            name: data.name,
+            email: data.email,
+            newPassword: data.password,
+            phoneNumber: data.phoneNumber,
+            profilePic,
+          })
+        );
+
+        toast.success("Profile updated successfully!");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -58,7 +61,7 @@ export default function UseProfile() {
   };
 
   const handleProfilePicChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
@@ -83,6 +86,13 @@ export default function UseProfile() {
     setProfilePicError,
     imageUrl,
     loading,
-    isManager,
   };
 }
+
+const checkDataChanged = (data: TSignupSchema, user: User) => {
+  return (
+    data.email !== user.email ||
+    data.name !== user.name ||
+    data.phoneNumber !== user.phoneNumber
+  );
+};
