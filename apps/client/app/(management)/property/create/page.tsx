@@ -32,7 +32,7 @@ export default function PropertyCreationPage() {
         toast.error("Error creating desired property");
       } else {
         toast.success("Property creation successful");
-        router.push("/");
+        router.push("/dashboard");
       }
     }
   };
