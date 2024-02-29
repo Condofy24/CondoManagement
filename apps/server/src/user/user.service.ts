@@ -377,7 +377,6 @@ export class UserService {
     image?: Express.Multer.File,
   ): Promise<UserDto> {
     const { name, email, newPassword, phoneNumber } = updateUserDto;
-
     // Find the user by id
     const user = await this.userModel.findById(id);
     if (!user) {
@@ -409,8 +408,7 @@ export class UserService {
       );
     }
     if (newPassword) {
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
+      user.password = newPassword;
     }
     let imageUrl = '';
     let imageId = '';

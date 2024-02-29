@@ -74,7 +74,7 @@ export class BuildingController {
    * @param companyId - The ID of the company.
    * @returns An array of buildings.
    */
-  @Get(':id')
+  @Get(':companyId')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
   findAll(@Param('companyId') companyId: string) {

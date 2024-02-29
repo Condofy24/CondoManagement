@@ -10,7 +10,7 @@ interface UpdateUserData {
   email: string;
   newPassword: string;
   phoneNumber: string;
-  profilePic: File;
+  profilePic: File | null;
 }
 
 export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
@@ -26,7 +26,7 @@ export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
         email,
         newPassword,
         phoneNumber,
-        profilePic,
+        profilePic: profilePic ?? undefined,
       });
 
       // Handle the response accordingly

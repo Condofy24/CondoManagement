@@ -3,6 +3,8 @@ import React from "react";
 import Logo from "@/public/logo.png";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useAppSelector } from "@/redux/store";
+import { User } from "@/types";
 
 type UserProfileLayoutProps = {
   children: React.ReactNode;
@@ -12,6 +14,7 @@ export default function UserProfileLayout({
   children,
 }: UserProfileLayoutProps) {
   const pathname = usePathname();
+  const { user } = useAppSelector((state) => state.auth.value);
 
   return (
     <section>
@@ -20,7 +23,7 @@ export default function UserProfileLayout({
         <div className="mx-auto flex flex-col items-center">
           <div className="w-[5rem] h-[5rem] relative">
             <Image
-              src={Logo}
+              src={user.imageUrl || Logo}
               alt="Website Logo"
               layout="fill"
               objectFit="contain"

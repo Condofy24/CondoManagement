@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { updateUserProfile } from "@/redux/services/user-service";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { UserRolesEnum } from "@/types";
+import { AppDispatch, useAppSelector } from "@/redux/store";
 import toast from "react-hot-toast";
 
 export default function UseProfile() {
@@ -16,21 +15,14 @@ export default function UseProfile() {
   const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
     undefined,
   );
-
-  let user = null;
-  if (typeof window !== "undefined") {
-    user = localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user") as string)
-      : null;
-  }
-
-  const isManager = user?.role === UserRolesEnum.MANAGER;
+  const { user } = useAppSelector((state) => state.auth.value);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    formState,
   } = useForm<TSignupSchema>({
     defaultValues: user, // Set the default values as the current user data
     resolver: zodResolver(signupSchema),
@@ -38,12 +30,22 @@ export default function UseProfile() {
 
   const onSubmit = async (data: TSignupSchema) => {
     setLoading(true);
-
     try {
-      if (profilePic) {
-        //await dispatch(updateUserProfile({ ...data, profilePic, id }));
-      } else {
-        setProfilePicError("Profile picture is required");
+      if (!formState.isDirty) {
+        toast.error("Please fill in the form");
+      } else if (formState.isDirty || profilePic) {
+        await dispatch(
+          updateUserProfile({
+            id: user.id,
+            name: data.name,
+            email: data.email,
+            newPassword: data.password,
+            phoneNumber: data.phoneNumber,
+            profilePic,
+          }),
+        );
+
+        toast.success("Profile updated successfully!");
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -83,6 +85,5 @@ export default function UseProfile() {
     setProfilePicError,
     imageUrl,
     loading,
-    isManager,
   };
 }
