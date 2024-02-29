@@ -14,7 +14,7 @@ export default function UseProfile() {
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const [imageUrl, setImagePreviewUrl] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const { user, error } = useAppSelector((state) => state.auth.value);
 
@@ -43,7 +43,7 @@ export default function UseProfile() {
             newPassword: data.password,
             phoneNumber: data.phoneNumber,
             profilePic,
-          })
+          }),
         );
 
         toast.success("Profile updated successfully!");
@@ -61,7 +61,7 @@ export default function UseProfile() {
   };
 
   const handleProfilePicChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
