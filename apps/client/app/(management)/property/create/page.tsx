@@ -7,11 +7,10 @@ import { TPropertySchema, propertySchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/redux/store";
+import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { createProperty } from "@/action";
+import { createProperty } from "@/actions";
 
 export default function PropertyCreationPage() {
   const [loading, setLoading] = useState(false);
@@ -19,15 +18,18 @@ export default function PropertyCreationPage() {
   const [propertyFileError, setPropertyFileError] = useState<string | null>(
     null,
   );
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  const companyID = "65df95a194e0af6b900c6aed";
-  const { token } = useAppSelector((state) => state.auth.value);
+  const { token, admin } = useAppSelector((state) => state.auth.value);
 
   const onSubmit = async (data: TPropertySchema) => {
-    if (propertyFile && token) {
-      const result = await createProperty(companyID, data, propertyFile, token);
+    if (propertyFile) {
+      const result = await createProperty(
+        admin?.companyId as string,
+        data,
+        propertyFile,
+        token as string,
+      );
       if (result instanceof Error) {
         toast.error("Error creating desired property");
       } else {

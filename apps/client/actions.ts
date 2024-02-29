@@ -23,3 +23,16 @@ export async function createProperty(
     return new Error("could not create specified property");
   }
 }
+
+export async function fetchProperties(companyId: string, token: string) {
+  try {
+    const response = await axios.get(`${API_URL}/building/${companyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    return new Error("could not fetch properties");
+  }
+}
