@@ -1,32 +1,29 @@
 "use client";
-import { useEffect } from "react";
-import { Property, User } from "@/types";
-import { API_URL } from "@/global";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { Property } from "@/types";
 import { useAppSelector } from "@/redux/store";
 import { columns } from "./columns";
 import { DataTable } from "@/app/components/table/data-table";
+import { fetchProperties } from "@/actions";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Button } from "@/app/components/ui/button";
 
 export default function ManagementDashboardPage() {
-  let buildings: Property[] = [];
-  const user = useAppSelector((state) => state.auth.value.user);
+  const [buildings, setBuildings] = useState<Property[]>([]);
+  const { admin, token, user } = useAppSelector((state) => state.auth.value);
+  const router = useRouter();
+
   useEffect(() => {
-    const fetchBuildings = async (user: User | null) => {
-      if (!user?.companyId) return [];
+    const result = fetchProperties(admin?.companyId as string, token as string);
 
-      try {
-        const { data } = await axios.get<Property[]>(
-          `${API_URL}/building/${user?.companyId}`,
-        );
-
-        buildings = data;
-      } catch (error) {
-        toast.error("Could not loading your properties, please try again...");
-      }
-    };
-
-    fetchBuildings(user);
+    if (result instanceof Error) {
+      toast.error("Something went wrong getting your properties information");
+    } else {
+      result.then((data) => {
+        setBuildings(data);
+      });
+    }
   }, []);
 
   return (
@@ -38,7 +35,11 @@ export default function ManagementDashboardPage() {
             Here&apos;s a list your company&apos;s properties!
           </p>
         </div>
-        <div className="flex items-center space-x-2"></div>
+        <div className="flex items-center space-x-2">
+          <Button onClick={() => router.push("/property/create")}>
+            Create Building
+          </Button>
+        </div>
       </div>
       <DataTable columns={columns} data={buildings} />
     </div>

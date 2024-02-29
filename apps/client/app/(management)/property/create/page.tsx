@@ -7,19 +7,37 @@ import { TPropertySchema, propertySchema } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerUser } from "@/redux/services/auth-service";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
+import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { createProperty } from "@/actions";
 
-const SignUpNew = () => {
+export default function PropertyCreationPage() {
   const [loading, setLoading] = useState(false);
   const [propertyFile, setPropertyFile] = useState<File | null>(null);
   const [propertyFileError, setPropertyFileError] = useState<string | null>(
     null,
   );
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+
+  const { token, admin } = useAppSelector((state) => state.auth.value);
+
+  const onSubmit = async (data: TPropertySchema) => {
+    if (propertyFile) {
+      const result = await createProperty(
+        admin?.companyId as string,
+        data,
+        propertyFile,
+        token as string,
+      );
+      if (result instanceof Error) {
+        toast.error("Error creating desired property");
+      } else {
+        toast.success("Property creation successful");
+        router.push("/dashboard");
+      }
+    }
+  };
 
   const {
     register,
@@ -28,20 +46,6 @@ const SignUpNew = () => {
   } = useForm<TPropertySchema>({
     resolver: zodResolver(propertySchema),
   });
-
-  const onSubmit = async (data: TPropertySchema) => {
-    setLoading(true);
-
-    if (propertyFile) {
-      //SERVICE CALL
-      //dispatch(registerUser({ ...data, profileFile, role: "3" }));
-      //router.push("/login");
-    } else {
-      setPropertyFileError("Property File is required");
-    }
-
-    setLoading(false);
-  };
 
   return (
     <div className="flex flex-col items-center my-20">
@@ -81,6 +85,4 @@ const SignUpNew = () => {
       </form>
     </div>
   );
-};
-
-export default SignUpNew;
+}

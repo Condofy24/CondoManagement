@@ -56,10 +56,10 @@ export default function PropertyFormInputs({
         <input
           className="w-full px-11 py-2 formInput"
           placeholder="Property Name"
-          {...register("propertyName")}
+          {...register("name")}
         />
       </div>
-      <FormFieldError fieldError={errors.propertyName} />
+      <FormFieldError fieldError={errors.name} />
       <div className="relative mt-3 flex items-center">
         <span className="absolute">
           <svg
