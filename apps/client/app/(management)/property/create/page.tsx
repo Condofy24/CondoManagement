@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createProperty } from "@/action";
 
-export default function PropertyCreationPage () {
+export default function PropertyCreationPage() {
   const [loading, setLoading] = useState(false);
   const [propertyFile, setPropertyFile] = useState<File | null>(null);
   const [propertyFileError, setPropertyFileError] = useState<string | null>(
@@ -23,21 +23,19 @@ export default function PropertyCreationPage () {
   const router = useRouter();
 
   const companyID = "65df95a194e0af6b900c6aed";
-  const {token} = useAppSelector((state) => state.auth.value);
+  const { token } = useAppSelector((state) => state.auth.value);
 
   const onSubmit = async (data: TPropertySchema) => {
     if (propertyFile && token) {
-
       const result = await createProperty(companyID, data, propertyFile, token);
       if (result instanceof Error) {
         toast.error("Error creating desired property");
-      }
-      else {
+      } else {
         toast.success("Property creation successful");
         router.push("/");
       }
     }
-  }
+  };
 
   const {
     register,
@@ -85,5 +83,4 @@ export default function PropertyCreationPage () {
       </form>
     </div>
   );
-};
-
+}
