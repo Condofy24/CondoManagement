@@ -2,6 +2,9 @@ import { object, string, TypeOf, number } from "zod";
 
 export const unitSchema = object({
   unitNumber: string({ required_error: "Unit number is required" }),
+  isOccupiedByRenter: string({
+    required_error: "Occupied status is required",
+  }),
   fees: number({ required_error: "Unit fees is required" }).min(0, {
     message: "Fees must be at above 0",
   }),

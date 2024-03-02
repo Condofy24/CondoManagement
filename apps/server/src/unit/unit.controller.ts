@@ -23,6 +23,7 @@ export class UnitController {
   ) {
     return this.unitService.createUnit(buildingId, createUnitDto);
   }
+
   @Patch('update/:unitId')
   update(
     @Param('unitId') buildingId: string,
@@ -30,6 +31,7 @@ export class UnitController {
   ) {
     return this.unitService.updateUnit(buildingId, updateUnitDto);
   }
+
   @Patch('/update/link/:buildingId/:userId')
   linkUnitToUser(
     @Param('buildingId') buildingId: string,
@@ -42,22 +44,27 @@ export class UnitController {
       linkUnitToBuildingDto,
     );
   }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.unitService.remove(id);
   }
+
   @Get(':buildingId')
   findAll(@Param('buildingId') buildingId: string) {
     return this.unitService.findAll(buildingId);
   }
+
   @Get('/getUnit/:id')
   getUnit(@Param('id') id: string) {
     return this.unitService.findOne(id);
   }
+
   @Get('/findOwnerUnits/:ownerId')
   findOwnerUnits(@Param('ownerId') ownerId: string) {
     return this.unitService.findOwnerUnits(ownerId);
   }
+
   @Get('/findRenterUnit/:renterId')
   findRenterUnit(@Param('renterId') renterId: string) {
     return this.unitService.findRenterUnit(renterId);

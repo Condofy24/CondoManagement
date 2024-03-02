@@ -12,7 +12,7 @@ export default function UnitForm() {
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="name">
+        <label className="block text-sm font-bold mb-2" htmlFor="unitNumber">
           Unit Number
         </label>
         <Input
@@ -20,9 +20,39 @@ export default function UnitForm() {
           id="unitNumber"
           placeholder="Unit Number"
           className="dark:bg-white dark:text-black"
-          value={mode === "edit" ? (asset as Unit).unitNumber : ""}
         />
         <FormFieldError fieldError={errors.unitNumber} />
+      </div>
+      <div className="mb-4">
+        <label
+          className="block text-sm font-bold mb-2"
+          htmlFor="isOccupiedByRenter"
+        >
+          Occupied By Renter
+        </label>
+        <div>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              {...register("isOccupiedByRenter")}
+              id="occupiedYes"
+              className="form-radio h-5 w-5 text-gray-600"
+              value={"Yes"}
+            />
+            <span className="ml-2">Yes</span>
+          </label>
+          <label className="inline-flex items-center ml-6">
+            <input
+              type="radio"
+              {...register("isOccupiedByRenter")}
+              id="occupiedNo"
+              className="form-radio h-5 w-5 text-gray-600"
+              value={"No"}
+            />
+            <span className="ml-2">No</span>
+          </label>
+        </div>
+        <FormFieldError fieldError={errors.isOccupiedByRenter} />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-bold mb-2" htmlFor="fees">
@@ -33,7 +63,6 @@ export default function UnitForm() {
           id="fees"
           placeholder="Fees"
           className="dark:bg-white dark:text-black"
-          value={mode === "edit" ? (asset as Unit).fees : ""}
         />
         <FormFieldError fieldError={errors.fees} />
       </div>
@@ -46,7 +75,6 @@ export default function UnitForm() {
           placeholder="Size"
           className="dark:bg-white dark:text-black"
           {...register("size", { valueAsNumber: true })}
-          value={mode === "edit" ? (asset as Unit).size : ""}
         />
         <FormFieldError fieldError={errors.size} />
       </div>
