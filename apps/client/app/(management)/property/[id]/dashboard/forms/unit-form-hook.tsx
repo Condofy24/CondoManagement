@@ -1,14 +1,12 @@
-import { API_URL } from "@/global";
+import { createUnit } from "@/actions";
 import { TUnitSchema, unitSchema } from "@/lib/unit-validation-schemas";
 import { useAppSelector } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-export default function useUnitForm() {
-  const isEditing = false;
+export default function useUnitForm({ isEditing }: { isEditing: boolean }) {
   const buildingId = useParams().id;
   const { token } = useAppSelector((state) => state.auth.value);
 
@@ -21,21 +19,12 @@ export default function useUnitForm() {
   });
 
   const onSubmit = async (data: TUnitSchema) => {
-    const userData = {
-      ...data,
-      isOccupiedByRenter: getIsOccupiesByRenter(data.isOccupiedByRenter),
-    };
-
     if (isEditing) {
       // Edit unit
     } else {
-      const res = await axios.post(`${API_URL}/unit/${buildingId}`, userData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await createUnit(buildingId as string, data, token as string);
 
-      if (res.status === 201) {
+      if (res === 201) {
         toast.success("Unit created successfully");
       } else {
         toast.error("Failed to create unit");
@@ -51,7 +40,3 @@ export default function useUnitForm() {
     isEditing,
   };
 }
-
-const getIsOccupiesByRenter = (isOccupiedByRenter: string): boolean => {
-  return isOccupiedByRenter === "Yes";
-};

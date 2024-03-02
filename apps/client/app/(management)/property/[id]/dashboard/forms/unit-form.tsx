@@ -3,11 +3,12 @@ import { Input } from "@/app/components/ui/input";
 import useUnitForm from "./unit-form-hook";
 import FormFieldError from "@/app/components/form/form-field-error";
 import { useAssetManagement } from "@/context/asset-management-context";
-import { Unit } from "@/types";
 
 export default function UnitForm() {
-  const { register, handleSubmit, errors, onSubmit } = useUnitForm();
   const { asset, mode, setShowDialog } = useAssetManagement();
+  const { register, handleSubmit, errors, onSubmit } = useUnitForm({
+    isEditing: mode === "edit",
+  });
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
