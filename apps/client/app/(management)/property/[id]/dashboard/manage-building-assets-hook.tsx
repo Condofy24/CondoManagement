@@ -10,7 +10,7 @@ export type AssetTypes = Unit[] | Parking[] | Storage[];
 
 export default function useBuildingAsset() {
   const [assetPage, setAssetPage] = useState<BuildingAssetType>(
-    BuildingAssetType.unit
+    BuildingAssetType.unit,
   );
   const { token } = useAppSelector((state) => state.auth.value);
   const { id: buildingId } = useParams();
@@ -22,7 +22,7 @@ export default function useBuildingAsset() {
         const data = await fetchAssets(
           assetPage,
           buildingId as string,
-          token as string
+          token as string,
         );
         setAssets(data);
       } catch (error) {
@@ -39,7 +39,7 @@ export default function useBuildingAsset() {
 const fetchAssets = async (
   assetPage: BuildingAssetType,
   buildingId: string,
-  token: string
+  token: string,
 ): Promise<AssetTypes> => {
   switch (assetPage) {
     case BuildingAssetType.unit:
@@ -47,7 +47,7 @@ const fetchAssets = async (
         `${API_URL}/unit/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       return unitData;
 
@@ -56,7 +56,7 @@ const fetchAssets = async (
         `${API_URL}/parking/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       return parkingData;
 
@@ -65,7 +65,7 @@ const fetchAssets = async (
         `${API_URL}/storage/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       return storageData;
 
