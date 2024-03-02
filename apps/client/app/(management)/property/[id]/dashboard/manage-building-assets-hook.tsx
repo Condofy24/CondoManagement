@@ -1,7 +1,6 @@
-import { API_URL } from "@/global";
+import { fetchAssets } from "@/actions";
 import { useAppSelector } from "@/redux/store";
 import { BuildingAssetType, Parking, Storage, Unit } from "@/types";
-import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -35,41 +34,3 @@ export default function useBuildingAsset() {
 
   return { assetPage, setAssetPage, assets };
 }
-
-const fetchAssets = async (
-  assetPage: BuildingAssetType,
-  buildingId: string,
-  token: string,
-): Promise<AssetTypes> => {
-  switch (assetPage) {
-    case BuildingAssetType.unit:
-      const { data: unitData } = await axios.get<Unit[]>(
-        `${API_URL}/unit/${buildingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      return unitData;
-
-    case BuildingAssetType.parking:
-      const { data: parkingData } = await axios.get<Parking[]>(
-        `${API_URL}/parking/${buildingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      return parkingData;
-
-    case BuildingAssetType.storage:
-      const { data: storageData } = await axios.get<Storage[]>(
-        `${API_URL}/storage/${buildingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      return storageData;
-
-    default:
-      throw new Error("Invalid asset type");
-  }
-};
