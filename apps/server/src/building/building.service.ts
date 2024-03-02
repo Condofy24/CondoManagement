@@ -205,20 +205,18 @@ export class BuildingService {
     const buildings = await this.buildingModel
       .find({ companyId: new ObjectId(companyId) })
       .exec();
-    return buildings.map(
-      (building: Building) =>
-        ({
-          companyId: building.companyId,
-          name: building.name,
-          address: building.address,
-          unitCount: building.unitCount,
-          parkingCount: building.parkingCount,
-          storageCount: building.storageCount,
-          fileUrl: building.fileUrl,
-          filePublicId: building.filePublicId,
-          fileAssetId: building.fileAssetId,
-        }) as Building,
-    );
+    return buildings.map((building) => ({
+      id: building.id,
+      companyId: building.companyId,
+      name: building.name,
+      address: building.address,
+      unitCount: building.unitCount,
+      parkingCount: building.parkingCount,
+      storageCount: building.storageCount,
+      fileUrl: building.fileUrl,
+      filePublicId: building.filePublicId,
+      fileAssetId: building.fileAssetId,
+    }));
   }
 
   /**
