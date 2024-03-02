@@ -74,6 +74,7 @@ export class UnitService {
     this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
     return { result, verfKeyOwner, verKeyRenter };
   }
+
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = updateUnitDto;
     const unit = await this.unitModel.findById(unitId);
