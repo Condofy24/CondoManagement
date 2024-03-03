@@ -1,7 +1,7 @@
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import FormFieldError from "@/app/components/form/form-field-error";
-import { Asset, BuildingAsset, BuildingAssetType, Parking } from "@/types";
+import { BuildingAssetType, Parking } from "@/types";
 import { useAssetManagement } from "@/context/asset-management-context";
 import useAssetForm from "./asset-form-hook";
 
@@ -27,7 +27,7 @@ export default function AssetForm({
           {...register("assetNumber")}
           placeholder={`${assetName} Number`}
           className="dark:bg-white dark:text-black"
-          value={
+          defaultValue={
             mode === "edit"
               ? assetType == BuildingAssetType.parking
                 ? (asset as unknown as Parking).parkingNumber
@@ -46,7 +46,7 @@ export default function AssetForm({
           {...register("fees", { valueAsNumber: true })}
           placeholder="Fees"
           className="dark:bg-white dark:text-black"
-          value={mode === "edit" ? asset?.fees : ""}
+          defaultValue={mode === "edit" ? asset?.fees : ""}
         />
         <FormFieldError fieldError={errors.fees} />
       </div>

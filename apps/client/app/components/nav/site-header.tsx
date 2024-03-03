@@ -14,7 +14,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex px-2 h-14 items-center">
-        <div
+        <button
           onClick={() => router.push("/")}
           className="hidden md:flex mr-6 items-center space-x-2 size-10"
         >
@@ -24,13 +24,15 @@ export function SiteHeader() {
             quality={100}
             objectFit="cover"
           />
-        </div>
+        </button>
         {!loggedIn ? (
           <div className="flex flex-row gap-4">
             <Button className="" onClick={() => router.push("/login")}>
               Login
             </Button>
-            <Button>Register</Button>
+            <Button className="" onClick={() => router.push("/register")}>
+              Register
+            </Button>
           </div>
         ) : (
           <MainNav />

@@ -24,7 +24,7 @@ export default function ManagementDashboardPage() {
         setBuildings(data);
       });
     }
-  }, []);
+  }, [admin?.companyId, token]);
 
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">

@@ -8,15 +8,17 @@ import { assetsColumns } from "./table-columns/assets-columns";
 import CreateUpdateAssetModal from "./create-update-asset-modal";
 import { DataTable } from "@/app/components/table/data-table";
 import AssetManagementContextProvider from "@/context/asset-management-context";
+import { useParams } from "next/navigation";
 
 export default function AssetsDashboard() {
   const { assetPage, setAssetPage, assets } = UseAssets();
+  const assetID = useParams().id;
 
   return (
     <AssetManagementContextProvider>
       <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
         <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
-          {getTitle(assetPage)}
+          {getTitle(assetPage, assetID as string)}
         </p>
         <div className="w:fit">
           <ManagerOptions setAssetPage={setAssetPage} />
@@ -30,14 +32,14 @@ export default function AssetsDashboard() {
   );
 }
 
-const getTitle = (assetPage: BuildingAssetType) => {
+const getTitle = (assetPage: BuildingAssetType, assetID: string) => {
   switch (assetPage) {
     case BuildingAssetType.unit:
-      return `Building #XYZ Units`;
+      return `Building #${assetID} Units`;
     case BuildingAssetType.parking:
-      return `Building #XYZ Parking`;
+      return `Building #${assetID} Parking`;
     case BuildingAssetType.storage:
-      return `Building #XYZ Storage`;
+      return `Building #${assetID} Storage`;
   }
 };
 

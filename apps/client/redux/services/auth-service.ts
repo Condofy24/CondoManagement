@@ -41,10 +41,14 @@ type UserRegistationData =
   | { profilePic: File; role: UserRolesEnum };
 
 export const registerUser = createAsyncThunk<void, UserRegistationData>(
-  "",
+  "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      await axios.post(`${API_URL}/user`, userData);
+      await axios.post(`${API_URL}/user`, userData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     } catch (error: any) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {
@@ -68,17 +72,25 @@ type ManagerRegistrationData =
   | { profilePic: File; role: string };
 
 export const registerManager = createAsyncThunk<void, ManagerRegistrationData>(
-  "",
+  "auth/registerManager",
   async (userData, { rejectWithValue }) => {
     try {
-      const { company, address, ...managerData } =
-        userData as TManagerSignupSchema;
+      const { profilePic, company, address, ...managerData } = userData as any;
 
-      await axios.post(`${API_URL}/user/manager`, {
-        companyName: company,
-        companyLocation: address,
-        ...managerData,
-      });
+      await axios.post(
+        `${API_URL}/user/manager`,
+        {
+          companyName: company,
+          companyLocation: address,
+          image: profilePic,
+          ...managerData,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
     } catch (error: any) {
       // return custom error message from API if any
       if (error.response && error.response.data.message) {

@@ -3,6 +3,7 @@ import { Input } from "@/app/components/ui/input";
 import useUnitForm from "./unit-form-hook";
 import FormFieldError from "@/app/components/form/form-field-error";
 import { useAssetManagement } from "@/context/asset-management-context";
+import { Unit } from "@/types";
 
 export default function UnitForm() {
   const { asset, mode, setShowDialog } = useAssetManagement();
@@ -21,6 +22,7 @@ export default function UnitForm() {
           id="unitNumber"
           placeholder="Unit Number"
           className="dark:bg-white dark:text-black"
+          defaultValue={mode === "edit" ? (asset as Unit).unitNumber : ""}
         />
         <FormFieldError fieldError={errors.unitNumber} />
       </div>
@@ -64,6 +66,7 @@ export default function UnitForm() {
           id="fees"
           placeholder="Fees"
           className="dark:bg-white dark:text-black"
+          defaultValue={mode === "edit" ? (asset as Unit).fees : ""}
         />
         <FormFieldError fieldError={errors.fees} />
       </div>
@@ -76,6 +79,7 @@ export default function UnitForm() {
           placeholder="Size"
           className="dark:bg-white dark:text-black"
           {...register("size", { valueAsNumber: true })}
+          defaultValue={mode === "edit" ? (asset as Unit).size : ""}
         />
         <FormFieldError fieldError={errors.size} />
       </div>

@@ -104,3 +104,26 @@ export const fetchAssets = async (
       throw new Error("Invalid asset type");
   }
 };
+
+// export async function updateAsset(
+//   buildingId: string,
+//   data: TUnitSchema,
+//   token: string
+// ) {
+//   const userData = {
+//     ...data,
+//     isOccupiedByRenter: getIsOccupiesByRenter(data.isOccupiedByRenter),
+//   };
+
+//   try {
+//     const res = await axios.post(`${API_URL}/unit/${buildingId}`, userData, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     return res.status;
+//   } catch (error: any) {
+//     throw new Error("could not create specified unit");
+//   }
+// }

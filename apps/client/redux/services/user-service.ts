@@ -20,14 +20,22 @@ export const updateUserProfile = createAsyncThunk<User, UpdateUserData>(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await axios.patch<User>(`${API_URL}/user/${id}`, {
-        id,
-        name,
-        email,
-        newPassword,
-        phoneNumber,
-        profilePic: profilePic ?? undefined,
-      });
+      const { data } = await axios.patch<User>(
+        `${API_URL}/user/${id}`,
+        {
+          id,
+          name,
+          email,
+          newPassword,
+          phoneNumber,
+          image: profilePic ?? undefined,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
 
       // Handle the response accordingly
       toast.success("Profile updated successfully!");
