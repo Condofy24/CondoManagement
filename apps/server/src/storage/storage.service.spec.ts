@@ -3,7 +3,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from '../unit/unit.service';
 import { BuildingService } from '../building/building.service';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { Building } from '../building/entities/building.entity';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { StorageService } from './storage.service';
 import { Storage, StorageModel } from './entities/storage.entity';
@@ -36,7 +35,7 @@ const linkStorageToUnitDto: LinkStorageToUnitDto = {
   storageNumber: 8,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -89,7 +88,7 @@ const storageInfoTestData2: Storage = {
 
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
-  findByIdandUpdateStorageCount: jest.fn().mockResolvedValue(null),
+  updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
@@ -130,7 +129,7 @@ describe('StorageService', () => {
       mockingoose(StorageModel).toReturn(null, 'findOne');
       const id = new ObjectId();
       buildingServiceMock.findOne.mockResolvedValue({
-        id,
+        _id: id,
         ...buildingInfoTestData,
       });
 
@@ -141,9 +140,7 @@ describe('StorageService', () => {
       );
 
       //Assert
-      expect(
-        buildingServiceMock.findByIdandUpdateStorageCount,
-      ).toHaveBeenCalled();
+      expect(buildingServiceMock.updateBuilding).toHaveBeenCalled();
       expect(result).toBeDefined();
     });
     it('should throw an error if building does not exist', async () => {

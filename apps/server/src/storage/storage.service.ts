@@ -41,7 +41,7 @@ export class StorageService {
     }
     const storage = await this.storageModel.findOne({
       storageNumber,
-      buildingId: buildingExists.id,
+      buildingId: buildingExists._id,
     });
     if (storage) {
       if (storage.buildingId.equals(buildingExists.id)) {
@@ -54,16 +54,17 @@ export class StorageService {
     let storageCount = buildingExists.storageCount;
 
     const newStorage = new this.storageModel({
-      buildingId: buildingExists.id,
+      buildingId: buildingExists._id,
       storageNumber,
       isOccupied,
       fees,
     });
     storageCount++;
-    this.buildingService.findByIdandUpdateStorageCount(
-      buildingExists.id,
+
+    this.buildingService.updateBuilding(buildingExists.id.toString(), {
       storageCount,
-    );
+    });
+
     const result = await newStorage.save();
     return result;
   }
@@ -176,10 +177,7 @@ export class StorageService {
 
     await this.storageModel.remove(storage);
     storageCount--;
-    this.buildingService.findByIdandUpdateStorageCount(
-      buildingId,
-      storageCount,
-    );
+    this.buildingService.updateBuilding(buildingId, { storageCount });
 
     return response.status(HttpStatus.NO_CONTENT);
   }

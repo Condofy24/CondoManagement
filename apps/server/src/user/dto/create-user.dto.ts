@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { IsValidPhoneNumber, IsValidRole } from '../user.validators';
+import { IsValidPhoneNumber } from '../user.validators';
 import { Validate } from 'class-validator';
 
 /**

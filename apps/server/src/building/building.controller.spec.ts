@@ -7,6 +7,8 @@ import { CreateBuildingDto } from './dto/create-building.dto';
 import { ObjectId } from 'mongodb';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
+import { toBuilding } from './view-models/building.view-model';
+import { BuildingDocument } from './entities/building.entity';
 
 const buildingServiceMock = {
   createBuilding: jest.fn(),
@@ -35,6 +37,7 @@ const createBuildingDto: CreateBuildingDto = {
 };
 
 const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'PEWPEWWW',
   address: '2240PewPew',
@@ -92,28 +95,34 @@ describe('BuidlingController', () => {
 
       // Act
       const result = await buildingController.create(
-        's',
+        new ObjectId().toString(),
         createBuildingDto,
         fileMockData,
       );
 
       //Assert
-      expect(result).toEqual(buildingInfoTestData);
+      expect(result).toEqual(
+        toBuilding(buildingInfoTestData as BuildingDocument),
+      );
     });
-    describe('findAll', () => {
-      it('should forward call to building service', async () => {
-        // Arrange
+  });
 
-        buildingServiceMock.findAll.mockResolvedValue(buildingInfoTestData);
+  describe('findAll', () => {
+    it('should forward call to building service', async () => {
+      // Arrange
+      buildingServiceMock.findAll.mockResolvedValue([buildingInfoTestData]);
 
-        // Act
-        const result = await buildingController.findAll(
-          buildingInfoTestData.companyId.toString(),
-        );
+      const expectedBuildingViewModels = [
+        toBuilding(buildingInfoTestData as BuildingDocument),
+      ];
 
-        //Assert
-        expect(result).toEqual(buildingInfoTestData);
-      });
+      // Act
+      const result = await buildingController.findAll(
+        buildingInfoTestData.companyId.toString(),
+      );
+
+      //Assert
+      expect(result).toMatchObject(expectedBuildingViewModels);
     });
   });
 });

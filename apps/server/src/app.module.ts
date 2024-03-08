@@ -21,7 +21,7 @@ import { StorageController } from './storage/storage.controller';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/?retryWrites=true&w=majority', // TODO: Move password to env
+      'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/dev?retryWrites=true&w=majority', // TODO: Move password to env
     ),
     UserModule,
     AuthModule,

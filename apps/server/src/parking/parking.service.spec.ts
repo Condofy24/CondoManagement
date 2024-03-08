@@ -3,7 +3,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from '../unit/unit.service';
 import { BuildingService } from '../building/building.service';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { Building } from '../building/entities/building.entity';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { Parking, ParkingModel } from './entities/parking.entity';
@@ -36,7 +35,8 @@ const linkParkingToUnitDto: LinkParkingToUnitDto = {
   parkingNumber: 8,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -89,7 +89,7 @@ const parkingInfoTestData2: Parking = {
 
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
-  findByIdandUpdateParkingCount: jest.fn().mockResolvedValue(null),
+  updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
@@ -141,9 +141,7 @@ describe('ParkingService', () => {
       );
 
       //Assert
-      expect(
-        buildingServiceMock.findByIdandUpdateParkingCount,
-      ).toHaveBeenCalled();
+      expect(buildingServiceMock.updateBuilding).toHaveBeenCalled();
       expect(result).toBeDefined();
     });
     it('should throw an error if building does not exist', async () => {

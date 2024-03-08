@@ -41,7 +41,7 @@ export class UnitService {
     }
     const unit = await this.unitModel.findOne({
       unitNumber,
-      buildingId: buildingExists.id,
+      buildingId: buildingExists._id,
     });
     if (unit) {
       if (unit.buildingId.equals(buildingExists.id)) {
@@ -52,7 +52,7 @@ export class UnitService {
       }
     }
     const newUnit = new this.unitModel({
-      buildingId: buildingExists.id,
+      buildingId: buildingExists._id,
       unitNumber,
       size,
       isOccupiedByRenter,
@@ -71,7 +71,7 @@ export class UnitService {
     );
     let unitCount = buildingExists.unitCount;
     unitCount++;
-    this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
+    this.buildingService.updateBuilding(buildingId, { unitCount });
     return { result, verfKeyOwner, verKeyRenter };
   }
 
@@ -155,7 +155,7 @@ export class UnitService {
 
     await this.unitModel.remove(unit);
     unitCount--;
-    this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
+    this.buildingService.updateBuilding(buildingId, { unitCount });
 
     return response.status(HttpStatus.NO_CONTENT);
   }

@@ -1,17 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from './unit.service';
-import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
 import { Unit, UnitModel } from './entities/unit.entity';
-import { BadRequestException, HttpException } from '@nestjs/common';
-import { Readable } from 'stream';
-import { buffer } from 'stream/consumers';
+import { HttpException } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
 import { VerfService } from '../verf/verf.service';
 import { ObjectId } from 'mongodb';
-import { Building } from 'src/building/entities/building.entity';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { User } from 'src/user/entities/user.entity';
 
@@ -28,7 +24,7 @@ const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
   unitNumber: 4,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -103,6 +99,7 @@ const verfServiceMock = {
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
   findByIdandUpdateUnitCount: jest.fn().mockResolvedValue(null),
+  updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const userServiceMock = {
@@ -148,7 +145,7 @@ describe('UnitService', () => {
       mockingoose(UnitModel).toReturn(null, 'findOne');
       const id = new ObjectId();
       buildingServiceMock.findOne.mockResolvedValue({
-        id,
+        _id: id,
         ...buildingInfoTestData,
       });
 

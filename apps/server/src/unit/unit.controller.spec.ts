@@ -6,7 +6,6 @@ import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
 import { User } from '../user/entities/user.entity';
 import { Unit } from './entities/unit.entity';
-import { Building } from '../building/entities/building.entity';
 import { HttpStatus } from '@nestjs/common';
 
 const createUnitDto: CreateUnitDto = {
@@ -30,7 +29,8 @@ const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
   unitNumber: 4,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
