@@ -115,6 +115,15 @@ const adminInfoTestData = {
   imageId: 'image123',
 };
 
+const employeeInfoTestData = {
+  email: 'test@example.com',
+  name: 'Test Employee',
+  role: 2,
+  phoneNumber: '0987654321',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+};
+
 const userInfoTestData = {
   email: 'user@example.com',
   name: 'Test User',
@@ -442,6 +451,24 @@ describe('UserService', () => {
       expect(result.length).toBe(users.length);
       expect(result[0]).toEqual(
         expect.objectContaining({ ...adminInfoTestData, role: 0 }),
+      );
+    });
+  });
+
+  describe('findAll employees', () => {
+    it('should return all the employees', async () => {
+      // Arrange
+      const users = [employeeInfoTestData];
+      mockingoose(UserModel).toReturn(users, 'find');
+
+      // Act
+      const result = await service.findAll({ companyId: 'companyId' });
+
+      // Assert
+      expect(result[0]).toEqual(
+        expect.objectContaining({
+          ...employeeInfoTestData,
+        }),
       );
     });
   });
