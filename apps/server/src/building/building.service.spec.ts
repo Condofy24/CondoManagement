@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
 import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
-import BuildingModel, { BuildingDocument } from './entities/building.entity';
+import BuildingModel, { BuildingEntity } from './entities/building.entity';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { CreateBuildingDto } from './dto/create-building.dto';
@@ -299,8 +299,6 @@ describe('BuildingService', () => {
         fileMockData,
       );
 
-      console.log(result);
-
       // Assert
       expect(result).toMatchObject(updatedBuildingTest);
     });
@@ -331,7 +329,7 @@ describe('BuildingService', () => {
 
       // Assertions
       expect(result).toMatchObject({
-        building: toBuilding(buildingInfoTestData as BuildingDocument),
+        building: toBuilding(buildingInfoTestData as BuildingEntity),
       });
     });
   });

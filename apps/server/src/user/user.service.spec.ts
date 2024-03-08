@@ -11,10 +11,7 @@ import { buffer } from 'stream/consumers';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { VerfService } from '../verf/verf.service';
 import { UnitService } from '../unit/unit.service';
-import { VerificationKey } from 'src/verf/entities/verf.entity';
-import { Unit } from 'src/unit/entities/unit.entity';
 import { ObjectId } from 'mongodb';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
@@ -28,7 +25,7 @@ const cloudinaryServiceMock = {
   uploadFile: jest.fn().mockResolvedValue(cloudinaryResponseMock),
 };
 
-const unitServiceTestData: Unit & { id: string } = {
+const unitServiceTestData = {
   id: 'fdd',
   buildingId: new ObjectId(),
   ownerId: new ObjectId(),
@@ -47,13 +44,7 @@ const unitServiceCreateTestData = {
   fees: 222,
 };
 
-const unitServiceMock = {
-  findOne: jest.fn().mockResolvedValue(unitServiceTestData),
-  createUnit: jest.fn().mockResolvedValue(unitServiceCreateTestData),
-  linkUnitToUser: jest.fn().mockResolvedValue(unitServiceTestData),
-};
-
-const verfKeyTestData: VerificationKey & { id: string } = {
+const verfKeyTestData = {
   id: 'sdsdw',
   unitId: 'sdsds',
   key: 'sdsddsd',
@@ -61,11 +52,11 @@ const verfKeyTestData: VerificationKey & { id: string } = {
   claimedBy: 'sdsd',
 };
 
-const verfServiceMock = {
-  findByVerfKey: jest.fn().mockResolvedValue(verfKeyTestData),
-  createVerfKey: jest
-    .fn()
-    .mockResolvedValue({ verfKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c' }),
+const unitServiceMock = {
+  findOne: jest.fn().mockResolvedValue(unitServiceTestData),
+  createUnit: jest.fn().mockResolvedValue(unitServiceCreateTestData),
+  linkUnitToUser: jest.fn().mockResolvedValue(unitServiceTestData),
+  findUnitRegistrationKey: jest.fn().mockResolvedValue(verfKeyTestData),
 };
 
 const companyServiceMock = {
@@ -156,10 +147,6 @@ describe('UserService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
-        },
-        {
-          provide: VerfService,
-          useValue: verfServiceMock,
         },
         {
           provide: CloudinaryService,

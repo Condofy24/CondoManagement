@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 
-export interface BuildingDocument extends Document {
+export interface BuildingEntity extends Document {
   _id: mongoose.Types.ObjectId;
   companyId: mongoose.Types.ObjectId | Record<string, unknown>;
   name: string;
@@ -13,13 +13,13 @@ export interface BuildingDocument extends Document {
   fileAssetId: string;
 }
 
-interface BuildingModel extends mongoose.Model<BuildingDocument> {}
+interface BuildingModel extends mongoose.Model<BuildingEntity> {}
 
 /**
  * The Mongoose schema for a building.
  */
 export const BuildingSchema = new mongoose.Schema<
-  BuildingDocument,
+  BuildingEntity,
   BuildingModel
 >(
   {
@@ -52,20 +52,5 @@ BuildingSchema.index(
   { name: 1, companyId: 1 },
   { unique: true, name: 'unique-name-index' },
 );
-
-BuildingSchema.methods.toBuildingModel = function (this: BuildingDocument) {
-  return {
-    id: this._id.toString(),
-    companyId: this.companyId.toString(),
-    name: this.name,
-    address: this.address,
-    unitCount: this.unitCount,
-    parkingCount: this.parkingCount,
-    storageCount: this.storageCount,
-    fileUrl: this.fileUrl,
-    filePublicId: this.filePublicId,
-    fileAssetId: this.fileAssetId,
-  };
-};
 
 export default mongoose.model('Building', new mongoose.Schema(BuildingSchema));

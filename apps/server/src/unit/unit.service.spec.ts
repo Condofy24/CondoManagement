@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from './unit.service';
-import { Unit, UnitModel } from './entities/unit.entity';
+import UnitModel, { UnitEntity } from './entities/unit.entity';
 import { HttpException } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
-import { VerfService } from '../verf/verf.service';
 import { ObjectId } from 'mongodb';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { User } from 'src/user/entities/user.entity';
+import RegistationKeyModel from './entities/registration-key.entity';
 
 const mockingoose = require('mockingoose');
 
@@ -51,7 +51,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const unitInfoTestData: Unit = {
+const unitInfoTestData: Partial<UnitEntity> = {
   buildingId: buildingInfoTestData2.id,
   unitNumber: 4,
   size: 4,
@@ -90,12 +90,6 @@ const userInfoTestData2: User = {
   imageId: 'image123',
 };
 
-const verfServiceMock = {
-  createVerfKey: jest
-    .fn()
-    .mockResolvedValue({ verificationkeyId: 'mockVerificationKeyId' }),
-};
-
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
   findByIdandUpdateUnitCount: jest.fn().mockResolvedValue(null),
@@ -118,16 +112,16 @@ describe('UnitService', () => {
           useValue: UnitModel,
         },
         {
+          provide: getModelToken('RegistrationKey'),
+          useValue: RegistationKeyModel,
+        },
+        {
           provide: BuildingService,
           useValue: buildingServiceMock,
         },
         {
           provide: UserService,
           useValue: userServiceMock,
-        },
-        {
-          provide: VerfService,
-          useValue: verfServiceMock,
         },
       ],
     }).compile();
@@ -157,7 +151,6 @@ describe('UnitService', () => {
 
       //Assert
       expect(result).toBeDefined();
-      expect(verfServiceMock.createVerfKey).toHaveBeenCalledTimes(2);
     });
     it('should throw an error if building does not exist', async () => {
       //Arrange
@@ -172,7 +165,7 @@ describe('UnitService', () => {
     });
     it('should throw an error if unit already exists', async () => {
       //Arrange
-      const id = unitInfoTestData.buildingId;
+      const id = unitInfoTestData.buildingId as ObjectId;
       buildingServiceMock.findOne.mockResolvedValue({
         id,
         ...buildingInfoTestData,
@@ -190,7 +183,7 @@ describe('UnitService', () => {
       //Arrange
       const units = [unitInfoTestData];
       mockingoose(UnitModel).toReturn(units, 'find');
-      const id = unitInfoTestData.buildingId;
+      const id = unitInfoTestData.buildingId as ObjectId;
 
       //Act
       const result = await service.findAll(id.toString());
@@ -286,7 +279,7 @@ describe('UnitService', () => {
       //Act
       expect(
         service.linkUnitToUser(
-          unitInfoTestData.buildingId.toString(),
+          (unitInfoTestData.buildingId as ObjectId).toString(),
           userInfoTestData.id,
           linkUnitToBuildingDto,
         ),
@@ -300,7 +293,7 @@ describe('UnitService', () => {
       //Act
       expect(
         service.linkUnitToUser(
-          unitInfoTestData.buildingId.toString(),
+          (unitInfoTestData.buildingId as ObjectId).toString(),
           userInfoTestData.id,
           linkUnitToBuildingDto,
         ),

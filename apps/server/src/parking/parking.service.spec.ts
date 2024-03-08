@@ -6,7 +6,6 @@ import { MongoServerError, ObjectId } from 'mongodb';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { Parking, ParkingModel } from './entities/parking.entity';
-import { Unit } from '../unit/entities/unit.entity';
 import { UpdateParkingDto } from './dto/update-parking.dto';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { HttpException } from '@nestjs/common';
@@ -63,7 +62,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const occupiedUnitInfoTestData: Unit = {
+const occupiedUnitInfoTestData = {
   buildingId: buildingInfoTestData2.id,
   ownerId: new ObjectId(),
   renterId: new ObjectId(),
@@ -159,8 +158,8 @@ describe('ParkingService', () => {
       // Arrange
       const id = new ObjectId();
       buildingServiceMock.findOne.mockResolvedValue({
-        id,
         ...buildingInfoTestData,
+        _id: id,
       });
       mockingoose(ParkingModel).toReturn(
         { ...parkingInfoTestData, buildingId: id },

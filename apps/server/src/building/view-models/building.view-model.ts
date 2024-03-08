@@ -1,4 +1,4 @@
-import { BuildingDocument } from '../entities/building.entity';
+import { BuildingEntity } from '../entities/building.entity';
 
 /**
  * Represents a building
@@ -15,16 +15,16 @@ export type Building = {
   fileAssetId: string;
 };
 
-export const toBuilding = (buildingDocument: BuildingDocument): Building => {
+export const toBuilding = (entity: BuildingEntity): Building => {
   return {
-    id: buildingDocument._id.toString(),
-    companyId: buildingDocument.companyId.toString(),
-    address: buildingDocument.address,
-    unitCount: buildingDocument.unitCount,
-    parkingCount: buildingDocument.parkingCount,
-    storageCount: buildingDocument.storageCount,
-    fileUrl: buildingDocument.fileUrl,
-    filePublicId: buildingDocument.filePublicId,
-    fileAssetId: buildingDocument.fileAssetId,
+    id: entity._id.toString(),
+    companyId: entity.companyId.toString(),
+    address: entity.address,
+    unitCount: entity.unitCount,
+    parkingCount: entity.parkingCount,
+    storageCount: entity.storageCount,
+    fileUrl: entity.fileUrl,
+    filePublicId: entity.filePublicId,
+    fileAssetId: entity.fileAssetId,
   };
 };

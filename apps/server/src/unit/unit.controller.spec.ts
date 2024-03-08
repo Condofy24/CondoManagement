@@ -5,8 +5,8 @@ import { CreateUnitDto } from './dto/create-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
 import { User } from '../user/entities/user.entity';
-import { Unit } from './entities/unit.entity';
 import { HttpStatus } from '@nestjs/common';
+import { UnitEntity } from './entities/unit.entity';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -57,7 +57,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const unitInfoTestData: Unit = {
+const unitInfoTestData = {
   buildingId: buildingInfoTestData2.id,
   unitNumber: 4,
   size: 4,

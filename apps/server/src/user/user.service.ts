@@ -12,14 +12,12 @@ import { User } from './entities/user.entity';
 import { response } from 'express';
 import { Token, UserProfile } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
-import { VerfService } from '../verf/verf.service';
 import { UnitService } from '../unit/unit.service';
 import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
 
@@ -40,7 +38,6 @@ export class UserService {
     @InjectModel('User') private readonly userModel: Model<User>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
-    private verfService: VerfService,
     @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
   ) {}
@@ -225,13 +222,10 @@ export class UserService {
       );
     }
     //check if Key exists:
-    const verfExist = await this.verfService.findByVerfKey(verfKey);
-    if (!verfExist) {
-      throw new HttpException(
-        { error: "Key doesn't exists", status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const registrationKey =
+      await this.unitService.findUnitRegistrationKey(verfKey);
+    if (!registrationKey)
+      throw new BadRequestException('Registration Key is invalid');
 
     let imageUrl =
       'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
@@ -242,10 +236,10 @@ export class UserService {
       imageId = imageResponse.public_id;
     }
     let assignedRole;
-    if (verfExist.type == 0) {
+    if (registrationKey.type == 0) {
       assignedRole = 3;
     }
-    if (verfExist.type == 1) {
+    if (registrationKey.type == 1) {
       assignedRole = 4;
     }
 
@@ -263,7 +257,9 @@ export class UserService {
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
 
-    const unitForLink = await this.unitService.findOne(verfExist.unitId);
+    const unitForLink = await this.unitService.findOne(
+      registrationKey.unitId.toString(),
+    );
 
     const buildingId = unitForLink.buildingId;
 

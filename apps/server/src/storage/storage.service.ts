@@ -61,7 +61,7 @@ export class StorageService {
     });
     storageCount++;
 
-    this.buildingService.updateBuilding(buildingExists.id.toString(), {
+    this.buildingService.updateBuilding(buildingExists._id.toString(), {
       storageCount,
     });
 

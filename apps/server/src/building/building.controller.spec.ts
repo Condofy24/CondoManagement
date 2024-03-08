@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { toBuilding } from './view-models/building.view-model';
-import { BuildingDocument } from './entities/building.entity';
+import { BuildingEntity } from './entities/building.entity';
 
 const buildingServiceMock = {
   createBuilding: jest.fn(),
@@ -102,7 +102,7 @@ describe('BuidlingController', () => {
 
       //Assert
       expect(result).toEqual(
-        toBuilding(buildingInfoTestData as BuildingDocument),
+        toBuilding(buildingInfoTestData as BuildingEntity),
       );
     });
   });
@@ -113,7 +113,7 @@ describe('BuidlingController', () => {
       buildingServiceMock.findAll.mockResolvedValue([buildingInfoTestData]);
 
       const expectedBuildingViewModels = [
-        toBuilding(buildingInfoTestData as BuildingDocument),
+        toBuilding(buildingInfoTestData as BuildingEntity),
       ];
 
       // Act

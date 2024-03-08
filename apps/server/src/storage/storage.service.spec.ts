@@ -6,7 +6,6 @@ import { MongoServerError, ObjectId } from 'mongodb';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { StorageService } from './storage.service';
 import { Storage, StorageModel } from './entities/storage.entity';
-import { Unit } from '../unit/entities/unit.entity';
 import { UpdateStorageDto } from './dto/update-storage.dto';
 import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { HttpException } from '@nestjs/common';
@@ -62,7 +61,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const occupiedUnitInfoTestData: Unit = {
+const occupiedUnitInfoTestData = {
   buildingId: buildingInfoTestData2.id,
   ownerId: new ObjectId(),
   renterId: new ObjectId(),

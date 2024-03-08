@@ -15,8 +15,8 @@ import { StorageService } from '../storage/storage.service';
 import { UnitService } from '../unit/unit.service';
 
 import { ParkingService } from '../parking/parking.service';
-import { BuildingDocument } from './entities/building.entity';
 import { Building, toBuilding } from './view-models/building.view-model';
+import { BuildingEntity } from './entities/building.entity';
 
 /**
  * Service class for managing buildings.
@@ -25,7 +25,7 @@ import { Building, toBuilding } from './view-models/building.view-model';
 export class BuildingService {
   constructor(
     @InjectModel('Building')
-    private readonly buildingModel: Model<BuildingDocument>,
+    private readonly buildingModel: Model<BuildingEntity>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
