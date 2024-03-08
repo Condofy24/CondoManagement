@@ -70,6 +70,15 @@ export class UserController {
   }
 
   /**
+   * Manager gets all company employees
+   * @returns All employees of a company.
+   */
+  @Get('employees/:companyId')
+  findEmployees(@Param('companyId') companyId: string) {
+    return this.userService.findAll({ companyId });
+  }
+
+  /**
    * Get the profile of the authenticated user.
    * @param req - The request object.
    * @returns The profile of the authenticated user.
