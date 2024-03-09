@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { Parking } from './entities/parking.entity';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
@@ -41,10 +41,10 @@ export class ParkingService {
     }
     const parking = await this.parkingModel.findOne({
       parkingNumber,
-      buildingId: buildingExists.id,
+      buildingId: buildingExists._id,
     });
     if (parking) {
-      if (parking.buildingId.equals(buildingExists.id)) {
+      if (parking.buildingId.equals(buildingExists._id)) {
         throw new HttpException(
           {
             error: 'Parking number already exists',
@@ -57,16 +57,15 @@ export class ParkingService {
     let parkingCount = buildingExists.parkingCount;
 
     const newParking = new this.parkingModel({
-      buildingId: buildingExists.id,
+      buildingId: buildingExists._id.toString(),
       parkingNumber,
       isOccupied,
       fees,
     });
     parkingCount++;
-    this.buildingService.findByIdandUpdateParkingCount(
-      buildingExists.id,
+    this.buildingService.updateBuilding(buildingExists._id.toString(), {
       parkingCount,
-    );
+    });
     const result = await newParking.save();
     return result;
   }
@@ -186,10 +185,7 @@ export class ParkingService {
 
     await this.parkingModel.remove(parkingExsits);
     parkingCount--;
-    this.buildingService.findByIdandUpdateParkingCount(
-      buildingId,
-      parkingCount,
-    );
+    this.buildingService.updateBuilding(buildingId, { parkingCount });
 
     return response.status(HttpStatus.NO_CONTENT);
   }

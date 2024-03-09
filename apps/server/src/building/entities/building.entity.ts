@@ -1,9 +1,27 @@
-import * as mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+
+export interface BuildingEntity extends Document {
+  _id: mongoose.Types.ObjectId;
+  companyId: mongoose.Types.ObjectId | Record<string, unknown>;
+  name: string;
+  address: string;
+  unitCount: number;
+  parkingCount: number;
+  storageCount: number;
+  fileUrl: string;
+  filePublicId: string;
+  fileAssetId: string;
+}
+
+interface BuildingModel extends mongoose.Model<BuildingEntity> {}
 
 /**
  * The Mongoose schema for a building.
  */
-export const BuildingSchema = new mongoose.Schema(
+export const BuildingSchema = new mongoose.Schema<
+  BuildingEntity,
+  BuildingModel
+>(
   {
     companyId: {
       type: mongoose.Types.ObjectId,
@@ -24,22 +42,15 @@ export const BuildingSchema = new mongoose.Schema(
   },
 );
 
-export const BuildingModel = mongoose.model(
-  'Building',
-  new mongoose.Schema(BuildingSchema),
+// Indexes for unique constraint
+BuildingSchema.index(
+  { address: 1, companyId: 1 },
+  { unique: true, name: 'unique-address-index' },
 );
 
-/**
- * Represents a building
- */
-export interface Building {
-  companyId: mongoose.Types.ObjectId;
-  name: string;
-  address: string;
-  unitCount: number;
-  parkingCount: number;
-  storageCount: number;
-  fileUrl: string;
-  filePublicId: string;
-  fileAssetId: string;
-}
+BuildingSchema.index(
+  { name: 1, companyId: 1 },
+  { unique: true, name: 'unique-name-index' },
+);
+
+export default mongoose.model('Building', new mongoose.Schema(BuildingSchema));

@@ -3,11 +3,9 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from '../unit/unit.service';
 import { BuildingService } from '../building/building.service';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { Building } from '../building/entities/building.entity';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { Parking, ParkingModel } from './entities/parking.entity';
-import { Unit } from '../unit/entities/unit.entity';
 import { UpdateParkingDto } from './dto/update-parking.dto';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { HttpException } from '@nestjs/common';
@@ -36,7 +34,8 @@ const linkParkingToUnitDto: LinkParkingToUnitDto = {
   parkingNumber: 8,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -63,7 +62,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const occupiedUnitInfoTestData: Unit = {
+const occupiedUnitInfoTestData = {
   buildingId: buildingInfoTestData2.id,
   ownerId: new ObjectId(),
   renterId: new ObjectId(),
@@ -89,7 +88,7 @@ const parkingInfoTestData2: Parking = {
 
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
-  findByIdandUpdateParkingCount: jest.fn().mockResolvedValue(null),
+  updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
@@ -141,9 +140,7 @@ describe('ParkingService', () => {
       );
 
       //Assert
-      expect(
-        buildingServiceMock.findByIdandUpdateParkingCount,
-      ).toHaveBeenCalled();
+      expect(buildingServiceMock.updateBuilding).toHaveBeenCalled();
       expect(result).toBeDefined();
     });
     it('should throw an error if building does not exist', async () => {
@@ -161,8 +158,8 @@ describe('ParkingService', () => {
       // Arrange
       const id = new ObjectId();
       buildingServiceMock.findOne.mockResolvedValue({
-        id,
         ...buildingInfoTestData,
+        _id: id,
       });
       mockingoose(ParkingModel).toReturn(
         { ...parkingInfoTestData, buildingId: id },

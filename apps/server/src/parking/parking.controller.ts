@@ -11,7 +11,10 @@ import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { UpdateParkingDto } from './dto/update-parking.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Parking')
+@ApiBearerAuth()
 @Controller('parking')
 export class ParkingController {
   constructor(private readonly parkingService: ParkingService) {}

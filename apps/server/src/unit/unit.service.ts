@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Inject,
@@ -6,24 +7,30 @@ import {
   UnauthorizedException,
   forwardRef,
 } from '@nestjs/common';
-import { Unit } from './entities/unit.entity';
+import { UnitEntity } from './entities/unit.entity';
 import { Model } from 'mongoose';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { VerfService } from '../verf/verf.service';
 import { BuildingService } from '../building/building.service';
-import { VerfRolesEnum } from '../verf/entities/verf.entity';
 import { response } from 'express';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { UserService } from '../user/user.service';
+import { MongoServerError, ObjectId } from 'mongodb';
+import {
+  CondoRegistrationKeys,
+  RegistrationKeyEntity,
+  RegistrationRoles,
+} from './entities/registration-key.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UnitService {
   constructor(
     @InjectModel('Unit')
-    private readonly unitModel: Model<Unit>,
-    private readonly verfService: VerfService,
+    private readonly unitModel: Model<UnitEntity>,
+    @InjectModel('RegistrationKey')
+    private readonly registrationKeyModel: Model<RegistrationKeyEntity>,
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     @Inject(forwardRef(() => BuildingService))
@@ -32,47 +39,73 @@ export class UnitService {
 
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
-    const buildingExists = await this.buildingService.findOne(buildingId);
-    if (!buildingExists) {
-      throw new HttpException(
-        { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const unit = await this.unitModel.findOne({
-      unitNumber,
-      buildingId: buildingExists.id,
-    });
-    if (unit) {
-      if (unit.buildingId.equals(buildingExists.id)) {
-        throw new HttpException(
-          { error: 'Unit already exists', status: HttpStatus.BAD_REQUEST },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-    const newUnit = new this.unitModel({
-      buildingId: buildingExists.id,
+
+    const building = await this.buildingService.findOne(buildingId);
+
+    if (!building) throw new BadRequestException('Invalid building Id');
+
+    const unit = new this.unitModel({
+      buildingId: building._id,
       unitNumber,
       size,
       isOccupiedByRenter,
       fees,
     });
-    const result = await newUnit.save();
-    const verfKeyOwner = this.verfService.createVerfKey(
-      result.id,
-      VerfRolesEnum.OWNER,
-      '',
+
+    let unitEntity;
+
+    try {
+      unitEntity = await unit.save();
+    } catch (error) {
+      let errorDescription = 'Building could not be created';
+
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'Unit with the same unit number already exists for this building.';
+      }
+
+      throw new BadRequestException(error?.message, errorDescription);
+    }
+
+    // generate the registration keys for the unit
+    const registrationKeys = await this.generateRegistrationKeysForUnit(
+      unit._id,
     );
-    const verKeyRenter = this.verfService.createVerfKey(
-      result.id,
-      VerfRolesEnum.RENTER,
-      '',
-    );
-    let unitCount = buildingExists.unitCount;
-    unitCount++;
-    this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
-    return { result, verfKeyOwner, verKeyRenter };
+
+    // update unit count of associted building
+    this.buildingService.updateBuilding(buildingId, {
+      unitCount: building.unitCount + 1,
+    });
+
+    return { unitEntity, registrationKeys };
+  }
+
+  public async findUnitRegistrationKey(key: string) {
+    return this.registrationKeyModel.findOne({ key });
+  }
+
+  private async generateRegistrationKeysForUnit(
+    unitId: ObjectId,
+  ): Promise<CondoRegistrationKeys> {
+    const ownerRegistrationKey = new this.registrationKeyModel({
+      unitId,
+      key: uuidv4(),
+      type: RegistrationRoles.OWNER,
+    });
+
+    const renterRegistrationKey = new this.registrationKeyModel({
+      unitId,
+      key: uuidv4(),
+      type: RegistrationRoles.RENTER,
+    });
+    try {
+      const { key: ownerKey } = await ownerRegistrationKey.save();
+      const { key: renterKey } = await renterRegistrationKey.save();
+
+      return { ownerKey, renterKey };
+    } catch (error) {
+      throw new BadRequestException(error?.message);
+    }
   }
 
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
@@ -101,10 +134,10 @@ export class UnitService {
     };
   }
 
-  public async findAll(buildingId: string): Promise<Unit[]> {
+  public async findAll(buildingId: string): Promise<UnitEntity[]> {
     const units = await this.unitModel.find({ buildingId }).exec();
     return units.map(
-      (unit: Unit) =>
+      (unit: UnitEntity) =>
         ({
           buildingId: unit.buildingId,
           ownerId: unit.ownerId,
@@ -113,7 +146,7 @@ export class UnitService {
           size: unit.size,
           isOccupiedByRenter: unit.isOccupiedByRenter,
           fees: unit.fees,
-        }) as Unit,
+        }) as UnitEntity,
     );
   }
   public async findOne(id: string) {
@@ -155,7 +188,7 @@ export class UnitService {
 
     await this.unitModel.remove(unit);
     unitCount--;
-    this.buildingService.findByIdandUpdateUnitCount(buildingId, unitCount);
+    this.buildingService.updateBuilding(buildingId, { unitCount });
 
     return response.status(HttpStatus.NO_CONTENT);
   }
@@ -165,7 +198,7 @@ export class UnitService {
     linkUnitToBuildingDto: LinkUnitToBuidlingDto,
   ) {
     const { unitNumber } = linkUnitToBuildingDto;
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findUserById(userId);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },
@@ -214,8 +247,8 @@ export class UnitService {
       fees: unit.fees,
     };
   }
-  public async findOwnerUnits(ownerId: string): Promise<Unit[]> {
-    const user = await this.userService.findById(ownerId);
+  public async findOwnerUnits(ownerId: string): Promise<UnitEntity[]> {
+    const user = await this.userService.findUserById(ownerId);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },
@@ -228,7 +261,7 @@ export class UnitService {
 
     const units = await this.unitModel.find({ ownerId }).exec();
     return units.map(
-      (unit: Unit) =>
+      (unit: UnitEntity) =>
         ({
           buildingId: unit.buildingId,
           ownerId: unit.ownerId,
@@ -237,11 +270,11 @@ export class UnitService {
           size: unit.size,
           isOccupiedByRenter: unit.isOccupiedByRenter,
           fees: unit.fees,
-        }) as Unit,
+        }) as UnitEntity,
     );
   }
   public async findRenterUnit(renterId: string) {
-    const user = await this.userService.findById(renterId);
+    const user = await this.userService.findUserById(renterId);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },

@@ -11,7 +11,10 @@ import { CreateStorageDto } from './dto/create-storage.dto';
 import { StorageService } from './storage.service';
 import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { UpdateStorageDto } from './dto/update-storage.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Storage')
+@ApiBearerAuth()
 @Controller('storage')
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}

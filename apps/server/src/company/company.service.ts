@@ -1,96 +1,57 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Company } from './entities/company.entity';
+import {
+  CompanyEntity,
+  CompanyUniqueLocationIndex,
+  CompanyUniqueNameIndex,
+} from './entities/company.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import { MongoServerError } from 'mongodb';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectModel('Company')
-    private readonly companyModel: Model<Company>,
+    private readonly companyModel: Model<CompanyEntity>,
   ) {}
 
-  public async createCompany(createCompanyDto: CreateCompanyDto) {
+  public async createCompany(
+    createCompanyDto: CreateCompanyDto,
+  ): Promise<CompanyEntity> {
     const { companyName, companyLocation } = createCompanyDto;
 
-    const company = await this.companyModel.findOne({ companyName });
-    if (company) {
-      throw new HttpException(
-        { error: 'Company already exists', status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // Create company
-    const newCompany = new this.companyModel({
-      companyName,
-      companyLocation,
+    const company = new this.companyModel({
+      name: companyName,
+      location: companyLocation,
     });
 
-    const result = await newCompany.save();
-    if (result instanceof Error)
-      throw new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+    try {
+      return await company.save();
+    } catch (error) {
+      let errorDescription = 'Company couldnt be created';
 
-    return newCompany;
-  }
+      if (error instanceof MongoServerError && error.code === 11000) {
+        if (error?.message.includes(CompanyUniqueNameIndex))
+          errorDescription = 'A company with the same name already exists';
 
-  public async updateCompany(id: string, updateCompanyDto: UpdateCompanyDto) {
-    const { companyName, companyLocation } = updateCompanyDto;
+        if (error?.message.includes(CompanyUniqueLocationIndex))
+          errorDescription = 'A company with the same location already exists';
+      }
 
-    // Find company
-    const company = await this.companyModel.findById(id);
-    if (!company) {
-      throw new HttpException(
-        { error: 'Company not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new BadRequestException(error?.message, errorDescription);
     }
-    company.companyName = companyName;
-    company.companyLocation = companyLocation;
-    await company.save();
-
-    return {
-      id: company.id,
-      companyName: company.companyName,
-      companyLocation: company.companyLocation,
-    };
   }
 
-  public async findOne(id: string) {
-    const company = await this.companyModel.findById(id).exec();
-    if (!company) {
-      throw new HttpException(
-        { error: 'Company not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return {
-      id: company._id,
-      companyName: company.companyName,
-      companyLocation: company.companyLocation,
-    };
+  public async deleteCompany(id: string) {
+    this.companyModel.findByIdAndDelete(id).exec();
   }
 
-  public async findByCompanyName(companyName: string) {
-    const company = await this.companyModel.findOne({ companyName }).exec();
-    if (!company) {
-      return false;
-    }
-    return {
-      id: company._id,
-      companyName: company.companyName,
-      companyLocation: company.companyLocation,
-    };
+  public async findCompanyById(id: string): Promise<CompanyEntity | null> {
+    return this.companyModel.findById(id).exec();
   }
 
-  public async findAll() {
-    const companies = await this.companyModel.find().exec();
-    return companies?.map((company) => ({
-      id: company._id,
-      companyName: company.companyName,
-      companyLocation: company.companyLocation,
-    }));
+  public async findCompanyByName(name: string): Promise<CompanyEntity | null> {
+    return this.companyModel.findOne({ name }).exec();
   }
 }

@@ -1,12 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { CreateParkingDto } from './create-parking.dto';
 
-export class UpdateParkingDto {
-  @IsNotEmpty()
-  parkingNumber: number;
-
-  @IsNotEmpty()
-  isOccupied: boolean;
-
-  @IsNotEmpty()
-  fees: Number;
-}
+export class UpdateParkingDto extends PartialType(CreateParkingDto) {}

@@ -4,10 +4,9 @@ import { UnitController } from './unit.controller';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
-import { User } from '../user/entities/user.entity';
-import { Unit } from './entities/unit.entity';
-import { Building } from '../building/entities/building.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
+import { UnitEntity } from './entities/unit.entity';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -30,7 +29,8 @@ const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
   unitNumber: 4,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -57,7 +57,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const unitInfoTestData: Unit = {
+const unitInfoTestData = {
   buildingId: buildingInfoTestData2.id,
   unitNumber: 4,
   size: 4,
@@ -74,8 +74,8 @@ const unitInfoTestData2 = {
   fees: 4,
 };
 
-const userInfoTestData: User = {
-  id: 'test',
+const userInfoTestData = {
+  _id: new ObjectId(),
   password: 'test',
   email: 'user@example.com',
   name: 'Test User',
@@ -85,8 +85,8 @@ const userInfoTestData: User = {
   imageId: 'image123',
 };
 
-const userInfoTestData2: User = {
-  id: 'test',
+const userInfoTestData2 = {
+  _id: new ObjectId(),
   password: 'test',
   email: 'user@example.com',
   name: 'Test User',
@@ -138,7 +138,7 @@ describe('UnitController', () => {
       //Act
       const result = await controller.linkUnitToUser(
         unitInfoTestData.buildingId.toString(),
-        userInfoTestData.id,
+        userInfoTestData._id.toString(),
         createUnitDto,
       );
 
@@ -190,7 +190,9 @@ describe('UnitController', () => {
       unitServiceMock.findOwnerUnits.mockResolvedValue([unitInfoTestData]);
 
       //Act
-      const result = await controller.findOwnerUnits(userInfoTestData.id);
+      const result = await controller.findOwnerUnits(
+        userInfoTestData._id.toString(),
+      );
 
       //Assert
       expect(result).toEqual([unitInfoTestData]);
@@ -202,7 +204,9 @@ describe('UnitController', () => {
       unitServiceMock.findRenterUnit.mockResolvedValue(unitInfoTestData);
 
       //Act
-      const result = await controller.findRenterUnit(userInfoTestData2.id);
+      const result = await controller.findRenterUnit(
+        userInfoTestData2._id.toString(),
+      );
 
       //Assert
       expect(result).toEqual(unitInfoTestData);

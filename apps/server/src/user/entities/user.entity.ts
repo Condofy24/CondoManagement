@@ -2,10 +2,24 @@ import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { isEmail } from 'class-validator';
 
+export interface UserEntity extends Document {
+  _id: string;
+  email: string;
+  password: string;
+  name: string;
+  role: number;
+  phoneNumber: string;
+  imageUrl: string;
+  imageId: string;
+  companyId?: string;
+}
+
+interface UserModel extends mongoose.Model<UserEntity> {}
+
 /**
  * Defines the schema for the User entity.
  */
-export const UserSchema = new mongoose.Schema(
+export const UserSchema = new mongoose.Schema<UserEntity, UserModel>(
   {
     email: {
       type: String,
@@ -27,18 +41,20 @@ export const UserSchema = new mongoose.Schema(
 );
 
 /**
- * Represents the User model in the database.
+ * Indices for uniqeness
  */
-export const UserModel = mongoose.model(
-  'User',
-  new mongoose.Schema(UserSchema),
-);
+
+export const UserUniqueEmailIndex = 'email_1';
+export const UserUniquePhoneNumberIndex = 'phoneNumber_1';
+
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ phoneNumber: 1 }, { unique: true });
 
 /**
  * Middleware function that automatically hashes the password before saving it to the database.
  */
 UserSchema.pre('save', async function (next) {
-  const user = this as any; // 'this' refers to the user document
+  const user: any = this; // 'this' refers to the user document
 
   if (!user.isModified('password')) {
     return next();
@@ -53,18 +69,4 @@ UserSchema.pre('save', async function (next) {
     return next(error);
   }
 });
-
-/**
- * Represents the User entity.
- */
-export interface User {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-  role: number;
-  phoneNumber: string;
-  imageUrl: string;
-  imageId: string;
-  companyId?: string;
-}
+export default mongoose.model('User', new mongoose.Schema(UserSchema));
