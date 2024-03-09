@@ -16,6 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError, ObjectId } from 'mongodb';
+import { CompanyEntity } from 'src/company/entities/company.entity';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
@@ -55,7 +56,7 @@ const verfKeyTestData = {
   claimedBy: 'sdsd',
 };
 
-const companyTestData = {
+const companyTestData: Partial<CompanyEntity> = {
   _id: new ObjectId(),
   name: 'Test Company',
   location: 'Test Location',
@@ -72,6 +73,7 @@ const companyServiceMock = {
   findCompanyById: jest.fn().mockResolvedValue(companyTestData),
   findOne: jest.fn().mockResolvedValue(null),
   createCompany: jest.fn().mockResolvedValue(companyTestData),
+  deleteCompany: jest.fn().mockResolvedValue(null),
 };
 
 const createManagerDto: CreateManagerDto = {
@@ -207,9 +209,6 @@ describe('UserService', () => {
       // Arrange
       mockingoose(UserDocumentModel).toReturn(null, 'findOne');
       companyServiceMock.findCompanyById.mockResolvedValue(false);
-      companyServiceMock.createCompany.mockResolvedValue({
-        companyId: 'mockId',
-      });
       mockingoose(UserDocumentModel).toReturn(new Error(), 'save');
 
       // Act & Assert
@@ -282,9 +281,6 @@ describe('UserService', () => {
       // Arrange
       mockingoose(UserDocumentModel).toReturn(null, 'findOne');
       companyServiceMock.findCompanyById.mockResolvedValue(false);
-      companyServiceMock.createCompany.mockResolvedValue({
-        companyId: 'mockId',
-      });
       mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
 
       // Act

@@ -102,8 +102,6 @@ export class BuildingService {
 
     if (!building) throw new BadRequestException("Building doesn't exists");
 
-    console.log(updatedFields, file);
-
     if (file) {
       let {
         secure_url: fileUrl,
