@@ -3,7 +3,8 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
 import { SignInDto } from './dto/signin.dto';
-import { UserDto } from '../user/dto/user.dto';
+import { UserModel } from '../user/models/user.model';
+import { SignInModel } from './models/sign-in.model';
 
 /**
  * Service responsible for handling authentication-related operations.
@@ -25,28 +26,19 @@ export class AuthService {
    * @returns {Promise<any>} - An object containing the JWT token and user information.
    * @throws {UnauthorizedException} - If the provided credentials are invalid.
    */
-  async signIn(signInDto: SignInDto): Promise<any> {
+  async signIn(signInDto: SignInDto): Promise<SignInModel> {
     const { email, password } = signInDto;
 
-    const user = await this.userService.findOne(email);
-    if (user && compareSync(password, user?.password)) {
-      const payload = { sub: user.id }; // name the user id sub per jwt conventions
-      const userInfo: UserDto = {
-        email,
-        id: user.id,
-        name: user.name,
-        role: user.role,
-        phoneNumber: user.phoneNumber,
-        imageUrl: user.imageUrl,
-        imageId: user.imageId,
-        companyId: user.companyId,
-      };
-      return {
-        token: await this.jwtService.signAsync(payload),
-        user: userInfo,
-      };
-    }
+    const user = await this.userService.findUserByEmail(email);
 
-    throw new UnauthorizedException();
+    if (!user || !compareSync(password, user?.password))
+      throw new UnauthorizedException({ message: 'Invalid credentials' });
+
+    const payload = { sub: user._id }; // name the user id sub per jwt conventions
+
+    return new SignInModel(
+      await this.jwtService.signAsync(payload),
+      new UserModel(user),
+    );
   }
 }

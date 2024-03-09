@@ -1,19 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from './unit.service';
-import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
-import { Unit, UnitModel } from './entities/unit.entity';
-import { BadRequestException, HttpException } from '@nestjs/common';
-import { Readable } from 'stream';
-import { buffer } from 'stream/consumers';
+import UnitModel, { UnitEntity } from './entities/unit.entity';
+import { HttpException } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
-import { VerfService } from '../verf/verf.service';
 import { ObjectId } from 'mongodb';
-import { Building } from 'src/building/entities/building.entity';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
-import { User } from 'src/user/entities/user.entity';
+import RegistationKeyModel from './entities/registration-key.entity';
 
 const mockingoose = require('mockingoose');
 
@@ -28,7 +23,7 @@ const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
   unitNumber: 4,
 };
 
-const buildingInfoTestData: Building = {
+const buildingInfoTestData = {
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -55,7 +50,7 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const unitInfoTestData: Unit = {
+const unitInfoTestData: Partial<UnitEntity> = {
   buildingId: buildingInfoTestData2.id,
   unitNumber: 4,
   size: 4,
@@ -72,8 +67,8 @@ const unitInfoTestData2 = {
   fees: 4,
 };
 
-const userInfoTestData: User = {
-  id: 'test',
+const userInfoTestData = {
+  _id: new ObjectId(),
   password: 'test',
   email: 'user@example.com',
   name: 'Test User',
@@ -83,7 +78,8 @@ const userInfoTestData: User = {
   imageId: 'image123',
 };
 
-const userInfoTestData2: User = {
+const userInfoTestData2 = {
+  _id: new ObjectId(),
   id: 'test',
   password: 'test',
   email: 'user@example.com',
@@ -94,19 +90,14 @@ const userInfoTestData2: User = {
   imageId: 'image123',
 };
 
-const verfServiceMock = {
-  createVerfKey: jest
-    .fn()
-    .mockResolvedValue({ verificationkeyId: 'mockVerificationKeyId' }),
-};
-
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
   findByIdandUpdateUnitCount: jest.fn().mockResolvedValue(null),
+  updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const userServiceMock = {
-  findById: jest.fn().mockResolvedValue(userInfoTestData),
+  findUserById: jest.fn().mockResolvedValue(userInfoTestData),
 };
 
 describe('UnitService', () => {
@@ -121,16 +112,16 @@ describe('UnitService', () => {
           useValue: UnitModel,
         },
         {
+          provide: getModelToken('RegistrationKey'),
+          useValue: RegistationKeyModel,
+        },
+        {
           provide: BuildingService,
           useValue: buildingServiceMock,
         },
         {
           provide: UserService,
           useValue: userServiceMock,
-        },
-        {
-          provide: VerfService,
-          useValue: verfServiceMock,
         },
       ],
     }).compile();
@@ -148,7 +139,7 @@ describe('UnitService', () => {
       mockingoose(UnitModel).toReturn(null, 'findOne');
       const id = new ObjectId();
       buildingServiceMock.findOne.mockResolvedValue({
-        id,
+        _id: id,
         ...buildingInfoTestData,
       });
 
@@ -160,7 +151,6 @@ describe('UnitService', () => {
 
       //Assert
       expect(result).toBeDefined();
-      expect(verfServiceMock.createVerfKey).toHaveBeenCalledTimes(2);
     });
     it('should throw an error if building does not exist', async () => {
       //Arrange
@@ -175,7 +165,7 @@ describe('UnitService', () => {
     });
     it('should throw an error if unit already exists', async () => {
       //Arrange
-      const id = unitInfoTestData.buildingId;
+      const id = unitInfoTestData.buildingId as ObjectId;
       buildingServiceMock.findOne.mockResolvedValue({
         id,
         ...buildingInfoTestData,
@@ -193,7 +183,7 @@ describe('UnitService', () => {
       //Arrange
       const units = [unitInfoTestData];
       mockingoose(UnitModel).toReturn(units, 'find');
-      const id = unitInfoTestData.buildingId;
+      const id = unitInfoTestData.buildingId as ObjectId;
 
       //Act
       const result = await service.findAll(id.toString());
@@ -275,7 +265,7 @@ describe('UnitService', () => {
       //Act
       const result = await service.linkUnitToUser(
         unitInfoTestData2.buildingId.toString(),
-        userInfoTestData.id,
+        userInfoTestData._id.toString(),
         linkUnitToBuildingDto,
       );
 
@@ -289,8 +279,8 @@ describe('UnitService', () => {
       //Act
       expect(
         service.linkUnitToUser(
-          unitInfoTestData.buildingId.toString(),
-          userInfoTestData.id,
+          (unitInfoTestData.buildingId as ObjectId).toString(),
+          userInfoTestData._id.toString(),
           linkUnitToBuildingDto,
         ),
       ).rejects.toThrow(HttpException);
@@ -298,13 +288,13 @@ describe('UnitService', () => {
     it('should throw an exception if user does not exist', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn([unitInfoTestData2], 'find');
-      userServiceMock.findById.mockResolvedValue(null);
+      userServiceMock.findUserById.mockResolvedValue(null);
 
       //Act
       expect(
         service.linkUnitToUser(
-          unitInfoTestData.buildingId.toString(),
-          userInfoTestData.id,
+          (unitInfoTestData.buildingId as ObjectId).toString(),
+          userInfoTestData._id.toString(),
           linkUnitToBuildingDto,
         ),
       ).rejects.toThrow(HttpException);
@@ -314,10 +304,12 @@ describe('UnitService', () => {
     it('should return all units for a given user given valid information', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn([unitInfoTestData], 'find');
-      userServiceMock.findById.mockResolvedValue(userInfoTestData2);
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData2);
 
       //Act
-      const result = await service.findOwnerUnits(userInfoTestData.id);
+      const result = await service.findOwnerUnits(
+        userInfoTestData._id.toString(),
+      );
 
       //Assert
       expect(result).toBeDefined();
@@ -325,22 +317,24 @@ describe('UnitService', () => {
     it('should throw an error if user does not exist', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn([], 'find');
-      userServiceMock.findById.mockResolvedValue(null);
+      userServiceMock.findUserById.mockResolvedValue(null);
 
       //Act
-      expect(service.findOwnerUnits(userInfoTestData.id)).rejects.toThrow(
-        HttpException,
-      );
+      expect(
+        service.findOwnerUnits(userInfoTestData._id.toString()),
+      ).rejects.toThrow(HttpException);
     });
   });
   describe('findRenterUnit', () => {
     it('should return the unit a renter rents given valid information', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn(unitInfoTestData, 'findOne');
-      userServiceMock.findById.mockResolvedValue(userInfoTestData);
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
 
       //Act
-      const result = await service.findRenterUnit(userInfoTestData.id);
+      const result = await service.findRenterUnit(
+        userInfoTestData._id.toString(),
+      );
 
       //Assert
       expect(result).toBeDefined();
@@ -348,20 +342,22 @@ describe('UnitService', () => {
     it('should throw an exception if user does not exist', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn(unitInfoTestData, 'findOne');
-      userServiceMock.findById.mockResolvedValue(null);
+      userServiceMock.findUserById.mockResolvedValue(null);
 
       //Act
-      expect(service.findRenterUnit(userInfoTestData.id)).rejects.toThrow(
-        HttpException,
-      );
+      expect(
+        service.findRenterUnit(userInfoTestData._id.toString()),
+      ).rejects.toThrow(HttpException);
     });
     it('should throw an exception if unit does not exist', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn(null, 'findOne');
-      userServiceMock.findById.mockResolvedValue(userInfoTestData);
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
 
       //Act
-      const result = await service.findRenterUnit(userInfoTestData.id);
+      const result = await service.findRenterUnit(
+        userInfoTestData._id.toString(),
+      );
 
       //Act
       expect(result).toBeNull();

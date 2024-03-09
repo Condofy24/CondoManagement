@@ -10,27 +10,35 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrivilegeGuard } from '../auth/auth.guard';
+import { AuthGuard, PrivilegeGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { UserModel } from './models/user.model';
 
+@ApiTags('User')
+@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @ApiCreatedResponse({ description: 'User created' })
   @UseInterceptors(FileInterceptor('image'))
-  create(
+  async create(
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
-    return this.userService.createUser(createUserDto, image);
+  ): Promise<UserModel> {
+    return new UserModel(
+      await this.userService.createUser(createUserDto, image),
+    );
   }
 
   /**
@@ -40,12 +48,15 @@ export class UserController {
    * @returns The created manager.
    */
   @Post('manager')
+  @ApiCreatedResponse({ description: 'Manager created' })
   @UseInterceptors(FileInterceptor('image'))
-  createManager(
+  async createManager(
     @Body() createManagerDto: CreateManagerDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
-    return this.userService.createManager(createManagerDto, image);
+  ): Promise<UserModel> {
+    return new UserModel(
+      await this.userService.createManager(createManagerDto, image),
+    );
   }
 
   /**
@@ -55,18 +66,14 @@ export class UserController {
    */
   @Post('employee')
   @UseGuards(PrivilegeGuard)
+  @ApiCreatedResponse({ description: 'Employee created' })
   @Roles(0)
-  createEmployee(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.userService.createEmployee(createEmployeeDto);
-  }
-
-  /**
-   * Get all users.
-   * @returns All users.
-   */
-  @Get('users')
-  findAll() {
-    return this.userService.findAll();
+  async createEmployee(
+    @Body() createEmployeeDto: CreateEmployeeDto,
+  ): Promise<UserModel> {
+    return new UserModel(
+      await this.userService.createEmployee(createEmployeeDto),
+    );
   }
 
   /**
@@ -75,18 +82,13 @@ export class UserController {
    * @returns The profile of the authenticated user.
    */
   @Get('profile')
-  getProfile(@Request() req: any) {
-    return this.userService.getProfile(req.user);
-  }
+  @UseGuards(AuthGuard)
+  async getProfile(@Request() req: any): Promise<UserModel> {
+    const userEntity = await this.userService.findUserById(req.user.sub);
 
-  /**
-   * Find a user by email.
-   * @param email - The email of the user to find.
-   * @returns The found user.
-   */
-  @Get(':email')
-  findOne(@Param('email') email: string) {
-    return this.userService.findOne(email);
+    if (!userEntity) throw new NotFoundException('User not found');
+
+    return new UserModel(userEntity);
   }
 
   /**
@@ -115,14 +117,4 @@ export class UserController {
   ) {
     return this.userService.updateUser(id, updateUserDto, image);
   }
-
-  // TODO: Manager should be able to modify his employees
-  // @UseGuards(PrivilegeGuard)
-  // @Patch('admin/:id')
-  // updateUserByAdmin(
-  //   @Param('id') id: string,
-  //   @Body() updateUserDto: UpdateUserDtoByAdmin,
-  // ) {
-  //   return this.userService.updateUserByAdmin(id, updateUserDto);
-  // }
 }

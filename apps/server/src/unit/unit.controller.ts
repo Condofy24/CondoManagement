@@ -11,7 +11,10 @@ import { CreateUnitDto } from './dto/create-unit.dto';
 import { UnitService } from './unit.service';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Unit')
+@ApiBearerAuth()
 @Controller('unit')
 export class UnitController {
   constructor(private readonly unitService: UnitService) {}

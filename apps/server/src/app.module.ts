@@ -8,7 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CompanyController } from './company/company.controller';
 import { CompanyModule } from './company/company.module';
-import { CloudinaryModule } from './user/cloudinary/cloudinary.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { BuildingModule } from './building/building.module';
 import { BuildingController } from './building/building.controller';
 import { UnitModule } from './unit/unit.module';
@@ -21,7 +21,7 @@ import { StorageController } from './storage/storage.controller';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/?retryWrites=true&w=majority', // TODO: Move password to env
+      'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/dev?retryWrites=true&w=majority', // TODO: Move password to env
     ),
     UserModule,
     AuthModule,

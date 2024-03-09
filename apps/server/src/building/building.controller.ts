@@ -12,13 +12,17 @@ import {
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { BuildingService } from './building.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { updateBuildingDto } from './dto/update-building.dto';
+import { UpdateBuildingDto } from './dto/update-building.dto';
 import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { BuildingModel } from './models/building.model';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 /**
  * Controller for managing building-related operations.
  */
+@ApiBearerAuth()
+@ApiTags('Building')
 @Controller('building')
 export class BuildingController {
   constructor(private readonly buildingService: BuildingService) {}
@@ -34,15 +38,17 @@ export class BuildingController {
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(PrivilegeGuard)
   @Roles(0)
-  create(
+  async create(
     @Param('companyId') companyId: string,
     @Body() createBuildingDto: CreateBuildingDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.buildingService.createBuilding(
-      createBuildingDto,
-      file,
-      companyId,
+    return new BuildingModel(
+      await this.buildingService.createBuilding(
+        createBuildingDto,
+        file,
+        companyId,
+      ),
     );
   }
 
@@ -59,12 +65,12 @@ export class BuildingController {
   @Roles(0)
   update(
     @Param('buildingId') buildingId: string,
-    @Body() updateBuildingDto: updateBuildingDto,
+    @Body() updateBuildingDto: UpdateBuildingDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.buildingService.updateBuilding(
       buildingId,
-      updateBuildingDto,
+      { ...updateBuildingDto },
       file,
     );
   }
@@ -77,9 +83,12 @@ export class BuildingController {
   @Get(':companyId')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
-  findAll(@Param('companyId') companyId: string) {
-    return this.buildingService.findAll(companyId);
+  async findAll(@Param('companyId') companyId: string) {
+    const buildingEntities = await this.buildingService.findAll(companyId);
+
+    return buildingEntities.map((entity) => new BuildingModel(entity));
   }
+
   /**
    * Get all properties for a building.
    * @param buildingId - The ID of the building.
@@ -89,7 +98,7 @@ export class BuildingController {
   @Get('allProperties/:companyId/:buildingId')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
-  findAllProperties(@Param('buildingId') buildingId: string) {
+  async findAllProperties(@Param('buildingId') buildingId: string) {
     return this.buildingService.findAllProperties(buildingId);
   }
 }

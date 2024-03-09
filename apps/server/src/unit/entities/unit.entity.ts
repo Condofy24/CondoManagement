@@ -1,6 +1,19 @@
 import * as mongoose from 'mongoose';
 
-export const UnitSchema = new mongoose.Schema(
+export interface UnitEntity extends Document {
+  _id: mongoose.Types.ObjectId;
+  buildingId: mongoose.Types.ObjectId | Record<string, unknown>;
+  ownerId: mongoose.Types.ObjectId | Record<string, unknown>;
+  renterId: mongoose.Types.ObjectId | Record<string, unknown>;
+  unitNumber: number;
+  size: number;
+  isOccupiedByRenter: boolean;
+  fees: number;
+}
+
+interface UnitModel extends mongoose.Model<UnitEntity> {}
+
+export const UnitSchema = new mongoose.Schema<UnitEntity, UnitModel>(
   {
     buildingId: {
       type: mongoose.Types.ObjectId,
@@ -27,17 +40,9 @@ export const UnitSchema = new mongoose.Schema(
   },
 );
 
-export const UnitModel = mongoose.model(
-  'Unit',
-  new mongoose.Schema(UnitSchema),
-);
+// Indexes
+export const UnitUniqueNameIndex = 'unitNumber_1';
 
-export interface Unit {
-  buildingId: mongoose.Types.ObjectId;
-  ownerId?: mongoose.Types.ObjectId;
-  renterId?: mongoose.Types.ObjectId;
-  unitNumber: number;
-  size: number;
-  isOccupiedByRenter: boolean;
-  fees: number;
-}
+UnitSchema.index({ unitNumber: 1 }, { unique: true });
+
+export default mongoose.model('Unit', new mongoose.Schema(UnitSchema));

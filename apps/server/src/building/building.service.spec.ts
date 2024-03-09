@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
-import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
-import { BuildingModel } from '../building/entities/building.entity';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import BuildingModel, { BuildingEntity } from './entities/building.entity';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { CreateBuildingDto } from './dto/create-building.dto';
-import { ObjectId } from 'mongodb';
-import { Company } from '../company/entities/company.entity';
+import { MongoServerError, ObjectId } from 'mongodb';
+import { CompanyEntity } from '../company/entities/company.entity';
 import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { ParkingService } from '../parking/parking.service';
@@ -33,18 +33,18 @@ const createBuildingDto: CreateBuildingDto = {
   address: 'address test',
 };
 
-const companyInfoTestData: Company = {
-  _id: new ObjectId().toString(),
-  companyName: 'PEWPEW',
-  companyLocation: 'PEWPew Address',
+const companyInfoTestData: Partial<CompanyEntity> = {
+  _id: new ObjectId(),
+  name: 'PEWPEW',
+  location: 'PEWPew Address',
 };
 const updateBuildingDtoTestData = {
   name: 'Updated Building',
   address: '456 Elm Street',
 };
 const updatedBuildingTest = {
-  id: new ObjectId(),
-  companyId: 'company123',
+  _id: new ObjectId(),
+  companyId: new ObjectId(),
   name: 'Updated Building',
   address: '456 Elm Street',
   unitCount: 30,
@@ -54,6 +54,7 @@ const updatedBuildingTest = {
   filePublicId: 'image123',
   fileAssetId: 'Image212344124',
 };
+
 const fileMockData: Express.Multer.File = {
   fieldname: 'file',
   originalname: 'test.jpg',
@@ -73,6 +74,7 @@ const fileMockData: Express.Multer.File = {
 };
 
 const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'PEWPEWWW',
   address: '2240PewPew',
@@ -83,8 +85,19 @@ const buildingInfoTestData = {
   filePublicId: 'image123',
   fileAssetId: 'Image212344124',
 };
+
+const mongoUniqueIndexException: MongoServerError = {
+  addErrorLabel: (_) => {},
+  hasErrorLabel: (_) => false,
+  name: 'test',
+  message: 'etst',
+  errmsg: 'duplicate ID',
+  errorLabels: [],
+  code: 110000,
+};
+
 const companyServiceMock = {
-  findOne: jest.fn().mockResolvedValue(companyInfoTestData),
+  findCompanyById: jest.fn().mockResolvedValue(companyInfoTestData),
 };
 const unitServiceMock = {
   findAll: jest.fn().mockResolvedValue([]),
@@ -151,31 +164,14 @@ describe('BuildingService', () => {
     cloudinaryServiceMock.uploadFile.mockResolvedValue(cloudinaryResponseMock);
     jest.clearAllMocks();
   });
-  describe('uploadfileToCloudinary', () => {
-    it('should upload file to cloudinary successfully', async () => {
-      // Act
-      const result = await service.uploadFileToCloudinary(fileMockData);
-      // Assert
-      expect(result).toEqual(cloudinaryResponseMock);
-    });
 
-    it('should fail to upload file to cloudinary ', async () => {
-      // Arrange
-      cloudinaryServiceMock.uploadFile.mockRejectedValue(new Error());
-
-      // Act
-      await expect(
-        service.uploadFileToCloudinary(fileMockData),
-      ).rejects.toThrow(BadRequestException);
-    });
-  });
   describe('createBuilding', () => {
     it('should create a building successfully if information is valid', async () => {
       //Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       mockingoose(BuildingModel).toReturn(null, 'exists');
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue({
+      companyServiceMock.findCompanyById.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -190,28 +186,25 @@ describe('BuildingService', () => {
       //Assert
       expect(result).toBeDefined();
     });
+
     it('should throw an error if building does not exist', async () => {
       //Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue(null);
+      companyServiceMock.findCompanyById.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
         service.createBuilding(createBuildingDto, fileMockData, id.toString()),
       ).rejects.toThrow(HttpException);
     });
-    it('should throw HttpException if address already exists', async () => {
+
+    it('should throw BadRequestException if address already exists', async () => {
+      // Arrange
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue({
-        id,
-        ...companyInfoTestData,
-      });
+
       const finderMock = (query: any) => {
-        if (query.getQuery().address) {
-          return buildingInfoTestData;
-        }
-        return null;
+        throw mongoUniqueIndexException;
       };
 
       mockingoose(BuildingModel).toReturn(finderMock, 'findOne'); // findById is findOne
@@ -219,30 +212,28 @@ describe('BuildingService', () => {
       // Act & Assert
       await expect(
         service.createBuilding(createBuildingDto, fileMockData, id.toString()),
-      ).rejects.toThrow(HttpException);
+      ).rejects.toThrow(BadRequestException);
     });
     it('should throw HttpException if building already exists', async () => {
+      // Arrange
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue({
-        id,
-        ...companyInfoTestData,
-      });
-      mockingoose(BuildingModel).toReturn(
-        { ...buildingInfoTestData, companyId: id },
-        'findOne',
-      ); // findById is findOne
+      const finderMock = (query: any) => {
+        throw mongoUniqueIndexException;
+      };
+
+      mockingoose(BuildingModel).toReturn(finderMock, 'findOne'); // findById is findOne
 
       // Act & Assert
       await expect(
         service.createBuilding(createBuildingDto, fileMockData, id.toString()),
-      ).rejects.toThrow(HttpException);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw an error if saving building fails', async () => {
       // Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue({
+      companyServiceMock.findCompanyById.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -255,26 +246,7 @@ describe('BuildingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
-  describe('findAll', () => {
-    it('should return all the users', async () => {
-      // Arrange
-      const building = [
-        buildingInfoTestData,
-        buildingInfoTestData,
-        buildingInfoTestData,
-      ];
-      mockingoose(BuildingModel).toReturn(building, 'find');
 
-      // Act
-      const result = await service.findAll(companyInfoTestData._id);
-
-      // Assert
-      expect(result.length).toBe(building.length);
-      expect(result[0]).toEqual(
-        expect.objectContaining({ ...buildingInfoTestData, name: 'PEWPEWWW' }),
-      );
-    });
-  });
   describe('findOne', () => {
     it('should find a building by id', async () => {
       // Arrange
@@ -308,13 +280,7 @@ describe('BuildingService', () => {
       );
 
       // Assert
-      expect(result).toEqual({
-        name: updatedBuildingTest.name,
-        address: updatedBuildingTest.address,
-        fileUrl: updatedBuildingTest.fileUrl,
-        filePublicId: updatedBuildingTest.filePublicId,
-        fileAssetId: updatedBuildingTest.fileAssetId,
-      });
+      expect(result).toMatchObject(updatedBuildingTest);
     });
 
     it('should throw an error if building is not found', async () => {
@@ -332,128 +298,18 @@ describe('BuildingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
-  describe('findByIdAndUpdateUnitCount', () => {
-    it('should update the unit count of the building', async () => {
-      // Arrange
-      const buildingId = updatedBuildingTest.id.toString();
-      const newUnitCount = 30;
 
-      // Mock the findByIdAndUpdate function of the buildingModel
-      mockingoose(BuildingModel).toReturn(
-        updatedBuildingTest,
-        'findOneAndUpdate',
-      );
-
-      // Act
-      const result = await service.findByIdandUpdateUnitCount(
-        buildingId,
-        newUnitCount,
-      );
-
-      // Assert
-      await expect(result?.unitCount).toEqual(newUnitCount);
-    });
-
-    it('should return null if building is not found', async () => {
-      // Arrange
-      const nonExistentBuildingId = 'nonExistentBuilding';
-      mockingoose(BuildingModel).toReturn(null, 'findOneAndUpdate');
-
-      // Act
-      const result = await service.findByIdandUpdateUnitCount(
-        nonExistentBuildingId,
-        50,
-      );
-
-      // Assert
-      expect(result).toBeNull();
-    });
-  });
-  describe('findByIdAndUpdateParkingCount', () => {
-    it('should update the parking count of the building', async () => {
-      // Arrange
-      const buildingId = updatedBuildingTest.id.toString();
-      const newParkingCount = 10;
-
-      // Mock the findByIdAndUpdate function of the buildingModel
-      mockingoose(BuildingModel).toReturn(
-        updatedBuildingTest,
-        'findOneAndUpdate',
-      );
-
-      // Act
-      const result = await service.findByIdandUpdateParkingCount(
-        buildingId,
-        newParkingCount,
-      );
-
-      // Assert
-      await expect(result?.parkingCount).toEqual(newParkingCount);
-    });
-
-    it('should return null if building is not found', async () => {
-      // Arrange
-      const nonExistentBuildingId = 'nonExistentBuilding';
-      mockingoose(BuildingModel).toReturn(null, 'findOneAndUpdate');
-
-      // Act
-      const result = await service.findByIdandUpdateParkingCount(
-        nonExistentBuildingId,
-        50,
-      );
-
-      // Assert
-      expect(result).toBeNull();
-    });
-  });
-  describe('findByIdAndUpdateStorageCount', () => {
-    it('should update the storage count of the building', async () => {
-      // Arrange
-      const buildingId = updatedBuildingTest.id.toString();
-      const newStorageCount = 5;
-
-      // Mock the findByIdAndUpdate function of the buildingModel
-      mockingoose(BuildingModel).toReturn(
-        updatedBuildingTest,
-        'findOneAndUpdate',
-      );
-
-      // Act
-      const result = await service.findByIdandUpdateStorageCount(
-        buildingId,
-        newStorageCount,
-      );
-
-      // Assert
-      await expect(result?.storageCount).toEqual(newStorageCount);
-    });
-
-    it('should return null if building is not found', async () => {
-      // Arrange
-      const nonExistentBuildingId = 'nonExistentBuilding';
-      mockingoose(BuildingModel).toReturn(null, 'findOneAndUpdate');
-
-      // Act
-      const result = await service.findByIdandUpdateParkingCount(
-        nonExistentBuildingId,
-        50,
-      );
-
-      // Assert
-      expect(result).toBeNull();
-    });
-  });
   describe('findAllProperties', () => {
     it('should return building info and arrays of building properties', async () => {
       // Arrange
-
       mockingoose(BuildingModel).toReturn(buildingInfoTestData, 'findOne');
+
       // Call the method
       const result = await service.findAllProperties('421');
 
       // Assertions
       expect(result).toMatchObject({
-        building: buildingInfoTestData,
+        building: new BuildingModel(buildingInfoTestData),
       });
     });
   });
