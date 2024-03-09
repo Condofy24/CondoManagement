@@ -4,7 +4,6 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
