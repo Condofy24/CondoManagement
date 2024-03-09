@@ -17,7 +17,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError, ObjectId } from 'mongodb';
 import { CompanyEntity } from 'src/company/entities/company.entity';
-import { UserModel } from './models/user.model';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
@@ -450,7 +449,7 @@ describe('UserService', () => {
     it('should return all the employees', async () => {
       // Arrange
       const users = [employeeInfoTestData];
-      mockingoose(UserModel).toReturn(users, 'find');
+      mockingoose(UserDocumentModel).toReturn(users, 'find');
 
       // Act
       const result = await service.findAll({ companyId: 'companyId' });
