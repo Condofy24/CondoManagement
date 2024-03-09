@@ -306,7 +306,7 @@ export class UserService {
 
     if (error instanceof MongoServerError && error.code === 11000) {
       if (error?.message.includes(UserUniqueEmailIndex))
-        errorDescription = 'A user with the same name email exists';
+        errorDescription = 'A user with the same email exists';
 
       if (error?.message.includes(UserUniquePhoneNumberIndex))
         errorDescription = 'A user with the same phone number already exists';
@@ -328,34 +328,4 @@ export class UserService {
 
     return { imageUrl, imageId };
   }
-
-  // TODO: Manager should be able to modify his employees
-  // public async updateUserByManager(
-  //   id: string,
-  //   updateUserDto: UpdateUserDtoByManager,
-  // ): Promise<UserDto> {
-  //   const { name, email, role, team } = updateUserDto;
-
-  //   const user = await this.userModel.findById(id);
-
-  //   if (!user) {
-  //     throw new HttpException(
-  //       { error: 'User not found', status: HttpStatus.NOT_FOUND },
-  //       HttpStatus.NOT_FOUND,
-  //     );
-  //   }
-  //   user.email = email;
-  //   user.name = name;
-  //   user.role = role;
-  //   user.team = team;
-  //   await user.save();
-
-  //   return {
-  //     id: user.id,
-  //     email: user.email,
-  //     name: user.name,
-  //     role: user.role,
-  //     team: user.team,
-  //   };
-  // }
 }

@@ -15,7 +15,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrivilegeGuard } from '../auth/auth.guard';
+import { AuthGuard, PrivilegeGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -82,6 +82,7 @@ export class UserController {
    * @returns The profile of the authenticated user.
    */
   @Get('profile')
+  @UseGuards(AuthGuard)
   async getProfile(@Request() req: any): Promise<UserModel> {
     const userEntity = await this.userService.findUserById(req.user.sub);
 

@@ -8,8 +8,6 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
 
-  // app.setGlobalPrefix('api');
-
   const config = new DocumentBuilder()
     .setTitle('Condofy API')
     .setDescription('API for the Condofy application')
