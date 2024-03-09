@@ -21,16 +21,10 @@ export const CompanySchema = new mongoose.Schema<CompanyEntity, CompanyModel>(
 /**
  * Indices
  */
-export const CompanyUniqueNameIndex = 'company-unique-name-index';
-CompanySchema.index(
-  { name: 1 },
-  { unique: true, name: CompanyUniqueNameIndex },
-);
+export const CompanyUniqueNameIndex = 'name_1';
+CompanySchema.index({ name: 1 }, { unique: true });
 
-export const CompanyUniqueLocationIndex = 'company-unique-location-index';
-CompanySchema.index(
-  { location: 1 },
-  { unique: true, name: CompanyUniqueLocationIndex },
-);
+export const CompanyUniqueLocationIndex = 'location_1';
+CompanySchema.index({ location: 1 }, { unique: true });
 
 export default mongoose.model('Company', new mongoose.Schema(CompanySchema));

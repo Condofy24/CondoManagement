@@ -46,6 +46,8 @@ export class BuildingService {
     file: Express.Multer.File,
     companyId: string,
   ) {
+    if (!file) throw new BadRequestException('Building file is required');
+
     const { name, address } = createBuildingDto;
 
     const companyExists = await this.companyService.findCompanyById(companyId);
@@ -100,6 +102,8 @@ export class BuildingService {
 
     if (!building) throw new BadRequestException("Building doesn't exists");
 
+    console.log(updatedFields, file);
+
     if (file) {
       let {
         secure_url: fileUrl,
@@ -117,7 +121,7 @@ export class BuildingService {
 
     try {
       const updatedEntity = await this.buildingModel.findByIdAndUpdate(
-        buildingId,
+        new ObjectId(buildingId),
         {
           $set: updatedFields,
         },

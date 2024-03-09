@@ -41,8 +41,8 @@ export const UnitSchema = new mongoose.Schema<UnitEntity, UnitModel>(
 );
 
 // Indexes
-export const UnitUniqueNameIndex = 'unit-unique-name-index';
+export const UnitUniqueNameIndex = 'unitNumber_1';
 
-UnitSchema.index({ name: 1 }, { unique: true, name: UnitUniqueNameIndex });
+UnitSchema.index({ unitNumber: 1 }, { unique: true });
 
 export default mongoose.model('Unit', new mongoose.Schema(UnitSchema));

@@ -43,6 +43,10 @@ export class CompanyService {
     }
   }
 
+  public async deleteCompany(id: string) {
+    this.companyModel.findByIdAndDelete(id).exec();
+  }
+
   public async findCompanyById(id: string): Promise<CompanyEntity | null> {
     return this.companyModel.findById(id).exec();
   }

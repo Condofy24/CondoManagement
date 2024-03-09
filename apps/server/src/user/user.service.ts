@@ -82,6 +82,7 @@ export class UserService {
     try {
       return await newUser.save();
     } catch (error) {
+      await this.companyService.deleteCompany(company._id.toString());
       throw new BadRequestException(
         error?.message,
         this.getUserCreateErrorDescription(error),

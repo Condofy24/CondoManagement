@@ -74,7 +74,7 @@ export class UnitService {
 
     // update unit count of associted building
     this.buildingService.updateBuilding(buildingId, {
-      unitCount: building.unitCount++,
+      unitCount: building.unitCount + 1,
     });
 
     return { unitEntity, registrationKeys };
