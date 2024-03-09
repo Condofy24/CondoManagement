@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -81,8 +82,10 @@ export class UserController {
    * @returns All employees of a company.
    */
   @Get('employees/:companyId')
-  findEmployees(@Param('companyId') companyId: string) {
-    return this.userService.findAll({ companyId });
+  async findEmployees(@Param('companyId') companyId: string) {
+    return (await this.userService.findAll({ companyId })).map(
+      (user) => new UserModel(user),
+    );
   }
 
   /**

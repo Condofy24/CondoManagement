@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
@@ -299,6 +300,17 @@ export class UserService {
         this.getUserCreateErrorDescription(error),
       );
     }
+  }
+
+  /**
+   * Retrieves all user profiles.
+   * @returns An array of user profiles.
+   */
+  public async findAll(attribute?: Record<string, string>) {
+    const users = attribute
+      ? await this.userModel.find(attribute).exec()
+      : await this.userModel.find().exec();
+    return users;
   }
 
   private getUserCreateErrorDescription(error: any): string {
