@@ -32,11 +32,13 @@ export class UserController {
   @Post()
   @ApiCreatedResponse({ description: 'User created' })
   @UseInterceptors(FileInterceptor('image'))
-  create(
+  async create(
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
-    return this.userService.createUser(createUserDto, image);
+  ): Promise<UserModel> {
+    return new UserModel(
+      await this.userService.createUser(createUserDto, image),
+    );
   }
 
   /**
@@ -48,11 +50,13 @@ export class UserController {
   @Post('manager')
   @ApiCreatedResponse({ description: 'Manager created' })
   @UseInterceptors(FileInterceptor('image'))
-  createManager(
+  async createManager(
     @Body() createManagerDto: CreateManagerDto,
     @UploadedFile() image: Express.Multer.File,
-  ) {
-    return this.userService.createManager(createManagerDto, image);
+  ): Promise<UserModel> {
+    return new UserModel(
+      await this.userService.createManager(createManagerDto, image),
+    );
   }
 
   /**
@@ -64,8 +68,12 @@ export class UserController {
   @UseGuards(PrivilegeGuard)
   @ApiCreatedResponse({ description: 'Employee created' })
   @Roles(0)
-  async createEmployee(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.userService.createEmployee(createEmployeeDto);
+  async createEmployee(
+    @Body() createEmployeeDto: CreateEmployeeDto,
+  ): Promise<UserModel> {
+    return new UserModel(
+      await this.userService.createEmployee(createEmployeeDto),
+    );
   }
 
   /**
@@ -74,7 +82,7 @@ export class UserController {
    * @returns The profile of the authenticated user.
    */
   @Get('profile')
-  async getProfile(@Request() req: any) {
+  async getProfile(@Request() req: any): Promise<UserModel> {
     const userEntity = await this.userService.findUserById(req.user.sub);
 
     if (!userEntity) throw new NotFoundException('User not found');

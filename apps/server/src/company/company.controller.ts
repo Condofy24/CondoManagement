@@ -1,7 +1,10 @@
-import { Controller, Post, Get, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompanyService } from './company.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Company')
+@ApiBearerAuth()
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
@@ -14,10 +17,5 @@ export class CompanyController {
   @Get(':id')
   getCompany(@Param('id') id: string) {
     return this.companyService.findCompanyById(id);
-  }
-
-  @Get('companyName/:name')
-  getByCompanyName(@Param('name') name: string) {
-    return this.companyService.findCompanyByName(name);
   }
 }

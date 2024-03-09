@@ -16,10 +16,13 @@ import { UpdateBuildingDto } from './dto/update-building.dto';
 import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { BuildingModel } from './models/building.model';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 /**
  * Controller for managing building-related operations.
  */
+@ApiBearerAuth()
+@ApiTags('Building')
 @Controller('building')
 export class BuildingController {
   constructor(private readonly buildingService: BuildingService) {}

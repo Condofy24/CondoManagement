@@ -74,15 +74,6 @@ describe('Company Controller', () => {
     });
   });
 
-  describe('getByCompanyName', () => {
-    it('should get a company back', async () => {
-      await expect(controller.getByCompanyName(testCompany1)).resolves.toEqual({
-        companyName: testCompany1,
-        companyLocation: testLocation1,
-      });
-    });
-  });
-
   describe('newCompany', () => {
     it('should create a new company', () => {
       const newCompanyDto: CreateCompanyDto = {
