@@ -301,6 +301,17 @@ export class UserService {
     }
   }
 
+  /**
+   * Retrieves all user profiles.
+   * @returns An array of user profiles.
+   */
+  public async findAll(attribute?: Record<string, string>) {
+    const users = attribute
+      ? await this.userModel.find(attribute).exec()
+      : await this.userModel.find().exec();
+    return users;
+  }
+
   private getUserCreateErrorDescription(error: any): string {
     let errorDescription = 'Manager couldnt be created';
 

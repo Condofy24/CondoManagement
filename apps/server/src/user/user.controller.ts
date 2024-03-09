@@ -77,6 +77,17 @@ export class UserController {
   }
 
   /**
+   * Manager gets all company employees
+   * @returns All employees of a company.
+   */
+  @Get('employees/:companyId')
+  async findEmployees(@Param('companyId') companyId: string) {
+    return (await this.userService.findAll({ companyId })).map(
+      (user) => new UserModel(user),
+    );
+  }
+
+  /**
    * Get the profile of the authenticated user.
    * @param req - The request object.
    * @returns The profile of the authenticated user.
