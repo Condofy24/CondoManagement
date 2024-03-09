@@ -4,7 +4,7 @@ import { UnitController } from './unit.controller';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
 import { UnitEntity } from './entities/unit.entity';
 
@@ -74,8 +74,8 @@ const unitInfoTestData2 = {
   fees: 4,
 };
 
-const userInfoTestData: User = {
-  id: 'test',
+const userInfoTestData = {
+  _id: new ObjectId(),
   password: 'test',
   email: 'user@example.com',
   name: 'Test User',
@@ -85,8 +85,8 @@ const userInfoTestData: User = {
   imageId: 'image123',
 };
 
-const userInfoTestData2: User = {
-  id: 'test',
+const userInfoTestData2 = {
+  _id: new ObjectId(),
   password: 'test',
   email: 'user@example.com',
   name: 'Test User',
@@ -138,7 +138,7 @@ describe('UnitController', () => {
       //Act
       const result = await controller.linkUnitToUser(
         unitInfoTestData.buildingId.toString(),
-        userInfoTestData.id,
+        userInfoTestData._id.toString(),
         createUnitDto,
       );
 
@@ -190,7 +190,9 @@ describe('UnitController', () => {
       unitServiceMock.findOwnerUnits.mockResolvedValue([unitInfoTestData]);
 
       //Act
-      const result = await controller.findOwnerUnits(userInfoTestData.id);
+      const result = await controller.findOwnerUnits(
+        userInfoTestData._id.toString(),
+      );
 
       //Assert
       expect(result).toEqual([unitInfoTestData]);
@@ -202,7 +204,9 @@ describe('UnitController', () => {
       unitServiceMock.findRenterUnit.mockResolvedValue(unitInfoTestData);
 
       //Act
-      const result = await controller.findRenterUnit(userInfoTestData2.id);
+      const result = await controller.findRenterUnit(
+        userInfoTestData2._id.toString(),
+      );
 
       //Assert
       expect(result).toEqual(unitInfoTestData);

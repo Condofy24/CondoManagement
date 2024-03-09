@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
-import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import BuildingModel, { BuildingEntity } from './entities/building.entity';
 import { Readable } from 'stream';
 import { buffer } from 'stream/consumers';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { Company } from '../company/entities/company.entity';
+import { CompanyEntity } from '../company/entities/company.entity';
 import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { ParkingService } from '../parking/parking.service';
@@ -15,7 +15,6 @@ import { StorageService } from '../storage/storage.service';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { toBuilding } from './view-models/building.view-model';
 
 const mockingoose = require('mockingoose');
 
@@ -34,10 +33,10 @@ const createBuildingDto: CreateBuildingDto = {
   address: 'address test',
 };
 
-const companyInfoTestData: Company = {
-  _id: new ObjectId().toString(),
-  companyName: 'PEWPEW',
-  companyLocation: 'PEWPew Address',
+const companyInfoTestData: Partial<CompanyEntity> = {
+  _id: new ObjectId(),
+  name: 'PEWPEW',
+  location: 'PEWPew Address',
 };
 const updateBuildingDtoTestData = {
   name: 'Updated Building',
@@ -98,7 +97,7 @@ const mongoUniqueIndexException: MongoServerError = {
 };
 
 const companyServiceMock = {
-  findOne: jest.fn().mockResolvedValue(companyInfoTestData),
+  findCompanyById: jest.fn().mockResolvedValue(companyInfoTestData),
 };
 const unitServiceMock = {
   findAll: jest.fn().mockResolvedValue([]),
@@ -172,7 +171,7 @@ describe('BuildingService', () => {
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       mockingoose(BuildingModel).toReturn(null, 'exists');
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue({
+      companyServiceMock.findCompanyById.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -192,7 +191,7 @@ describe('BuildingService', () => {
       //Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue(null);
+      companyServiceMock.findCompanyById.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
@@ -234,7 +233,7 @@ describe('BuildingService', () => {
       // Arrange
       mockingoose(BuildingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      companyServiceMock.findOne.mockResolvedValue({
+      companyServiceMock.findCompanyById.mockResolvedValue({
         id,
         ...companyInfoTestData,
       });
@@ -247,26 +246,7 @@ describe('BuildingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
-  describe('findAll', () => {
-    it('should return all the users', async () => {
-      // Arrange
-      const building = [
-        buildingInfoTestData,
-        buildingInfoTestData,
-        buildingInfoTestData,
-      ];
-      mockingoose(BuildingModel).toReturn(building, 'find');
 
-      // Act
-      const result = await service.findAll(companyInfoTestData._id);
-
-      // Assert
-      expect(result.length).toBe(building.length);
-      expect(result[0]).toEqual(
-        expect.objectContaining({ ...buildingInfoTestData, name: 'PEWPEWWW' }),
-      );
-    });
-  });
   describe('findOne', () => {
     it('should find a building by id', async () => {
       // Arrange
@@ -329,7 +309,7 @@ describe('BuildingService', () => {
 
       // Assertions
       expect(result).toMatchObject({
-        building: toBuilding(buildingInfoTestData as BuildingEntity),
+        building: new BuildingModel(buildingInfoTestData),
       });
     });
   });

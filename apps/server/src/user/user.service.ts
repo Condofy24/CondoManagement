@@ -4,22 +4,26 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  NotFoundException,
   forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from './entities/user.entity';
+import {
+  UserEntity,
+  UserUniqueEmailIndex,
+  UserUniquePhoneNumberIndex,
+} from './entities/user.entity';
 import { response } from 'express';
-import { Token, UserProfile } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDto } from './dto/user.dto';
-import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
+import { MongoServerError } from 'mongodb';
 
 @Injectable()
 /**
@@ -35,21 +39,12 @@ export class UserService {
    * @param companyService The Company service.
    */
   constructor(
-    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('User') private readonly userModel: Model<UserEntity>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
   ) {}
-
-  async uploadImageToCloudinary(file: Express.Multer.File) {
-    try {
-      const imageResponse = await this.cloudinary.uploadFile(file);
-      return imageResponse;
-    } catch (error) {
-      throw new BadRequestException('Failed to upload image to Cloudinary.');
-    }
-  }
 
   /**
    * Creates a new manager.
@@ -61,70 +56,37 @@ export class UserService {
   public async createManager(
     createManagerDto: CreateManagerDto,
     image?: Express.Multer.File,
-  ) {
+  ): Promise<UserEntity> {
     const { email, password, name, phoneNumber, companyLocation, companyName } =
       createManagerDto;
 
-    // Check user doesn't already exist
-    const emailInUse = await this.userModel.exists({ email: email });
-    const phoneNumberInUse = await this.userModel.exists({
-      phoneNumber: phoneNumber,
-    });
-    if (emailInUse?._id || phoneNumberInUse?._id) {
-      const errorMessage =
-        emailInUse && phoneNumberInUse
-          ? 'Email and phone number exist'
-          : emailInUse
-            ? 'Email already exists'
-            : phoneNumberInUse
-              ? 'Phone number exists'
-              : '';
-      throw new HttpException(
-        { error: errorMessage, status: HttpStatus.CONFLICT },
-        HttpStatus.CONFLICT,
-      );
-    }
-
-    // Check company exists
-    const companyExists =
-      await this.companyService.findByCompanyName(companyName);
-    if (companyExists) {
-      throw new HttpException(
-        { error: 'Company exists already', status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const companyRes = await this.companyService.createCompany({
+    const company = await this.companyService.createCompany({
       companyName,
       companyLocation,
     });
 
-    let imageUrl =
-      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
-    let imageId = 'default_user';
-    if (image) {
-      const imageResponse = await this.uploadImageToCloudinary(image);
-      imageUrl = imageResponse.secure_url;
-      imageId = imageResponse.public_id;
-    }
+    const { imageUrl, imageId } = await this.uploadProfileImage(image);
 
     // Create user
     const newUser = new this.userModel({
       email,
       password,
       name,
-      companyId: companyRes._id,
+      companyId: company._id,
       role: 0,
       phoneNumber,
       imageUrl,
       imageId,
     });
+
     try {
-      await newUser.save();
-    } catch (e) {
-      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      return await newUser.save();
+    } catch (error) {
+      throw new BadRequestException(
+        error?.message,
+        this.getUserCreateErrorDescription(error),
+      );
     }
-    return response.status(HttpStatus.CREATED);
   }
 
   /**
@@ -136,38 +98,13 @@ export class UserService {
   public async createEmployee(createEmployeeDto: CreateEmployeeDto) {
     const { email, name, role, companyId, phoneNumber } = createEmployeeDto;
 
-    // Check user doesn't already exist
-    const emailInUse = await this.userModel.exists({ email: email });
-    const phoneNumberInUse = await this.userModel.exists({
-      phoneNumber: phoneNumber,
-    });
-    if (emailInUse?._id || phoneNumberInUse?._id) {
-      const errorMessage =
-        emailInUse && phoneNumberInUse
-          ? 'Email and phone number exist'
-          : emailInUse
-            ? 'Email already exists'
-            : phoneNumberInUse
-              ? 'Phone number exists'
-              : '';
-      throw new HttpException(
-        { error: errorMessage, status: HttpStatus.CONFLICT },
-        HttpStatus.CONFLICT,
-      );
-    }
-
     // Check company exists
-    const companyExists = await this.companyService.findOne(companyId);
-    if (!companyExists) {
-      throw new HttpException(
-        { error: "Company doesn't exists", status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const company = await this.companyService.findCompanyById(companyId);
 
-    const imageUrl =
-      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
-    const imageId = 'default_user';
+    if (!company) throw new BadRequestException('Invalid company Id');
+
+    const { imageUrl, imageId } = await this.uploadProfileImage(undefined);
+
     // Create user
     const newUser = new this.userModel({
       email,
@@ -181,11 +118,13 @@ export class UserService {
     });
 
     try {
-      await newUser.save();
-    } catch (e) {
-      throw new HttpException(e?.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      return await newUser.save();
+    } catch (error) {
+      throw new BadRequestException(
+        error?.message,
+        this.getUserCreateErrorDescription(error),
+      );
     }
-    return response.status(HttpStatus.CREATED);
   }
 
   /**
@@ -201,41 +140,17 @@ export class UserService {
   ) {
     const { email, password, name, phoneNumber, verfKey } = createUserDto;
 
-    // Check user doesn't already exist
-    const emailInUse = await this.userModel.exists({ email: email });
-    const phoneNumberInUse = await this.userModel.exists({
-      phoneNumber: phoneNumber,
-    });
-
-    if (emailInUse?._id || phoneNumberInUse?._id) {
-      const errorMessage =
-        emailInUse && phoneNumberInUse
-          ? 'Email and phone number exist'
-          : emailInUse
-            ? 'Email already exists'
-            : phoneNumberInUse
-              ? 'Phone number exists'
-              : '';
-      throw new HttpException(
-        { error: errorMessage, status: HttpStatus.CONFLICT },
-        HttpStatus.CONFLICT,
-      );
-    }
     //check if Key exists:
     const registrationKey =
       await this.unitService.findUnitRegistrationKey(verfKey);
+
     if (!registrationKey)
       throw new BadRequestException('Registration Key is invalid');
 
-    let imageUrl =
-      'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png';
-    let imageId = 'default_user';
-    if (image) {
-      const imageResponse = await this.uploadImageToCloudinary(image);
-      imageUrl = imageResponse.secure_url;
-      imageId = imageResponse.public_id;
-    }
+    const { imageUrl, imageId } = await this.uploadProfileImage(image);
+
     let assignedRole;
+
     if (registrationKey.type == 0) {
       assignedRole = 3;
     }
@@ -253,9 +168,16 @@ export class UserService {
       imageUrl,
       imageId,
     });
-    const result = await newUser.save();
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
+
+    let createdUser;
+    try {
+      createdUser = await newUser.save();
+    } catch (error) {
+      throw new BadRequestException(
+        error?.message,
+        this.getUserCreateErrorDescription(error),
+      );
+    }
 
     const unitForLink = await this.unitService.findOne(
       registrationKey.unitId.toString(),
@@ -272,16 +194,16 @@ export class UserService {
       newUser._id.toString(),
       linkUnitDto,
     );
-    return response.status(HttpStatus.CREATED);
+    return createdUser;
   }
 
   /**
    * Finds a user by email.
-   * @param userEmail The email of the user to find.
+   * @param email The email of the user to find.
    * @returns The found user, or undefined if not found.
    */
-  public async findOne(userEmail: string): Promise<User | undefined | null> {
-    return this.userModel.findOne({ email: userEmail }).exec();
+  public async findUserByEmail(email: string): Promise<UserEntity | null> {
+    return this.userModel.findOne({ email }).exec();
   }
 
   /**
@@ -289,49 +211,8 @@ export class UserService {
    * @param id The ID of the user to find.
    * @returns The found user, or undefined if not found.
    */
-  public async findById(id: string): Promise<User | undefined | null> {
+  public async findUserById(id: string): Promise<UserEntity | null> {
     return this.userModel.findOne({ _id: id }).exec();
-  }
-
-  /**
-   * Retrieves the profile of a user.
-   * @param token The user's token.
-   * @returns The user's profile.
-   * @throws HttpException if the user is not found.
-   */
-  public async getProfile(token: Token): Promise<UserProfile> {
-    const user = await this.userModel.findById(token.sub);
-    if (!user) {
-      throw new HttpException('', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    return {
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      phoneNumber: user.phoneNumber,
-      imageUrl: user.imageUrl,
-      imageId: user.imageId,
-    } as UserProfile;
-  }
-
-  /**
-   * Retrieves all user profiles.
-   * @returns An array of user profiles.
-   */
-  public async findAll(): Promise<UserProfile[]> {
-    const users = await this.userModel.find().exec();
-    return users.map(
-      (user: User) =>
-        ({
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          phoneNumber: user.phoneNumber,
-          imageUrl: user.imageUrl,
-          imageId: user.imageId,
-        }) as UserProfile,
-    );
   }
 
   /**
@@ -371,68 +252,80 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserDto,
     image?: Express.Multer.File,
-  ): Promise<UserDto> {
+  ): Promise<UserEntity> {
     const { name, email, newPassword, phoneNumber } = updateUserDto;
+
     // Find the user by id
     const user = await this.userModel.findById(id);
-    if (!user) {
-      throw new HttpException(
-        { error: 'User not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
+
+    if (!user) throw new NotFoundException('User not found');
+
     if (user.email != email) {
       const isUserAlreadyExist = await this.userModel.exists({ email: email });
-      if (!!isUserAlreadyExist) {
-        throw new HttpException(
-          { error: 'User already exists', status: HttpStatus.CONFLICT },
-          HttpStatus.CONFLICT,
-        );
-      }
+      if (!!isUserAlreadyExist)
+        throw new BadRequestException('Email in use by another user.');
     }
-    // Check phone number doesn't already exist
-    const userWithPhoneNumber = await this.userModel.exists({
-      phoneNumber: phoneNumber,
-    });
-    if (userWithPhoneNumber && userWithPhoneNumber._id.toString() !== id) {
-      throw new HttpException(
-        {
-          error: 'Phone number already linked to another user',
-          status: HttpStatus.CONFLICT,
-        },
-        HttpStatus.CONFLICT,
-      );
+
+    if (user.phoneNumber != phoneNumber) {
+      const isUserAlreadyExist = await this.userModel.exists({
+        phoneNumber: phoneNumber,
+      });
+      if (!!isUserAlreadyExist)
+        throw new BadRequestException('Phone number in use by another user.');
     }
+
     if (newPassword) {
       user.password = newPassword;
     }
+
     let imageUrl = '';
     let imageId = '';
     if (image) {
-      const imageResponse = await this.uploadImageToCloudinary(image);
-      imageUrl = imageResponse.secure_url;
-      imageId = imageResponse.public_id;
+      let { imageUrl: newUrl, imageId: newId } =
+        await this.uploadProfileImage(image);
+      imageUrl = newUrl;
+      imageId = newId;
     } else {
       imageUrl = user.imageUrl;
       imageId = user.imageId;
     }
 
-    user.email = email;
-    user.name = name;
-    user.phoneNumber = phoneNumber;
-    user.imageUrl = imageUrl;
-    user.imageId = imageId;
-    await user.save();
+    try {
+      return await user.save();
+    } catch (error) {
+      throw new BadRequestException(
+        error?.message,
+        this.getUserCreateErrorDescription(error),
+      );
+    }
+  }
 
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      phoneNumber: user.phoneNumber,
-      imageUrl: imageUrl,
-      imageId: imageId,
-    };
+  private getUserCreateErrorDescription(error: any): string {
+    let errorDescription = 'Manager couldnt be created';
+
+    if (error instanceof MongoServerError && error.code === 11000) {
+      if (error?.message.includes(UserUniqueEmailIndex))
+        errorDescription = 'A user with the same name email exists';
+
+      if (error?.message.includes(UserUniquePhoneNumberIndex))
+        errorDescription = 'A user with the same phone number already exists';
+    }
+
+    return errorDescription;
+  }
+
+  private async uploadProfileImage(image: Express.Multer.File | undefined) {
+    if (!image) {
+      return {
+        imageUrl:
+          'https://res.cloudinary.com/dzu5t20lr/image/upload/v1706910325/m9ijj0xc1d2yzclssyzc.png',
+        imageId: 'default_user',
+      };
+    }
+    const { secure_url: imageUrl, public_id: imageId } =
+      await this.cloudinary.uploadFile(image);
+
+    return { imageUrl, imageId };
   }
 
   // TODO: Manager should be able to modify his employees

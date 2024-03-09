@@ -12,7 +12,7 @@ const jwtServiceMock = {
 
 const userServiceMock = {
   getPrivilege: jest.fn().mockResolvedValue(0),
-  findById: jest
+  findUserById: jest
     .fn()
     .mockResolvedValue({ id: 'user123', companyId: 'company-id', role: 0 }),
 };

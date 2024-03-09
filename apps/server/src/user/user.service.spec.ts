@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { UserModel } from './entities/user.entity';
-import { CloudinaryService } from './cloudinary/cloudinary.service';
+import UserDocumentModel, {
+  UserUniqueEmailIndex,
+  UserUniquePhoneNumberIndex,
+} from './entities/user.entity';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UserService } from './user.service';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { CompanyService } from '../company/company.service';
@@ -12,7 +15,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UnitService } from '../unit/unit.service';
-import { ObjectId } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
@@ -52,6 +55,12 @@ const verfKeyTestData = {
   claimedBy: 'sdsd',
 };
 
+const companyTestData = {
+  _id: new ObjectId(),
+  name: 'Test Company',
+  location: 'Test Location',
+};
+
 const unitServiceMock = {
   findOne: jest.fn().mockResolvedValue(unitServiceTestData),
   createUnit: jest.fn().mockResolvedValue(unitServiceCreateTestData),
@@ -60,9 +69,9 @@ const unitServiceMock = {
 };
 
 const companyServiceMock = {
-  findByCompanyName: jest.fn().mockResolvedValue(null),
+  findCompanyById: jest.fn().mockResolvedValue(companyTestData),
   findOne: jest.fn().mockResolvedValue(null),
-  createCompany: jest.fn().mockResolvedValue({ companyId: 'mockCompanyId' }),
+  createCompany: jest.fn().mockResolvedValue(companyTestData),
 };
 
 const createManagerDto: CreateManagerDto = {
@@ -133,6 +142,16 @@ const imageMockData: Express.Multer.File = {
   }),
 };
 
+const mongoUniqueIndexException: MongoServerError = {
+  addErrorLabel: (_) => {},
+  hasErrorLabel: (_) => false,
+  name: 'test',
+  message: 'etst',
+  errmsg: 'duplicate ID',
+  errorLabels: [],
+  code: 110000,
+};
+
 describe('UserService', () => {
   let service: UserService;
 
@@ -142,7 +161,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: getModelToken('User'),
-          useValue: UserModel,
+          useValue: UserDocumentModel,
         },
         {
           provide: UnitService,
@@ -163,55 +182,35 @@ describe('UserService', () => {
   });
 
   afterEach(() => {
-    mockingoose(UserModel).reset();
+    mockingoose(UserDocumentModel).reset();
     cloudinaryServiceMock.uploadFile.mockResolvedValue(cloudinaryResponseMock);
     jest.clearAllMocks();
-  });
-
-  describe('uploadImageToCloudinary', () => {
-    it('should upload image to cloudinary successfully', async () => {
-      // Act
-      const result = await service.uploadImageToCloudinary(imageMockData);
-      // Assert
-      expect(result).toEqual(cloudinaryResponseMock);
-    });
-
-    it('should upload image to cloudinary successfully', async () => {
-      // Arrange
-      cloudinaryServiceMock.uploadFile.mockRejectedValue(new Error());
-
-      // Act
-      await expect(
-        service.uploadImageToCloudinary(imageMockData),
-      ).rejects.toThrow(BadRequestException);
-    });
   });
 
   describe('createManager', () => {
     it('should create a manager successfully if information is valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyName.mockResolvedValue(false);
-      companyServiceMock.createCompany.mockResolvedValue({
-        companyId: 'mockId',
-      });
+      mockingoose(UserDocumentModel)
+        .toReturn(null, 'findOne')
+        .toReturn(userInfoTestData, 'save');
+
+      companyServiceMock.findCompanyById.mockResolvedValue(false);
 
       // Act
       const result: any = await service.createManager(createManagerDto);
 
       // Assert
-      expect(result).toBeDefined();
-      expect(result.statusCode).toBe(201);
+      expect(result).toMatchObject(userInfoTestData);
     });
 
     it('should throw an error if saving user fails', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyName.mockResolvedValue(false);
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      companyServiceMock.findCompanyById.mockResolvedValue(false);
       companyServiceMock.createCompany.mockResolvedValue({
         companyId: 'mockId',
       });
-      mockingoose(UserModel).toReturn(new Error(), 'save');
+      mockingoose(UserDocumentModel).toReturn(new Error(), 'save');
 
       // Act & Assert
       await expect(service.createManager(createManagerDto)).rejects.toThrow(
@@ -221,29 +220,53 @@ describe('UserService', () => {
 
     it('should throw an error if email already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn({ _id: 'test' }, 'findOne');
+      const error = {
+        ...mongoUniqueIndexException,
+        message: UserUniqueEmailIndex,
+      };
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw error;
+      }, 'save');
 
       // Act & Assert
       await expect(service.createManager(createManagerDto)).rejects.toThrow(
-        HttpException,
+        BadRequestException,
+      );
+    });
+
+    it('should throw an error if phone number already exists', async () => {
+      // Arrange
+      const error = {
+        ...mongoUniqueIndexException,
+        message: UserUniquePhoneNumberIndex,
+      };
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw error;
+      }, 'save');
+
+      // Act & Assert
+      await expect(service.createManager(createManagerDto)).rejects.toThrow(
+        BadRequestException,
       );
     });
 
     it('should throw an error if company already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyName.mockResolvedValue(true);
+      companyServiceMock.createCompany.mockRejectedValue(
+        new BadRequestException(),
+      );
 
       // Act & Assert
       await expect(service.createManager(createManagerDto)).rejects.toThrow(
-        HttpException,
+        BadRequestException,
       );
     });
 
     it('should create company if information is valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyName.mockResolvedValue(false);
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      companyServiceMock.findCompanyById.mockResolvedValue(false);
+      companyServiceMock.createCompany.mockResolvedValue(companyTestData);
 
       // Act
       await service.createManager(createManagerDto);
@@ -257,12 +280,12 @@ describe('UserService', () => {
 
     it('should upload profile image if its valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findByCompanyName.mockResolvedValue(false);
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      companyServiceMock.findCompanyById.mockResolvedValue(false);
       companyServiceMock.createCompany.mockResolvedValue({
         companyId: 'mockId',
       });
-      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
+      mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
 
       // Act
       await service.createManager(createManagerDto, imageMockData);
@@ -277,11 +300,9 @@ describe('UserService', () => {
   describe('createEmployee', () => {
     it('should create employee successfully if information is valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findOne.mockResolvedValue({
-        companyName: 'genetec',
-      });
-      mockingoose(UserModel).toReturn(adminInfoTestData, 'save');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      companyServiceMock.findCompanyById.mockResolvedValue(companyTestData);
+      mockingoose(UserDocumentModel).toReturn(adminInfoTestData, 'save');
 
       // Act
       const result = await service.createEmployee(createEmployeeDtoTestData);
@@ -290,34 +311,41 @@ describe('UserService', () => {
       expect(result).toBeDefined();
     });
 
-    it('should throw an error if saving employee fails', async () => {
+    it('should throw an error if email already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findOne.mockResolvedValue({
-        companyName: 'genetec',
-      });
-      mockingoose(UserModel).toReturn(new Error(), 'save');
+      const error = {
+        ...mongoUniqueIndexException,
+        message: UserUniqueEmailIndex,
+      };
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw error;
+      }, 'save');
 
       // Act & Assert
       await expect(service.createManager(createManagerDto)).rejects.toThrow(
-        HttpException,
+        BadRequestException,
       );
     });
 
-    it('should throw an error if email already exists', async () => {
+    it('should throw an error if phone number already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn({ _id: 'test' }, 'findOne');
+      const error = {
+        ...mongoUniqueIndexException,
+        message: UserUniquePhoneNumberIndex,
+      };
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw error;
+      }, 'save');
 
       // Act & Assert
-      await expect(
-        service.createEmployee(createEmployeeDtoTestData),
-      ).rejects.toThrow(HttpException);
+      await expect(service.createManager(createManagerDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
-
     it('should throw an error if company doesnt exist', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      companyServiceMock.findOne.mockResolvedValue(false);
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      companyServiceMock.findCompanyById.mockResolvedValue(false);
 
       // Act & Assert
       await expect(
@@ -327,7 +355,7 @@ describe('UserService', () => {
 
     it('should create company if information is valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
 
       // Act
       await service.createManager(createManagerDto);
@@ -343,21 +371,21 @@ describe('UserService', () => {
   describe('findOne', () => {
     it('should find a user by email', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn({ _id: 'test' }, 'findOne');
+      mockingoose(UserDocumentModel).toReturn({ _id: 'test' }, 'findOne');
 
       // Act
-      await service.findOne('test');
+      await service.findUserByEmail('test');
 
       // Arrange
-      await expect(service.findOne('test')).resolves.toBeDefined();
+      await expect(service.findUserByEmail('test')).resolves.toBeDefined();
     });
   });
 
   describe('createUser', () => {
     it('should create user successfully if information is valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
 
       // Act
       const result = await service.createUser(createUserDtoTestData);
@@ -368,17 +396,39 @@ describe('UserService', () => {
 
     it('should throw an error if email already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn({ _id: 'test' }, 'findOne');
+      const error = {
+        ...mongoUniqueIndexException,
+        message: UserUniqueEmailIndex,
+      };
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw error;
+      }, 'save');
 
       // Act & Assert
-      await expect(service.createUser(createUserDtoTestData)).rejects.toThrow(
-        HttpException,
+      await expect(service.createManager(createManagerDto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw an error if phone number already exists', async () => {
+      // Arrange
+      const error = {
+        ...mongoUniqueIndexException,
+        message: UserUniquePhoneNumberIndex,
+      };
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw error;
+      }, 'save');
+
+      // Act & Assert
+      await expect(service.createManager(createManagerDto)).rejects.toThrow(
+        BadRequestException,
       );
     });
 
     it('should upload profile image if its valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
 
       // Act
       await service.createUser(createUserDtoTestData, imageMockData);
@@ -390,53 +440,10 @@ describe('UserService', () => {
     });
   });
 
-  describe('getProfile', () => {
-    it('should throw an exception if user doesnt exist', async () => {
-      // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-
-      // Act
-      expect(service.getProfile({ sub: 't', iat: 1, exp: 2 })).rejects.toThrow(
-        HttpException,
-      );
-    });
-
-    it('should return user information if user exists', async () => {
-      // Arrange
-
-      mockingoose(UserModel).toReturn(adminInfoTestData, 'findOne');
-
-      // Act
-      const result = await service.getProfile({ sub: 't', iat: 1, exp: 2 });
-
-      // Assert
-      expect(result).toEqual(
-        expect.objectContaining({ ...adminInfoTestData, role: 0 }),
-      );
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return all the users', async () => {
-      // Arrange
-      const users = [adminInfoTestData];
-      mockingoose(UserModel).toReturn(users, 'find');
-
-      // Act
-      const result = await service.findAll();
-
-      // Assert
-      expect(result.length).toBe(users.length);
-      expect(result[0]).toEqual(
-        expect.objectContaining({ ...adminInfoTestData, role: 0 }),
-      );
-    });
-  });
-
   describe('remove', () => {
     it('should throw an exception if user doesnt exist', () => {
       // Arrange
-      mockingoose(UserModel).toReturn(() => {
+      mockingoose(UserDocumentModel).toReturn(() => {
         throw new Error();
       }, 'findOneAndRemove');
 
@@ -446,7 +453,7 @@ describe('UserService', () => {
 
     it('should remove user if it exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOneAndRemove');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOneAndRemove');
 
       // Act
       const result = await service.remove('test');
@@ -460,7 +467,7 @@ describe('UserService', () => {
   describe('getPrivilege', () => {
     it('should return users role', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(adminInfoTestData, 'findOne');
+      mockingoose(UserDocumentModel).toReturn(adminInfoTestData, 'findOne');
 
       // Act
       const result = await service.getPrivilege('userId');
@@ -473,8 +480,8 @@ describe('UserService', () => {
   describe('updateUser', () => {
     it('should create user successfully if information is valid', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
-      mockingoose(UserModel).toReturn(userInfoTestData, 'save');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
+      mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
 
       // Act
       const result = await service.createUser(createUserDtoTestData);
@@ -485,7 +492,7 @@ describe('UserService', () => {
 
     it('should throw an exception if user does not exist', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(null, 'findOne');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
 
       // Act & Assert
       await expect(
@@ -495,7 +502,7 @@ describe('UserService', () => {
 
     it('should throw an exception if new email already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(
+      mockingoose(UserDocumentModel).toReturn(
         { ...userInfoTestData, email: updateUserDtoTestData.email },
         'findOne',
       );
@@ -508,7 +515,7 @@ describe('UserService', () => {
 
     it('should throw an exception if new phone number already exists', async () => {
       // Arrange
-      mockingoose(UserModel).toReturn(
+      mockingoose(UserDocumentModel).toReturn(
         { ...userInfoTestData, phoneNumber: updateUserDtoTestData.phoneNumber },
         'findOne',
       );
@@ -527,7 +534,7 @@ describe('UserService', () => {
         }
       };
 
-      mockingoose(UserModel).toReturn(finderMock, 'findOne'); // findById is findOne
+      mockingoose(UserDocumentModel).toReturn(finderMock, 'findOne'); // findById is findOne
 
       // Act
       await service.updateUser('1', updateUserDtoTestData, imageMockData);

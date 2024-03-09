@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { CloudinaryService } from './user/cloudinary/cloudinary.service';
 
 @Controller()
 export class AppController {

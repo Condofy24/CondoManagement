@@ -4,6 +4,8 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { UserModel } from '../user/models/user.model';
+import { UserEntity } from '../user/entities/user.entity';
 jest.mock('bcrypt');
 
 const userTestData = {
@@ -25,7 +27,7 @@ const signInDtoTestData = {
 const jwtTokenTestData = 'testToken';
 
 const userServiceMock = {
-  findOne: jest.fn(),
+  findUserByEmail: jest.fn(),
 };
 
 const jwtServiceMock = {
@@ -65,7 +67,7 @@ describe('AuthService', () => {
     it('should return a token and user info on successful sign in', async () => {
       // Arrange
       (bcrypt.compareSync as jest.Mock).mockReturnValueOnce(true);
-      userServiceMock.findOne.mockResolvedValueOnce(userTestData);
+      userServiceMock.findUserByEmail.mockResolvedValueOnce(userTestData);
       jwtServiceMock.signAsync.mockResolvedValueOnce(jwtTokenTestData);
 
       // Act
@@ -74,16 +76,10 @@ describe('AuthService', () => {
       // Assert
       expect(result).toBeDefined();
       expect(result.token).toBe(jwtTokenTestData);
-      expect(result.user).toEqual({
-        email: userTestData.email,
-        id: userTestData.id,
-        name: userTestData.name,
-        role: userTestData.role,
-        phoneNumber: userTestData.phoneNumber,
-        imageUrl: userTestData.imageUrl,
-        imageId: userTestData.imageId,
-      });
-      expect(userServiceMock.findOne).toHaveBeenCalledWith(
+      expect(result.user).toMatchObject(
+        new UserModel(userTestData as unknown as UserEntity),
+      );
+      expect(userServiceMock.findUserByEmail).toHaveBeenCalledWith(
         signInDtoTestData.email,
       );
       expect(jwtServiceMock.signAsync).toHaveBeenCalled();
@@ -92,7 +88,7 @@ describe('AuthService', () => {
     it('should throw exception for invalid password', async () => {
       // Arrange
       (bcrypt.compareSync as jest.Mock).mockReturnValueOnce(false);
-      userServiceMock.findOne.mockResolvedValueOnce(userTestData);
+      userServiceMock.findUserByEmail.mockResolvedValueOnce(userTestData);
 
       // Act & Assert
       await expect(authService.signIn(signInDtoTestData)).rejects.toThrow(
@@ -102,7 +98,7 @@ describe('AuthService', () => {
 
     it('should throw exception for invalid email', async () => {
       // Arrange
-      userServiceMock.findOne.mockResolvedValueOnce(null);
+      userServiceMock.findUserByEmail.mockResolvedValueOnce(null);
 
       // Act & Assert
       await expect(authService.signIn(signInDtoTestData)).rejects.toThrow(

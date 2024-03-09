@@ -7,7 +7,7 @@ import {
 import { Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { CloudinaryService } from '../user/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CompanyService } from '../company/company.service';
 import { MongoServerError, ObjectId } from 'mongodb';
 import { error } from 'console';
@@ -15,7 +15,6 @@ import { StorageService } from '../storage/storage.service';
 import { UnitService } from '../unit/unit.service';
 
 import { ParkingService } from '../parking/parking.service';
-import { Building, toBuilding } from './view-models/building.view-model';
 import { BuildingEntity } from './entities/building.entity';
 
 /**
@@ -49,7 +48,7 @@ export class BuildingService {
   ) {
     const { name, address } = createBuildingDto;
 
-    const companyExists = await this.companyService.findOne(companyId);
+    const companyExists = await this.companyService.findCompanyById(companyId);
 
     if (!companyExists) throw new BadRequestException('Invalid company Id');
 
@@ -94,9 +93,9 @@ export class BuildingService {
    */
   public async updateBuilding(
     buildingId: string,
-    updatedFields: Partial<Building>,
+    updatedFields: Partial<BuildingEntity>,
     file?: Express.Multer.File,
-  ) {
+  ): Promise<BuildingEntity> {
     const building = await this.buildingModel.findById(buildingId);
 
     if (!building) throw new BadRequestException("Building doesn't exists");
@@ -124,7 +123,7 @@ export class BuildingService {
         },
       );
 
-      return updatedEntity;
+      return updatedEntity as BuildingEntity;
     } catch (error) {
       let errorDescription = 'Building could not be updated';
 
@@ -173,6 +172,6 @@ export class BuildingService {
     const parkings = await this.parkingService.findAll(buildingId);
     const storages = await this.storageService.findAll(buildingId);
 
-    return { building: toBuilding(buildingEntity), units, parkings, storages };
+    return { building: buildingEntity, units, parkings, storages };
   }
 }

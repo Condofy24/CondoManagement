@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { Company } from './entities/company.entity';
 
 interface CompanyDTO {
   _id?: string;
@@ -25,24 +24,7 @@ describe('Company Controller', () => {
         {
           provide: CompanyService,
           useValue: {
-            findAll: jest.fn<Company[], unknown[]>().mockImplementation(() => [
-              {
-                _id: 'a strange id',
-                companyName: testCompany1,
-                companyLocation: testLocation1,
-              },
-              {
-                _id: 'a different id',
-                companyName: 'Test Company 2',
-                companyLocation: 'Test Location 2',
-              },
-              {
-                _id: 'a third id',
-                companyName: 'Test Company 3',
-                companyLocation: 'Test Location 3',
-              },
-            ]),
-            findOne: jest
+            findCompanyById: jest
               .fn<Promise<CompanyDTO>, string[]>()
               .mockImplementation((id) =>
                 Promise.resolve({
@@ -51,7 +33,7 @@ describe('Company Controller', () => {
                   _id: id,
                 }),
               ),
-            findByCompanyName: jest
+            findCompanyByName: jest
               .fn<Promise<CompanyDTO>, string[]>()
               .mockImplementation((companyName) => {
                 return Promise.resolve({
@@ -75,28 +57,6 @@ describe('Company Controller', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-  });
-
-  describe('getAllCompanies', () => {
-    it('should get an array of companies', () => {
-      expect(controller.getAllComapnies()).toEqual([
-        {
-          _id: 'a strange id',
-          companyName: testCompany1,
-          companyLocation: testLocation1,
-        },
-        {
-          _id: 'a different id',
-          companyName: 'Test Company 2',
-          companyLocation: 'Test Location 2',
-        },
-        {
-          _id: 'a third id',
-          companyName: 'Test Company 3',
-          companyLocation: 'Test Location 3',
-        },
-      ]);
-    });
   });
 
   describe('getById', () => {

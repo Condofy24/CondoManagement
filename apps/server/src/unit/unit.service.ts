@@ -198,7 +198,7 @@ export class UnitService {
     linkUnitToBuildingDto: LinkUnitToBuidlingDto,
   ) {
     const { unitNumber } = linkUnitToBuildingDto;
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findUserById(userId);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },
@@ -248,7 +248,7 @@ export class UnitService {
     };
   }
   public async findOwnerUnits(ownerId: string): Promise<UnitEntity[]> {
-    const user = await this.userService.findById(ownerId);
+    const user = await this.userService.findUserById(ownerId);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },
@@ -274,7 +274,7 @@ export class UnitService {
     );
   }
   public async findRenterUnit(renterId: string) {
-    const user = await this.userService.findById(renterId);
+    const user = await this.userService.findUserById(renterId);
     if (!user) {
       throw new HttpException(
         { error: 'User not found', status: HttpStatus.NOT_FOUND },

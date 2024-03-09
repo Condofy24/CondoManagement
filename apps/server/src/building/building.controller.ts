@@ -12,10 +12,10 @@ import {
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { BuildingService } from './building.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { updateBuildingDto } from './dto/update-building.dto';
+import { UpdateBuildingDto } from './dto/update-building.dto';
 import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { toBuilding } from './view-models/building.view-model';
+import { BuildingModel } from './models/building.model';
 
 /**
  * Controller for managing building-related operations.
@@ -40,13 +40,13 @@ export class BuildingController {
     @Body() createBuildingDto: CreateBuildingDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const createdBuildingEntity = await this.buildingService.createBuilding(
-      createBuildingDto,
-      file,
-      companyId,
+    return new BuildingModel(
+      await this.buildingService.createBuilding(
+        createBuildingDto,
+        file,
+        companyId,
+      ),
     );
-
-    return toBuilding(createdBuildingEntity);
   }
 
   /**
@@ -62,7 +62,7 @@ export class BuildingController {
   @Roles(0)
   update(
     @Param('buildingId') buildingId: string,
-    @Body() updateBuildingDto: updateBuildingDto,
+    @Body() updateBuildingDto: UpdateBuildingDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.buildingService.updateBuilding(
@@ -83,7 +83,7 @@ export class BuildingController {
   async findAll(@Param('companyId') companyId: string) {
     const buildingEntities = await this.buildingService.findAll(companyId);
 
-    return buildingEntities.map((e) => toBuilding(e));
+    return buildingEntities.map((entity) => new BuildingModel(entity));
   }
 
   /**

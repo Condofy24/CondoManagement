@@ -1,7 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { BuildingController } from './building.controller';
 import { BuildingService } from './building.service';
-import { CloudinaryModule } from '../user/cloudinary/cloudinary.module';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 import { UnitModule } from '../unit/unit.module';
 import { ParkingModule } from '../parking/parking.module';

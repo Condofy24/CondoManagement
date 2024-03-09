@@ -77,7 +77,7 @@ export class PrivilegeGuard implements CanActivate {
     } catch {
       throw new UnauthorizedException();
     }
-    const user = await this.userService.findById(request.user.sub);
+    const user = await this.userService.findUserById(request.user.sub);
     const params = request?.params;
     if (user?.role === 0) {
       if (params?.buildingId) {
