@@ -3,10 +3,14 @@
 import RegistationFormInputs from "@/app/components/form/registation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
-import { TSignupSchema, signupSchema } from "@/lib/validation-schemas";
+import {
+  TManagerSignupSchema,
+  TSignupSchema,
+  signupSchema,
+} from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { UseFormRegister, useForm } from "react-hook-form";
 import { registerUser } from "@/actions/auth-actions";
 import { useRouter } from "next/navigation";
 import FormFieldError from "@/app/components/form/form-field-error";
@@ -75,7 +79,9 @@ export default function RegistrationPage() {
       </div>
 
       <RegistationFormInputs
-        register={register}
+        register={
+          register as UseFormRegister<TSignupSchema | TManagerSignupSchema>
+        }
         errors={errors}
         profilePic={{ setProfilePic, profilePicError, setProfilePicError }}
       />
