@@ -23,6 +23,7 @@ import {
   RegistrationRoles,
 } from './entities/registration-key.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UnitService {
@@ -300,38 +301,39 @@ export class UnitService {
     };
   }
 
-  // public async makeNewPayment(
-  //   unitId: string,
-  //   makeNewPaymentDto: MakeNewPaymentDto,
-  // ) {
-  //   const { amount } = makeNewPaymentDto;
-  //   const unit = await this.unitModel.findById(unitId);
-  //   if (unit) {
-  //     unit.payments = [
-  //       ...unit.payments,
-  //       {
-  //         timeStamp: new Date(),
-  //         amount,
-  //         previousBalance: unit.balance,
-  //         newBalance: unit.balance - amount,
-  //       } as IUnitPayment,
-  //     ];
-  //     unit.balance -= amount;
-  //     unit.save();
-  //   } else {
-  //     throw new HttpException('Unit not found', HttpStatus.NOT_FOUND);
-  //   }
-  // }
+  public async makeNewPayment(
+    unitId: string,
+    makeNewPaymentDto: MakeNewPaymentDto,
+  ) {
+    const { amount } = makeNewPaymentDto;
+    // const unit = await this.unitModel.findById(unitId);
+    // if (unit) {
+    //   unit.payments = [
+    //     ...unit.payments,
+    //     {
+    //       timeStamp: new Date(),
+    //       amount,
+    //       previousBalance: unit.balance,
+    //       newBalance: unit.balance - amount,
+    //     } as IUnitPayment,
+    //   ];
+    //   unit.balance -= amount;
+    //   unit.save();
+    // } else {
+    //   throw new HttpException('Unit not found', HttpStatus.NOT_FOUND);
+    // }
+  }
 
-  // @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
-  // async handleCron() {
-  //   const units = await this.unitModel.find();
-  //   units.forEach(async (unit) => {
-  //     if (unit.ownerId) {
-  //       // unit.overdue += unit.balance;
-  //       unit.balance = unit.fees;
-  //       await unit.save();
-  //     }
-  //   });
-  // }
+  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  async handleCron() {
+    const units = await this.unitModel.find();
+    units.forEach(async (unit) => {
+      if (unit.ownerId) {
+        // Reset monthly fees balance and add balance to overdue
+        unit.overdueFees += unit.monthlyFeesBalance;
+        unit.monthlyFeesBalance = unit.fees;
+        await unit.save();
+      }
+    });
+  }
 }
