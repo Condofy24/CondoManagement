@@ -299,4 +299,39 @@ export class UnitService {
       fees: unit.fees,
     };
   }
+
+  // public async makeNewPayment(
+  //   unitId: string,
+  //   makeNewPaymentDto: MakeNewPaymentDto,
+  // ) {
+  //   const { amount } = makeNewPaymentDto;
+  //   const unit = await this.unitModel.findById(unitId);
+  //   if (unit) {
+  //     unit.payments = [
+  //       ...unit.payments,
+  //       {
+  //         timeStamp: new Date(),
+  //         amount,
+  //         previousBalance: unit.balance,
+  //         newBalance: unit.balance - amount,
+  //       } as IUnitPayment,
+  //     ];
+  //     unit.balance -= amount;
+  //     unit.save();
+  //   } else {
+  //     throw new HttpException('Unit not found', HttpStatus.NOT_FOUND);
+  //   }
+  // }
+
+  // @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  // async handleCron() {
+  //   const units = await this.unitModel.find();
+  //   units.forEach(async (unit) => {
+  //     if (unit.ownerId) {
+  //       // unit.overdue += unit.balance;
+  //       unit.balance = unit.fees;
+  //       await unit.save();
+  //     }
+  //   });
+  // }
 }
