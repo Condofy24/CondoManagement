@@ -84,7 +84,7 @@ export const fetchAssets = async (
 
     case BuildingAssetType.parking:
       const { data: parkingData } = await axios.get<Parking[]>(
-        `${API_URL}/parking/${buildingId}`,
+        `${API_URL}/parking/building/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -93,7 +93,7 @@ export const fetchAssets = async (
 
     case BuildingAssetType.storage:
       const { data: storageData } = await axios.get<Storage[]>(
-        `${API_URL}/storage/${buildingId}`,
+        `${API_URL}/storage/building/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
