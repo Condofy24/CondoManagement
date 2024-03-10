@@ -22,6 +22,7 @@ const unitServiceMock = {
   findOwnerUnits: jest.fn(),
   findRenterUnit: jest.fn(),
   makeNewPayment: jest.fn(),
+  getUnitPayments: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -75,6 +76,20 @@ const userInfoTestData2 = {
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
+};
+
+const paymentsTestData = {
+  unitId: new ObjectId(),
+  record: [
+    {
+      timeStamp: new Date(),
+      amount: 100,
+      monthBalance: 100,
+      overdueFees: 0,
+      previousMonthBalance: 0,
+      previousOverdueFees: 0,
+    },
+  ],
 };
 
 describe('UnitController', () => {
@@ -205,6 +220,18 @@ describe('UnitController', () => {
 
       //Assert
       expect(result).toEqual(HttpStatus.NO_CONTENT);
+    });
+  });
+  describe('getPayments', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.getUnitPayments.mockResolvedValue(paymentsTestData);
+
+      //Act
+      const result = await controller.getPayments('test-id');
+
+      //Assert
+      expect(result?.record?.[0]?.amount).toBe(100);
     });
   });
 });

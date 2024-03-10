@@ -81,4 +81,9 @@ export class UnitController {
   ) {
     return this.unitService.makeNewPayment(unitId, makeNewPaymentDto);
   }
+
+  @Get('/payments/:unitId')
+  getPayments(@Param('unitId') unitId: string) {
+    return this.unitService.getUnitPayments(unitId);
+  }
 }

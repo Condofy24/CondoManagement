@@ -419,7 +419,7 @@ describe('UnitService', () => {
       expect(result).toBeNull();
     });
   });
-  describe('makeNewPayment', () => {
+  describe('payments', () => {
     it('make payment to unowned unit', async () => {
       mockingoose(UnitModel).toReturn(unitInfoTestData2, 'findOne');
       mockingoose(PaymentsModel).toReturn(paymentsTestData, 'findOne');
@@ -463,6 +463,13 @@ describe('UnitService', () => {
       );
 
       expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
+    });
+    it('should get all unit payments', async () => {
+      mockingoose(PaymentsModel).toReturn(paymentsTestData, 'findOne');
+
+      const result = await service.getUnitPayments('test-id');
+
+      expect(result?.record?.[0]?.amount).toBe(100);
     });
   });
   describe('scheduled task', () => {

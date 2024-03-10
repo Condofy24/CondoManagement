@@ -362,6 +362,10 @@ export class UnitService {
     return response.status(HttpStatus.NO_CONTENT);
   }
 
+  public async getUnitPayments(unitId: string): Promise<PaymentsEntity | null> {
+    return this.paymentsModel.findOne({ unitId });
+  }
+
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   async handleCron() {
     const units = await this.unitModel.find();
