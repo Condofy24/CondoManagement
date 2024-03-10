@@ -16,12 +16,14 @@ import { ParkingModule } from './parking/parking.module';
 import { ParkingController } from './parking/parking.controller';
 import { StorageModule } from './storage/storage.module';
 import { StorageController } from './storage/storage.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
       'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/dev?retryWrites=true&w=majority', // TODO: Move password to env
     ),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     CompanyModule,

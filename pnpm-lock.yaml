@@ -182,6 +182,9 @@ importers:
       "@nestjs/platform-express":
         specifier: ^10.0.0
         version: 10.3.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)
+      "@nestjs/schedule":
+        specifier: ^4.0.1
+        version: 4.0.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)
       "@nestjs/swagger":
         specifier: ^7.3.0
         version: 7.3.0(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)
@@ -4193,6 +4196,21 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /@nestjs/schedule@4.0.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1):
+    resolution:
+      {
+        integrity: sha512-cz2FNjsuoma+aGsG0cMmG6Dqg/BezbBWet1UTHtAuu6d2mXNTVcmoEQM2DIVG5Lfwb2hfSE2yZt8Moww+7y+mA==,
+      }
+    peerDependencies:
+      "@nestjs/common": ^8.0.0 || ^9.0.0 || ^10.0.0
+      "@nestjs/core": ^8.0.0 || ^9.0.0 || ^10.0.0
+    dependencies:
+      "@nestjs/common": 10.3.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
+      "@nestjs/core": 10.3.1(@nestjs/common@10.3.1)(@nestjs/platform-express@10.3.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
+      cron: 3.1.6
+      uuid: 9.0.1
+    dev: false
+
   /@nestjs/schematics@10.1.0(chokidar@3.5.3)(typescript@5.3.3):
     resolution:
       {
@@ -6482,6 +6500,13 @@ packages:
       "@types/node": 20.11.6
     dev: false
 
+  /@types/luxon@3.3.8:
+    resolution:
+      {
+        integrity: sha512-jYvz8UMLDgy3a5SkGJne8H7VA7zPV2Lwohjx0V8V31+SqAjNmurWMkk9cQhfvlcnXWudBpK9xPM1n4rljOcHYQ==,
+      }
+    dev: false
+
   /@types/methods@1.1.4:
     resolution:
       {
@@ -8723,6 +8748,16 @@ packages:
         integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==,
       }
     dev: true
+
+  /cron@3.1.6:
+    resolution:
+      {
+        integrity: sha512-cvFiQCeVzsA+QPM6fhjBtlKGij7tLLISnTSvFxVdnFGLdz+ZdXN37kNe0i2gefmdD17XuZA6n2uPVwzl4FxW/w==,
+      }
+    dependencies:
+      "@types/luxon": 3.3.8
+      luxon: 3.4.4
+    dev: false
 
   /cross-spawn@7.0.3:
     resolution:
@@ -12919,6 +12954,14 @@ packages:
         integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==,
       }
     dev: true
+
+  /luxon@3.4.4:
+    resolution:
+      {
+        integrity: sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==,
+      }
+    engines: { node: ">=12" }
+    dev: false
 
   /lz-string@1.5.0:
     resolution:

@@ -2,10 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { UnitService } from './unit.service';
 import UnitModel, { UnitEntity } from './entities/unit.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
+import PaymentsModel from './entities/payments.entity';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
+import { ObjectId } from 'mongodb';
+import RegistationKeyModel from './entities/registration-key.entity';
+import { ParkingService } from '../parking/parking.service';
+import { Parking } from '../parking/entities/parking.entity';
 import { ClientSession, MongoServerError, ObjectId } from 'mongodb';
 import RegistationKeyModel, {
   RegistrationKeyEntity,
@@ -66,6 +72,28 @@ const unitInfoTestData2 = {
   fees: 4,
 };
 
+const unitInfoTestData3 = {
+  id: new ObjectId('65ed1de804bd4c731c3456c3'),
+  ownerId: new ObjectId(),
+  buildingId: buildingInfoTestData2.id,
+  unitNumber: 4,
+  size: 4,
+  isOccupiedByRenter: false,
+  fees: 4,
+};
+
+const inDebtedUnitInfoTestData = {
+  id: new ObjectId('65ed1de804bd4c731c3456c3'),
+  ownerId: new ObjectId(),
+  buildingId: buildingInfoTestData2.id,
+  unitNumber: 4,
+  size: 4,
+  isOccupiedByRenter: false,
+  fees: 4,
+  monthlyFeesBalance: 100,
+  overdueFees: 300,
+};
+
 const userInfoTestData = {
   _id: new ObjectId(),
   password: 'test',
@@ -84,9 +112,35 @@ const registationKeyTestData: Partial<RegistrationKeyEntity> = {
   type: 'owner',
 };
 
+const parkingInfoTestData: Parking = {
+  buildingId: new ObjectId(),
+  unitId: unitInfoTestData._id,
+  parkingNumber: 7,
+  isOccupied: false,
+  fees: 10,
+};
+
+const paymentsTestData = {
+  unitId: new ObjectId(unitInfoTestData._id),
+  record: [
+    {
+      timeStamp: new Date(),
+      amount: 100,
+      monthBalance: 100,
+      overdueFees: 0,
+      previousMonthBalance: 0,
+      previousOverdueFees: 0,
+    },
+  ],
+};
+
 const buildingServiceMock = {
   findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
   updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
+};
+
+const parkingServiceMock = {
+  findByUnitId: jest.fn().mockResolvedValue([parkingInfoTestData]),
 };
 
 const userServiceMock = {
@@ -115,9 +169,14 @@ describe('UnitService', () => {
           useValue: UnitModel,
         },
         {
+          provide: getModelToken('Payments'),
+          useValue: PaymentsModel,
+        },
+        {
           provide: getModelToken('RegistrationKey'),
           useValue: RegistationKeyModel,
         },
+        { provide: ParkingService, useValue: parkingServiceMock },
         {
           provide: BuildingService,
           useValue: buildingServiceMock,
@@ -274,6 +333,89 @@ describe('UnitService', () => {
           {} as ClientSession,
         ),
       ).rejects.toThrow(HttpException);
+    });
+  });
+  describe('findOwnerUnits', () => {
+    it('should return all units for a given user given valid information', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn([unitInfoTestData], 'find');
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData2);
+
+      //Act
+      const result = await service.fin(userInfoTestData._id.toString());
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+    it('should throw an error if user does not exist', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn([], 'find');
+      userServiceMock.findUserById.mockResolvedValue(null);
+
+      //Act
+      expect(
+        service.findOwnerUnits(userInfoTestData._id.toString()),
+      ).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('payments', () => {
+    it('make payment to unowned unit', async () => {
+      mockingoose(UnitModel).toReturn(unitInfoTestData2, 'findOne');
+      mockingoose(PaymentsModel).toReturn(paymentsTestData, 'findOne');
+
+      expect(
+        service.makeNewPayment(unitInfoTestData2.id.toString(), {
+          amount: 1000,
+        }),
+      ).rejects.toThrow(HttpException);
+    });
+    it('should make new payment successfully (no overdue)', async () => {
+      mockingoose(UnitModel)
+        .toReturn(unitInfoTestData3, 'findOne')
+        .toReturn((_: any) => {}, 'save');
+      mockingoose(PaymentsModel)
+        .toReturn(paymentsTestData, 'findOne')
+        .toReturn((_: any) => {}, 'save');
+
+      const result = await service.makeNewPayment(
+        unitInfoTestData3.id.toString(),
+        {
+          amount: 1000,
+        },
+      );
+
+      expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
+    });
+    it('should make new payment successfully (with overdue)', async () => {
+      mockingoose(UnitModel)
+        .toReturn(inDebtedUnitInfoTestData, 'findOne')
+        .toReturn((_: any) => {}, 'save');
+      mockingoose(PaymentsModel)
+        .toReturn(paymentsTestData, 'findOne')
+        .toReturn((_: any) => {}, 'save');
+
+      const result = await service.makeNewPayment(
+        inDebtedUnitInfoTestData.id.toString(),
+        {
+          amount: 1000,
+        },
+      );
+
+      expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
+    });
+    it('should get all unit payments', async () => {
+      mockingoose(PaymentsModel).toReturn(paymentsTestData, 'findOne');
+
+      const result = await service.getUnitPayments('test-id');
+
+      expect(result?.record?.[0]?.amount).toBe(100);
+    });
+  });
+  describe('scheduled task', () => {
+    it('scheduled fees adjustment should run', async () => {
+      mockingoose(UnitModel).toReturn([inDebtedUnitInfoTestData], 'find');
+      service.handleCron();
     });
   });
 });

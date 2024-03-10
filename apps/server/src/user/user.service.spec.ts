@@ -16,8 +16,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { CompanyEntity } from 'src/company/entities/company.entity';
-import { before } from 'node:test';
+import { CompanyEntity } from '../company/entities/company.entity';
+import { ParkingService } from '../parking/parking.service';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
@@ -75,6 +75,10 @@ const companyServiceMock = {
   findOne: jest.fn().mockResolvedValue(null),
   createCompany: jest.fn().mockResolvedValue(companyTestData),
   deleteCompany: jest.fn().mockResolvedValue(null),
+};
+
+const parkingServiceMock = {
+  findByUnitId: jest.fn(),
 };
 
 const createManagerDto: CreateManagerDto = {
@@ -189,6 +193,10 @@ describe('UserService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
+        },
+        {
+          provide: ParkingService,
+          useValue: parkingServiceMock,
         },
         {
           provide: CloudinaryService,

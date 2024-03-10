@@ -18,16 +18,8 @@ const unitServiceMock = {
   remove: jest.fn().mockResolvedValue(null),
   findAllBuildingUnits: jest.fn().mockResolvedValue(null),
   findAssociatedUnits: jest.fn().mockResolvedValue(null),
-};
-
-const userModelMock = {
-  db: {
-    startSession: jest.fn(() => ({
-      startTransaction: jest.fn(),
-      commitTransaction: jest.fn(),
-      endSession: jest.fn(),
-    })),
-  },
+  makeNewPayment: jest.fn(),
+  getUnitPayments: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -70,6 +62,31 @@ const userInfoTestData = {
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
+};
+
+const userInfoTestData2 = {
+  _id: new ObjectId(),
+  password: 'test',
+  email: 'user@example.com',
+  name: 'Test User',
+  role: 3,
+  phoneNumber: '1234567890',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+};
+
+const paymentsTestData = {
+  unitId: new ObjectId(),
+  record: [
+    {
+      timeStamp: new Date(),
+      amount: 100,
+      monthBalance: 100,
+      overdueFees: 0,
+      previousMonthBalance: 0,
+      previousOverdueFees: 0,
+    },
+  ],
 };
 
 describe('UnitController', () => {
@@ -148,6 +165,46 @@ describe('UnitController', () => {
 
       //Assert
       expect(result).toEqual([unitInfoTestData]);
+    });
+  });
+  describe('findRenterUnit', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.findRenterUnit.mockResolvedValue(unitInfoTestData);
+
+      //Act
+      const result = await controller.findRenterUnit(
+        userInfoTestData2._id.toString(),
+      );
+
+      //Assert
+      expect(result).toEqual(unitInfoTestData);
+    });
+  });
+  describe('makeNewPayment', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.makeNewPayment.mockResolvedValue(HttpStatus.NO_CONTENT);
+
+      //Act
+      const result = await controller.makeNewPayment('test-id', {
+        amount: 100,
+      });
+
+      //Assert
+      expect(result).toEqual(HttpStatus.NO_CONTENT);
+    });
+  });
+  describe('getPayments', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.getUnitPayments.mockResolvedValue(paymentsTestData);
+
+      //Act
+      const result = await controller.getPayments('test-id');
+
+      //Assert
+      expect(result?.record?.[0]?.amount).toBe(100);
     });
   });
 });

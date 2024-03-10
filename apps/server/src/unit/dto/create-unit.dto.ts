@@ -12,4 +12,6 @@ export class CreateUnitDto {
 
   @IsNotEmpty()
   fees: number;
+
+  lateFeesInterestRate?: number;
 }

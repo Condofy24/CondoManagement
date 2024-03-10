@@ -17,6 +17,10 @@ import {
   RegistrationKeyEntity,
 } from './entities/registration-key.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
+import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
+import { ParkingService } from '../parking/parking.service';
 import { UnitModel } from './models/unit.model';
 
 @Injectable()
@@ -24,6 +28,9 @@ export class UnitService {
   constructor(
     @InjectModel('Unit')
     private readonly unitModel: Model<UnitEntity>,
+    private readonly parkingService: ParkingService,
+    @InjectModel('Payments')
+    private readonly paymentsModel: Model<PaymentsEntity>,
     @InjectModel('RegistrationKey')
     private readonly registrationKeyModel: Model<RegistrationKeyEntity>,
     @Inject(forwardRef(() => UserService))
@@ -33,7 +40,8 @@ export class UnitService {
   ) {}
 
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
-    const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
+    const { unitNumber, size, isOccupiedByRenter, lateFeesInterestRate, fees } =
+      createUnitDto;
 
     const building = await this.buildingService.findBuildingById(buildingId);
 
@@ -44,6 +52,7 @@ export class UnitService {
       unitNumber,
       size,
       isOccupiedByRenter,
+      lateFeesInterestRate,
       fees,
     });
 
@@ -208,5 +217,75 @@ export class UnitService {
     const filterKey = user.role == 3 ? 'ownerId' : 'renterId';
 
     return await this.unitModel.find({ [filterKey]: userId }).exec();
+  }
+
+  public async makeNewPayment(
+    unitId: string,
+    makeNewPaymentDto: MakeNewPaymentDto,
+  ) {
+    const { amount } = makeNewPaymentDto;
+    const unit = await this.unitModel.findOne({ _id: unitId });
+
+    if (!unit || !unit?.ownerId) {
+      throw new HttpException(
+        'Unit does not exist or not owned',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let unitPayments = await this.paymentsModel.findOne({ unitId });
+    if (!unitPayments) {
+      unitPayments = await this.paymentsModel.create({ unitId });
+    }
+
+    let newOverdueFees = unit.overdueFees - amount;
+    let newMonthlyBalance = unit.monthlyFeesBalance;
+
+    if (newOverdueFees < 0) {
+      // Remove from monthly balance and reset overdue to 0
+      newMonthlyBalance += newOverdueFees; // overdue fees is negative -> add
+      newOverdueFees = 0;
+    }
+
+    unitPayments.record.push({
+      timeStamp: new Date(),
+      amount,
+      monthBalance: newMonthlyBalance,
+      overdueFees: newOverdueFees,
+      previousMonthBalance: unit?.monthlyFeesBalance,
+      previousOverdueFees: unit?.overdueFees,
+    } as IUnitPayment);
+
+    unit.monthlyFeesBalance = newMonthlyBalance;
+    unit.overdueFees = newOverdueFees;
+
+    unitPayments.save();
+    unit.save();
+
+    return response.status(HttpStatus.NO_CONTENT);
+  }
+
+  public async getUnitPayments(unitId: string): Promise<PaymentsEntity | null> {
+    return this.paymentsModel.findOne({ unitId });
+  }
+
+  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  async handleCron() {
+    const units = await this.unitModel.find();
+    units.forEach(async (unit) => {
+      if (unit.ownerId) {
+        // Reset monthly fees balance and add balance to overdue
+        const sumOfParkingFees = (
+          await this.parkingService.findByUnitId(unit.id)
+        )?.reduce((acc, current) => {
+          return (acc += current.fees);
+        }, 0);
+        unit.overdueFees +=
+          unit.monthlyFeesBalance +
+          unit.monthlyFeesBalance * (unit.lateFeesInterestRate / 100);
+        unit.monthlyFeesBalance = unit.fees + sumOfParkingFees;
+        await unit.save();
+      }
+    });
   }
 }
