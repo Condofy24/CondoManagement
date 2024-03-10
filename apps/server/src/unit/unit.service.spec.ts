@@ -445,7 +445,7 @@ describe('UnitService', () => {
         },
       );
 
-      expect(result).toBe(HttpStatus.NO_CONTENT);
+      expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
     });
     it('should make new payment successfully (with overdue)', async () => {
       mockingoose(UnitModel)
@@ -462,7 +462,7 @@ describe('UnitService', () => {
         },
       );
 
-      expect(result).toBe(HttpStatus.NO_CONTENT);
+      expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
     });
   });
   describe('scheduled task', () => {

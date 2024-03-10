@@ -90,7 +90,8 @@
       ".module.ts",
       "main.ts",
       ".dto.ts",
-      ".entity.ts"
+      ".entity.ts",
+      ".model.ts"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",

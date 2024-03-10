@@ -359,7 +359,7 @@ export class UnitService {
     unitPayments.save();
     unit.save();
 
-    return HttpStatus.NO_CONTENT;
+    return response.status(HttpStatus.NO_CONTENT);
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
