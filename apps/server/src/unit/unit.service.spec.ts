@@ -1,21 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
-import { UnitService } from './unit.service';
-import UnitModel, { UnitEntity } from './entities/unit.entity';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ClientSession, MongoServerError, ObjectId } from 'mongodb';
+import { BuildingService } from '../building/building.service';
+import { Parking } from '../parking/entities/parking.entity';
+import { ParkingService } from '../parking/parking.service';
+import { UserService } from '../user/user.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import PaymentsModel from './entities/payments.entity';
-import { BuildingService } from '../building/building.service';
-import { UserService } from '../user/user.service';
-import { ObjectId } from 'mongodb';
-import RegistationKeyModel from './entities/registration-key.entity';
-import { ParkingService } from '../parking/parking.service';
-import { Parking } from '../parking/entities/parking.entity';
-import { ClientSession, MongoServerError, ObjectId } from 'mongodb';
 import RegistationKeyModel, {
   RegistrationKeyEntity,
 } from './entities/registration-key.entity';
+import UnitModel, { UnitEntity } from './entities/unit.entity';
+import { UnitService } from './unit.service';
 
 const mockingoose = require('mockingoose');
 
@@ -75,7 +72,7 @@ const unitInfoTestData2 = {
 const unitInfoTestData3 = {
   id: new ObjectId('65ed1de804bd4c731c3456c3'),
   ownerId: new ObjectId(),
-  buildingId: buildingInfoTestData2.id,
+  buildingId: buildingInfoTestData2._id,
   unitNumber: 4,
   size: 4,
   isOccupiedByRenter: false,
@@ -85,7 +82,7 @@ const unitInfoTestData3 = {
 const inDebtedUnitInfoTestData = {
   id: new ObjectId('65ed1de804bd4c731c3456c3'),
   ownerId: new ObjectId(),
-  buildingId: buildingInfoTestData2.id,
+  buildingId: buildingInfoTestData2._id,
   unitNumber: 4,
   size: 4,
   isOccupiedByRenter: false,
@@ -335,14 +332,16 @@ describe('UnitService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
-  describe('findOwnerUnits', () => {
+  describe('findAssociatedUnits', () => {
     it('should return all units for a given user given valid information', async () => {
       //Arrange
       mockingoose(UnitModel).toReturn([unitInfoTestData], 'find');
-      userServiceMock.findUserById.mockResolvedValue(userInfoTestData2);
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
 
       //Act
-      const result = await service.fin(userInfoTestData._id.toString());
+      const result = await service.findAssociatedUnits(
+        userInfoTestData._id.toString(),
+      );
 
       //Assert
       expect(result).toBeDefined();
@@ -354,7 +353,7 @@ describe('UnitService', () => {
 
       //Act
       expect(
-        service.findOwnerUnits(userInfoTestData._id.toString()),
+        service.findAssociatedUnits(userInfoTestData._id.toString()),
       ).rejects.toThrow(HttpException);
     });
   });
@@ -365,7 +364,7 @@ describe('UnitService', () => {
       mockingoose(PaymentsModel).toReturn(paymentsTestData, 'findOne');
 
       expect(
-        service.makeNewPayment(unitInfoTestData2.id.toString(), {
+        service.makeNewPayment(unitInfoTestData2._id.toString(), {
           amount: 1000,
         }),
       ).rejects.toThrow(HttpException);

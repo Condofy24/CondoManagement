@@ -167,20 +167,6 @@ describe('UnitController', () => {
       expect(result).toEqual([unitInfoTestData]);
     });
   });
-  describe('findRenterUnit', () => {
-    it('should forward call to unit service', async () => {
-      //Arrange
-      unitServiceMock.findRenterUnit.mockResolvedValue(unitInfoTestData);
-
-      //Act
-      const result = await controller.findRenterUnit(
-        userInfoTestData2._id.toString(),
-      );
-
-      //Assert
-      expect(result).toEqual(unitInfoTestData);
-    });
-  });
   describe('makeNewPayment', () => {
     it('should forward call to unit service', async () => {
       //Arrange

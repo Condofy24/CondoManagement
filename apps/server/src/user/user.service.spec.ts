@@ -16,8 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { CompanyEntity } from '../company/entities/company.entity';
-import { ParkingService } from '../parking/parking.service';
+import { CompanyEntity } from 'src/company/entities/company.entity';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
@@ -75,10 +74,6 @@ const companyServiceMock = {
   findOne: jest.fn().mockResolvedValue(null),
   createCompany: jest.fn().mockResolvedValue(companyTestData),
   deleteCompany: jest.fn().mockResolvedValue(null),
-};
-
-const parkingServiceMock = {
-  findByUnitId: jest.fn(),
 };
 
 const createManagerDto: CreateManagerDto = {
@@ -193,10 +188,6 @@ describe('UserService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
-        },
-        {
-          provide: ParkingService,
-          useValue: parkingServiceMock,
         },
         {
           provide: CloudinaryService,
@@ -408,90 +399,17 @@ describe('UserService', () => {
     });
   });
 
-  // describe('createUser', () => {
-  //   beforeEach(async () => {
-  //     const module: TestingModule = await Test.createTestingModule({
-  //       providers: [
-  //         UserService,
-  //         {
-  //           provide: getModelToken('User'),
-  //           useValue: userModelMock,
-  //         },
-  //         {
-  //           provide: UnitService,
-  //           useValue: unitServiceMock,
-  //         },
-  //         {
-  //           provide: CloudinaryService,
-  //           useValue: cloudinaryServiceMock,
-  //         },
-  //         {
-  //           provide: CompanyService,
-  //           useValue: companyServiceMock,
-  //         },
-  //       ],
-  //     }).compile();
-  //
-  //     service = module.get<UserService>(UserService);
-  //   });
-  //
-  //   it('should create user successfully if information is valid', async () => {
-  //     // Arrange
-  //     mockingoose(UserDocumentModel).toReturn(null, 'findOne');
-  //     mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
-  //
-  //     // Act
-  //     const result = await service.createUser(createUserDtoTestData);
-  //
-  //     // Assert
-  //     expect(result).toBeDefined();
-  //   });
-  //
-  //   it('should throw an error if email already exists', async () => {
-  //     // Arrange
-  //     const error = {
-  //       ...mongoUniqueIndexException,
-  //       message: UserUniqueEmailIndex,
-  //     };
-  //     mockingoose(UserDocumentModel).toReturn((_: any) => {
-  //       throw error;
-  //     }, 'save');
-  //
-  //     // Act & Assert
-  //     await expect(service.createManager(createManagerDto)).rejects.toThrow(
-  //       BadRequestException,
-  //     );
-  //   });
-  //
-  //   it('should throw an error if phone number already exists', async () => {
-  //     // Arrange
-  //     const error = {
-  //       ...mongoUniqueIndexException,
-  //       message: UserUniquePhoneNumberIndex,
-  //     };
-  //     mockingoose(UserDocumentModel).toReturn((_: any) => {
-  //       throw error;
-  //     }, 'save');
-  //
-  //     // Act & Assert
-  //     await expect(service.createManager(createManagerDto)).rejects.toThrow(
-  //       BadRequestException,
-  //     );
-  //   });
-  //
-  //   it('should upload profile image if its valid', async () => {
-  //     // Arrange
-  //     mockingoose(UserDocumentModel).toReturn(null, 'findOne');
-  //
-  //     // Act
-  //     await service.createUser(createUserDtoTestData, imageMockData);
-  //
-  //     // Assert
-  //     expect(cloudinaryServiceMock.uploadFile).toHaveBeenCalledWith(
-  //       imageMockData,
-  //     );
-  //   });
-  // });
+  describe('createUser', () => {
+    it('should throw an error if registration key is invalid', async () => {
+      // Arrange
+      unitServiceMock.findUnitRegistrationKey.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(
+        service.createUser(createUserDtoTestData, imageMockData),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
 
   describe('findAll employees', () => {
     it('should return all the employees', async () => {
