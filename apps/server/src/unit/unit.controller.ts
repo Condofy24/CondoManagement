@@ -12,6 +12,7 @@ import { UnitService } from './unit.service';
 import { UpdateUnitDto } from './dto/update-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
 
 @ApiTags('Unit')
 @ApiBearerAuth()
@@ -71,5 +72,13 @@ export class UnitController {
   @Get('/findRenterUnit/:renterId')
   findRenterUnit(@Param('renterId') renterId: string) {
     return this.unitService.findRenterUnit(renterId);
+  }
+
+  @Post('/makeNewPayment/:unitId')
+  makeNewPayment(
+    @Param('unitId') unitId: string,
+    @Body() makeNewPaymentDto: MakeNewPaymentDto,
+  ) {
+    this.unitService.makeNewPayment(unitId, makeNewPaymentDto);
   }
 }

@@ -4,9 +4,9 @@ export interface IUnitPayment {
   timeStamp: Date;
   amount: number;
   monthBalance: number;
-  overdueBalance: number;
+  overdueFees: number;
   previousMonthBalance: number;
-  previousOverdueBalance: number;
+  previousOverdueFees: number;
 }
 
 export interface PaymentsEntity extends Document {

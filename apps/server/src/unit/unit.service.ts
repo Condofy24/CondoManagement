@@ -25,7 +25,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
-import { PaymentsEntity } from './entities/payments.entity';
+import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
 
 @Injectable()
 export class UnitService {
@@ -310,23 +310,43 @@ export class UnitService {
     makeNewPaymentDto: MakeNewPaymentDto,
   ) {
     const { amount } = makeNewPaymentDto;
-    const unitPayments = await this.paymentsModel.find({ unitId });
-    console.log(unitPayments);
-    // if (unit) {
-    //   unit.payments = [
-    //     ...unit.payments,
-    //     {
-    //       timeStamp: new Date(),
-    //       amount,
-    //       previousBalance: unit.balance,
-    //       newBalance: unit.balance - amount,
-    //     } as IUnitPayment,
-    //   ];
-    //   unit.balance -= amount;
-    //   unit.save();
-    // } else {
-    //   throw new HttpException('Unit not found', HttpStatus.NOT_FOUND);
-    // }
+    const unit = await this.unitModel.findById(unitId);
+
+    if (!unit || !unit?.ownerId) {
+      throw new HttpException(
+        'Unit does not exist or not owned',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let unitPayments = await this.paymentsModel.findOne({ unitId });
+    if (!unitPayments) {
+      unitPayments = await this.paymentsModel.create({ unitId });
+    }
+
+    let newOverdueFees = unit.overdueFees - amount;
+    let newMonthlyBalance = unit.monthlyFeesBalance;
+
+    if (newOverdueFees < 0) {
+      // Remove from monthly balance and reset overdue to 0
+      newMonthlyBalance += newOverdueFees; // overdue fees is negative -> add
+      newOverdueFees = 0;
+    }
+
+    unitPayments.record.push({
+      timeStamp: new Date(),
+      amount,
+      monthBalance: newMonthlyBalance,
+      overdueFees: newOverdueFees,
+      previousMonthBalance: unit?.monthlyFeesBalance,
+      previousOverdueFees: unit?.overdueFees,
+    } as IUnitPayment);
+
+    unit.monthlyFeesBalance = newMonthlyBalance;
+    unit.overdueFees = newOverdueFees;
+
+    unitPayments.save();
+    unit.save();
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
