@@ -24,12 +24,16 @@ import {
 } from './entities/registration-key.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
+import { PaymentsEntity } from './entities/payments.entity';
 
 @Injectable()
 export class UnitService {
   constructor(
     @InjectModel('Unit')
     private readonly unitModel: Model<UnitEntity>,
+    @InjectModel('Payments')
+    private readonly paymentsModel: Model<PaymentsEntity>,
     @InjectModel('RegistrationKey')
     private readonly registrationKeyModel: Model<RegistrationKeyEntity>,
     @Inject(forwardRef(() => UserService))
@@ -306,7 +310,8 @@ export class UnitService {
     makeNewPaymentDto: MakeNewPaymentDto,
   ) {
     const { amount } = makeNewPaymentDto;
-    // const unit = await this.unitModel.findById(unitId);
+    const unitPayments = await this.paymentsModel.find({ unitId });
+    console.log(unitPayments);
     // if (unit) {
     //   unit.payments = [
     //     ...unit.payments,
