@@ -4,7 +4,7 @@ import {
   Injectable,
   forwardRef,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -143,7 +143,7 @@ export class BuildingService {
    * @param buildingId - The ID of the building to find.
    * @returns The found building or null if not found.
    */
-  public async findOne(buildingId: string) {
+  public async findBuildingById(buildingId: string) {
     return await this.buildingModel.findById(buildingId);
   }
 
@@ -166,11 +166,11 @@ export class BuildingService {
    * @returns The building info and arrays of building's properties.
    */
   public async findAllProperties(buildingId: string) {
-    const buildingEntity = await this.findOne(buildingId);
+    const buildingEntity = await this.findBuildingById(buildingId);
 
     if (!buildingEntity) return {};
 
-    const units = await this.unitService.findAll(buildingId);
+    const units = await this.unitService.findAllBuildingUnits(buildingId);
     const parkings = await this.parkingService.findAll(buildingId);
     const storages = await this.storageService.findAll(buildingId);
 

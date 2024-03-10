@@ -10,8 +10,8 @@ import {
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UnitService } from './unit.service';
 import { UpdateUnitDto } from './dto/update-unit.dto';
-import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UnitModel } from './models/unit.model';
 
 @ApiTags('Unit')
 @ApiBearerAuth()
@@ -28,23 +28,12 @@ export class UnitController {
   }
 
   @Patch('update/:unitId')
-  update(
+  async update(
     @Param('unitId') buildingId: string,
     @Body() updateUnitDto: UpdateUnitDto,
   ) {
-    return this.unitService.updateUnit(buildingId, updateUnitDto);
-  }
-
-  @Patch('/update/link/:buildingId/:userId')
-  linkUnitToUser(
-    @Param('buildingId') buildingId: string,
-    @Param('userId') userId: string,
-    @Body() linkUnitToBuildingDto: LinkUnitToBuidlingDto,
-  ) {
-    return this.unitService.linkUnitToUser(
-      buildingId,
-      userId,
-      linkUnitToBuildingDto,
+    return new UnitModel(
+      await this.unitService.updateUnit(buildingId, updateUnitDto),
     );
   }
 
@@ -55,21 +44,16 @@ export class UnitController {
 
   @Get(':buildingId')
   findAll(@Param('buildingId') buildingId: string) {
-    return this.unitService.findAll(buildingId);
+    return this.unitService.findAllBuildingUnits(buildingId);
   }
 
   @Get('/getUnit/:id')
   getUnit(@Param('id') id: string) {
-    return this.unitService.findOne(id);
+    return this.unitService.findUnitById(id);
   }
 
-  @Get('/findOwnerUnits/:ownerId')
-  findOwnerUnits(@Param('ownerId') ownerId: string) {
-    return this.unitService.findOwnerUnits(ownerId);
-  }
-
-  @Get('/findRenterUnit/:renterId')
-  findRenterUnit(@Param('renterId') renterId: string) {
-    return this.unitService.findRenterUnit(renterId);
+  @Get('/findAssociatedUnits/:userId')
+  findOwnerUnits(@Param('userId') userId: string) {
+    return this.unitService.findAssociatedUnits(userId);
   }
 }

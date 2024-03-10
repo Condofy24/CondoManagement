@@ -32,7 +32,8 @@ export class StorageService {
     createStorageDto: CreateStorageDto,
   ) {
     const { storageNumber, isOccupied, fees } = createStorageDto;
-    const buildingExists = await this.buildingService.findOne(buildingId);
+    const buildingExists =
+      await this.buildingService.findBuildingById(buildingId);
     if (!buildingExists) {
       throw new HttpException(
         { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
@@ -75,7 +76,7 @@ export class StorageService {
     linkStorageToUnitDto: LinkStorageToUnitDto,
   ) {
     const { storageNumber } = linkStorageToUnitDto;
-    const unitExsits = await this.unitService.findOne(unitId);
+    const unitExsits = await this.unitService.findUnitById(unitId);
     if (!unitExsits) {
       throw new HttpException(
         { error: 'Unit does not exist', status: HttpStatus.BAD_REQUEST },
@@ -163,7 +164,7 @@ export class StorageService {
       throw new HttpException('Storage not found', HttpStatus.BAD_REQUEST);
     }
     const buildingId = storage.buildingId.toString();
-    const building = await this.buildingService.findOne(buildingId);
+    const building = await this.buildingService.findBuildingById(buildingId);
     if (!building) {
       throw new HttpException(
         {
@@ -183,7 +184,7 @@ export class StorageService {
   }
 
   public async findByUnitId(unitId: string): Promise<Storage[]> {
-    const unit = await this.unitService.findOne(unitId);
+    const unit = await this.unitService.findUnitById(unitId);
     if (unit) {
       return this.storageModel.find({ unitId: unitId });
     }

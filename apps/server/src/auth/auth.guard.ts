@@ -82,7 +82,9 @@ export class PrivilegeGuard implements CanActivate {
     if (user?.role === 0) {
       if (params?.buildingId) {
         // Accessing building
-        const building = await this.buildingService.findOne(params?.buildingId);
+        const building = await this.buildingService.findBuildingById(
+          params?.buildingId,
+        );
         return (
           user?.role === this.reflector.get(Roles, context.getHandler()) &&
           user?.companyId === building?.companyId.toString()

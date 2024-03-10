@@ -1,14 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
-export class UpdateUnitDto {
-  @IsNotEmpty()
-  unitNumber: number;
+import { PartialType } from '@nestjs/swagger';
+import { CreateUnitDto } from './create-unit.dto';
 
-  @IsNotEmpty()
-  size: number;
-
-  @IsNotEmpty()
-  isOccupiedByRenter: boolean;
-
-  @IsNotEmpty()
-  fees: number;
-}
+export class UpdateUnitDto extends PartialType(CreateUnitDto) {}

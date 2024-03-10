@@ -86,12 +86,12 @@ const storageInfoTestData2: Storage = {
 };
 
 const buildingServiceMock = {
-  findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
+  findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
   updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
-  findOne: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
+  findUnitById: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
 };
 
 describe('StorageService', () => {
@@ -127,7 +127,7 @@ describe('StorageService', () => {
       //Arrange
       mockingoose(StorageModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         _id: id,
         ...buildingInfoTestData,
       });
@@ -146,7 +146,7 @@ describe('StorageService', () => {
       //Arrange
       mockingoose(StorageModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue(null);
+      buildingServiceMock.findBuildingById.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
@@ -156,7 +156,7 @@ describe('StorageService', () => {
     it('should throw an error if Storage number already exists', async () => {
       // Arrange
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         id,
         ...buildingInfoTestData,
       });
@@ -267,7 +267,7 @@ describe('StorageService', () => {
     it('should throw an exception if user does not exist', async () => {
       //Arrange
       mockingoose(StorageModel).toReturn([storageInfoTestData], 'find');
-      unitServiceMock.findOne.mockResolvedValue(null);
+      unitServiceMock.findUnitById.mockResolvedValue(null);
       const unitId: ObjectId = new ObjectId();
       //Act
       expect(
@@ -284,7 +284,7 @@ describe('StorageService', () => {
     it('should remove a Storage given its corresponding id', async () => {
       mockingoose(StorageModel).toReturn(storageInfoTestData2, 'findOne');
       const buildingId = storageInfoTestData2.buildingId.toString();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         buildingId,
         ...buildingInfoTestData,
       });

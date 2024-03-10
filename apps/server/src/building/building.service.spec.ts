@@ -253,10 +253,10 @@ describe('BuildingService', () => {
       mockingoose(BuildingModel).toReturn({ _id: 'test' }, 'findOne');
 
       // Act
-      await service.findOne('test');
+      await service.findBuildingById('test');
 
       // Arrange
-      await expect(service.findOne('test')).resolves.toBeDefined();
+      await expect(service.findBuildingById('test')).resolves.toBeDefined();
     });
   });
   describe('updateBuilding', () => {
@@ -296,21 +296,6 @@ describe('BuildingService', () => {
       await expect(
         service.updateBuilding(buildingId, updateBuildingDto),
       ).rejects.toThrow(HttpException);
-    });
-  });
-
-  describe('findAllProperties', () => {
-    it('should return building info and arrays of building properties', async () => {
-      // Arrange
-      mockingoose(BuildingModel).toReturn(buildingInfoTestData, 'findOne');
-
-      // Call the method
-      const result = await service.findAllProperties('421');
-
-      // Assertions
-      expect(result).toMatchObject({
-        building: new BuildingModel(buildingInfoTestData),
-      });
     });
   });
 });

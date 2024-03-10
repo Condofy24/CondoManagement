@@ -87,12 +87,12 @@ const parkingInfoTestData2: Parking = {
 };
 
 const buildingServiceMock = {
-  findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
+  findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
   updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
-  findOne: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
+  findUnitById: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
 };
 
 describe('ParkingService', () => {
@@ -128,7 +128,7 @@ describe('ParkingService', () => {
       //Arrange
       mockingoose(ParkingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         id,
         ...buildingInfoTestData,
       });
@@ -147,7 +147,7 @@ describe('ParkingService', () => {
       //Arrange
       mockingoose(ParkingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue(null);
+      buildingServiceMock.findBuildingById.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
@@ -157,7 +157,7 @@ describe('ParkingService', () => {
     it('should throw an error if parking number already exists', async () => {
       // Arrange
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         ...buildingInfoTestData,
         _id: id,
       });
@@ -269,7 +269,7 @@ describe('ParkingService', () => {
     it('should throw an exception if user does not exist', async () => {
       //Arrange
       mockingoose(ParkingModel).toReturn([parkingInfoTestData], 'find');
-      unitServiceMock.findOne.mockResolvedValue(null);
+      unitServiceMock.findUnitById.mockResolvedValue(null);
       const unitId: ObjectId = new ObjectId();
       //Act
       expect(
@@ -285,7 +285,7 @@ describe('ParkingService', () => {
     it('should remove a parking given its corresponding id', async () => {
       mockingoose(ParkingModel).toReturn(parkingInfoTestData2, 'findOne');
       const buildingId = parkingInfoTestData2.buildingId.toString();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         buildingId,
         ...buildingInfoTestData,
       });

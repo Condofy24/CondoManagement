@@ -1,28 +1,23 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
-  UnauthorizedException,
+  NotFoundException,
   forwardRef,
 } from '@nestjs/common';
 import { UnitEntity } from './entities/unit.entity';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
-import { response } from 'express';
-import { UpdateUnitDto } from './dto/update-unit.dto';
-import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { UserService } from '../user/user.service';
 import { MongoServerError, ObjectId } from 'mongodb';
 import {
   CondoRegistrationKeys,
   RegistrationKeyEntity,
-  RegistrationRoles,
 } from './entities/registration-key.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { UnitModel } from './models/unit.model';
 
 @Injectable()
 export class UnitService {
@@ -40,7 +35,7 @@ export class UnitService {
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
 
-    const building = await this.buildingService.findOne(buildingId);
+    const building = await this.buildingService.findBuildingById(buildingId);
 
     if (!building) throw new BadRequestException('Invalid building Id');
 
@@ -61,7 +56,7 @@ export class UnitService {
 
       if (error instanceof MongoServerError && error.code === 11000) {
         errorDescription =
-          'Unit with the same unit number already exists for this building.';
+          'A unit with the same unit number already exists for this building.';
       }
 
       throw new BadRequestException(error?.message, errorDescription);
@@ -90,13 +85,13 @@ export class UnitService {
     const ownerRegistrationKey = new this.registrationKeyModel({
       unitId,
       key: uuidv4(),
-      type: RegistrationRoles.OWNER,
+      type: 'owner',
     });
 
     const renterRegistrationKey = new this.registrationKeyModel({
       unitId,
       key: uuidv4(),
-      type: RegistrationRoles.RENTER,
+      type: 'renter',
     });
     try {
       const { key: ownerKey } = await ownerRegistrationKey.save();
@@ -108,195 +103,110 @@ export class UnitService {
     }
   }
 
-  public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
-    const { unitNumber, size, isOccupiedByRenter, fees } = updateUnitDto;
-    const unit = await this.unitModel.findById(unitId);
-    if (!unit) {
-      throw new HttpException(
-        { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const result = await this.unitModel.findByIdAndUpdate(unitId, {
-      unitNumber: unitNumber,
-      size: size,
-      isOccupiedByRenter: isOccupiedByRenter,
-      fees: fees,
-    }); // To return the updated document)
-    if (result instanceof Error)
-      return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-    return {
-      unitNumber,
-      size,
-      isOccupiedByRenter,
-      fees,
-    };
-  }
-
-  public async findAll(buildingId: string): Promise<UnitEntity[]> {
-    const units = await this.unitModel.find({ buildingId }).exec();
-    return units.map(
-      (unit: UnitEntity) =>
-        ({
-          buildingId: unit.buildingId,
-          ownerId: unit.ownerId,
-          renterId: unit.renterId,
-          unitNumber: unit.unitNumber,
-          size: unit.size,
-          isOccupiedByRenter: unit.isOccupiedByRenter,
-          fees: unit.fees,
-        }) as UnitEntity,
-    );
-  }
-  public async findOne(id: string) {
-    const unit = await this.unitModel.findById({ _id: id }).exec();
-    if (!unit) {
-      throw new HttpException(
-        { error: 'Unit not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return {
-      id: unit._id,
-      buildingId: unit.buildingId,
-      ownerId: unit.ownerId,
-      renterId: unit.renterId,
-      unitNumber: unit.unitNumber,
-      size: unit.size,
-      isOccupiedByRenter: unit.isOccupiedByRenter,
-      fees: unit.fees,
-    };
-  }
-  public async remove(id: string): Promise<any> {
-    const unit = await this.unitModel.findById(id).exec();
-    if (!unit) {
-      throw new HttpException('Unit not found', HttpStatus.BAD_REQUEST);
-    }
-    const buildingId = unit.buildingId.toString();
-    const building = await this.buildingService.findOne(buildingId);
-    if (!building) {
-      throw new HttpException(
+  public async updateUnit(
+    unitId: string,
+    updatedFields: Partial<UnitEntity>,
+  ): Promise<UnitEntity> {
+    try {
+      const updatedUnit = await this.unitModel.findByIdAndUpdate(
+        new ObjectId(unitId),
         {
-          error: "Building doesn't exists",
-          status: HttpStatus.BAD_REQUEST,
+          $set: updatedFields,
         },
-        HttpStatus.BAD_REQUEST,
       );
-    }
-    let unitCount = building.unitCount;
 
-    await this.unitModel.remove(unit);
-    unitCount--;
-    this.buildingService.updateBuilding(buildingId, { unitCount });
+      if (!updatedUnit) throw new NotFoundException('Unit not found');
 
-    return response.status(HttpStatus.NO_CONTENT);
-  }
-  public async linkUnitToUser(
-    buildingId: string,
-    userId: string,
-    linkUnitToBuildingDto: LinkUnitToBuidlingDto,
-  ) {
-    const { unitNumber } = linkUnitToBuildingDto;
-    const user = await this.userService.findUserById(userId);
-    if (!user) {
-      throw new HttpException(
-        { error: 'User not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const unitExists = await this.unitModel.find({ unitNumber: unitNumber });
-    let unit;
-    for (let i = 0; i < unitExists.length; i++) {
-      if (JSON.stringify(unitExists[i]).localeCompare(buildingId)) {
-        unit = unitExists[i];
+      return updatedUnit;
+    } catch (error) {
+      let errorDescription = 'Unit could not be updated';
+
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'A unit with the same unit number already exists for this building.';
       }
-    }
-    if (!unit) {
-      throw new HttpException(
-        { error: 'Unit not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    let result;
-    if (user.role == 3) {
-      result = await this.unitModel.findOneAndUpdate(
-        { unitNumber, buildingId },
-        {
-          ownerId: userId,
-        },
-      );
-    }
-    if (user.role == 4) {
-      result = await this.unitModel.findOneAndUpdate(
-        { unitNumber, buildingId },
-        {
-          renterId: userId,
-          isOccupiedByRenter: true,
-        },
-      );
-    }
-    return {
-      id: unit._id,
-      buildingId: unit.buildingId,
-      ownerId: unit.ownerId,
-      renterId: unit.renterId,
-      unitNumber: unit.unitNumber,
-      size: unit.size,
-      isOccupiedByRenter: unit.isOccupiedByRenter,
-      fees: unit.fees,
-    };
-  }
-  public async findOwnerUnits(ownerId: string): Promise<UnitEntity[]> {
-    const user = await this.userService.findUserById(ownerId);
-    if (!user) {
-      throw new HttpException(
-        { error: 'User not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    if (user.role != 3) {
-      throw new UnauthorizedException();
-    }
 
-    const units = await this.unitModel.find({ ownerId }).exec();
-    return units.map(
-      (unit: UnitEntity) =>
-        ({
-          buildingId: unit.buildingId,
-          ownerId: unit.ownerId,
-          renterId: unit.renterId,
-          unitNumber: unit.unitNumber,
-          size: unit.size,
-          isOccupiedByRenter: unit.isOccupiedByRenter,
-          fees: unit.fees,
-        }) as UnitEntity,
+      throw new BadRequestException(error?.message, errorDescription);
+    }
+  }
+
+  public async findAllBuildingUnits(buildingId: string): Promise<UnitModel[]> {
+    const units = await this.unitModel.find({ buildingId }).exec();
+
+    return Promise.all(
+      units.map(async (unit: UnitEntity) => {
+        const ownerKey = await this.registrationKeyModel.findOne({
+          unitId: unit._id,
+          type: 'owner',
+        });
+
+        const renterKey = await this.registrationKeyModel.findOne({
+          unitId: unit._id,
+          type: 'renter',
+        });
+
+        return new UnitModel(unit, ownerKey, renterKey);
+      }),
     );
   }
-  public async findRenterUnit(renterId: string) {
-    const user = await this.userService.findUserById(renterId);
-    if (!user) {
-      throw new HttpException(
-        { error: 'User not found', status: HttpStatus.NOT_FOUND },
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    if (user.role != 4) {
-      throw new UnauthorizedException();
-    }
-    const unit = await this.unitModel.findOne({ renterId }).exec();
-    if (!unit) {
-      return null;
-    }
-    return {
-      id: unit._id,
-      buildingId: unit.buildingId,
-      ownerId: unit.ownerId,
-      renterId: unit.renterId,
-      unitNumber: unit.unitNumber,
-      size: unit.size,
-      isOccupiedByRenter: unit.isOccupiedByRenter,
-      fees: unit.fees,
-    };
+
+  public async findUnitById(id: string): Promise<UnitEntity | null> {
+    return await this.unitModel.findOne({ _id: id }).exec();
+  }
+
+  public async remove(id: string): Promise<void> {
+    const unit = await this.unitModel.findOneAndRemove({ _id: id }).exec();
+
+    if (!unit) throw new NotFoundException('Unit not found');
+
+    const building = await this.buildingService.findBuildingById(
+      unit.buildingId.toString(),
+    );
+
+    if (!building) return;
+
+    await this.buildingService.updateBuilding(building._id.toString(), {
+      unitCount: building.unitCount - 1,
+    });
+  }
+
+  public async linkUnitToUser(
+    userId: string,
+    registrationKey: RegistrationKeyEntity,
+    session: ClientSession,
+  ) {
+    const associationKey =
+      registrationKey.type == 'owner' ? 'ownerId' : 'renterId';
+
+    const unit = await this.unitModel.findById(registrationKey.unitId);
+
+    if (!unit) throw new NotFoundException('Unit not found');
+
+    if (unit[associationKey])
+      throw new BadRequestException('Unit already associated with a user');
+
+    await this.unitModel
+      .findByIdAndUpdate(unit._id, {
+        $set: { [associationKey]: userId },
+      })
+      .session(session)
+      .exec();
+
+    await this.registrationKeyModel
+      .findByIdAndUpdate(registrationKey._id, {
+        $set: { claimedBy: userId },
+      })
+      .session(session)
+      .exec();
+  }
+
+  public async findAssociatedUnits(userId: string): Promise<UnitEntity[]> {
+    const user = await this.userService.findUserById(userId);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    const filterKey = user.role == 3 ? 'ownerId' : 'renterId';
+
+    return await this.unitModel.find({ [filterKey]: userId }).exec();
   }
 }

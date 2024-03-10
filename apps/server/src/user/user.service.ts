@@ -22,7 +22,6 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
-import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
 import { MongoServerError } from 'mongodb';
 
 @Injectable()
@@ -141,7 +140,7 @@ export class UserService {
   ) {
     const { email, password, name, phoneNumber, verfKey } = createUserDto;
 
-    //check if Key exists:
+    // check if Key exists
     const registrationKey =
       await this.unitService.findUnitRegistrationKey(verfKey);
 
@@ -150,52 +149,45 @@ export class UserService {
 
     const { imageUrl, imageId } = await this.uploadProfileImage(image);
 
-    let assignedRole;
-
-    if (registrationKey.type == 0) {
-      assignedRole = 3;
-    }
-    if (registrationKey.type == 1) {
-      assignedRole = 4;
-    }
-
     // Create user
     const newUser = new this.userModel({
       email,
       password,
       name,
-      role: assignedRole,
+      role: registrationKey.type == 'owner' ? 3 : 4,
       phoneNumber,
       imageUrl,
       imageId,
     });
 
-    let createdUser;
+    const session = await this.userModel.db.startSession();
+    session.startTransaction();
+
     try {
-      createdUser = await newUser.save();
+      const createdUser = await newUser.save({ session });
+
+      await this.unitService.linkUnitToUser(
+        createdUser._id.toString(),
+        registrationKey,
+        session,
+      );
+
+      await session.commitTransaction();
+
+      return createdUser;
     } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      )
+        throw error;
       throw new BadRequestException(
         error?.message,
         this.getUserCreateErrorDescription(error),
       );
+    } finally {
+      session.endSession();
     }
-
-    const unitForLink = await this.unitService.findOne(
-      registrationKey.unitId.toString(),
-    );
-
-    const buildingId = unitForLink.buildingId;
-
-    const linkUnitDto = new LinkUnitToBuidlingDto();
-
-    linkUnitDto.unitNumber = unitForLink.unitNumber;
-
-    await this.unitService.linkUnitToUser(
-      buildingId.toString(),
-      newUser._id.toString(),
-      linkUnitDto,
-    );
-    return createdUser;
   }
 
   /**

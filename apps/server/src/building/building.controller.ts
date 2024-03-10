@@ -88,17 +88,4 @@ export class BuildingController {
 
     return buildingEntities.map((entity) => new BuildingModel(entity));
   }
-
-  /**
-   * Get all properties for a building.
-   * @param buildingId - The ID of the building.
-   * @param companyId - The ID of the company
-   * @returns The building info and arrays of building's properties.
-   */
-  @Get('allProperties/:companyId/:buildingId')
-  @UseGuards(PrivilegeGuard)
-  @Roles(0)
-  async findAllProperties(@Param('buildingId') buildingId: string) {
-    return this.buildingService.findAllProperties(buildingId);
-  }
 }

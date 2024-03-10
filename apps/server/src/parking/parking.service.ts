@@ -32,7 +32,8 @@ export class ParkingService {
     createParkingDto: CreateParkingDto,
   ) {
     const { parkingNumber, isOccupied, fees } = createParkingDto;
-    const buildingExists = await this.buildingService.findOne(buildingId);
+    const buildingExists =
+      await this.buildingService.findBuildingById(buildingId);
     if (!buildingExists) {
       throw new HttpException(
         { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
@@ -76,7 +77,7 @@ export class ParkingService {
     linkParkingToUnitDto: LinkParkingToUnitDto,
   ) {
     const { parkingNumber } = linkParkingToUnitDto;
-    const unitExsits = await this.unitService.findOne(unitId);
+    const unitExsits = await this.unitService.findUnitById(unitId);
     if (!unitExsits) {
       throw new HttpException(
         { error: 'Unit does not exist', status: HttpStatus.BAD_REQUEST },
@@ -105,7 +106,7 @@ export class ParkingService {
   }
 
   public async findByUnitId(unitId: string): Promise<Parking[]> {
-    const unit = await this.unitService.findOne(unitId);
+    const unit = await this.unitService.findUnitById(unitId);
     if (unit) {
       return this.parkingModel.find({ unitId: unitId });
     }
@@ -171,7 +172,7 @@ export class ParkingService {
       throw new HttpException('Parking not found', HttpStatus.BAD_REQUEST);
     }
     const buildingId = parkingExsits.buildingId.toString();
-    const building = await this.buildingService.findOne(buildingId);
+    const building = await this.buildingService.findBuildingById(buildingId);
     if (!building) {
       throw new HttpException(
         {

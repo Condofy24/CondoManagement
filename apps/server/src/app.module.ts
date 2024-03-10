@@ -6,7 +6,6 @@ import { UserController } from './user/user.controller';
 import { AuthController } from './auth/auth.controller';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { CompanyController } from './company/company.controller';
 import { CompanyModule } from './company/company.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { BuildingModule } from './building/building.module';
@@ -36,7 +35,6 @@ import { StorageController } from './storage/storage.controller';
     AppController,
     UserController,
     AuthController,
-    CompanyController,
     BuildingController,
     UnitController,
     ParkingController,
