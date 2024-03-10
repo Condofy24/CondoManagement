@@ -63,7 +63,7 @@ export class UnitService {
     try {
       unitEntity = await unit.save();
     } catch (error) {
-      let errorDescription = 'Building could not be created';
+      let errorDescription = 'Unit could not be created';
 
       if (error instanceof MongoServerError && error.code === 11000) {
         errorDescription =
@@ -277,7 +277,7 @@ export class UnitService {
       if (unit.ownerId) {
         // Reset monthly fees balance and add balance to overdue
         const sumOfParkingFees = (
-          await this.parkingService.findByUnitId(unit.id)
+          await this.parkingService.findParkingsByUnitId(unit.id)
         )?.reduce((acc, current) => {
           return (acc += current.fees);
         }, 0);

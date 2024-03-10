@@ -8,9 +8,9 @@ export class CreateParkingDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  isOccupied: boolean;
+  isOccupiedByRenter: boolean;
 
   @IsNotEmpty()
   @ApiProperty()
-  fees: Number;
+  fees: number;
 }

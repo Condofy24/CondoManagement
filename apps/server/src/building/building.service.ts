@@ -4,7 +4,7 @@ import {
   Injectable,
   forwardRef,
 } from '@nestjs/common';
-import { ClientSession, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -158,22 +158,5 @@ export class BuildingService {
       .exec();
 
     return buildings;
-  }
-
-  /**
-   * Get all properties for a building.
-   * @param buildingId - The ID of the building.
-   * @returns The building info and arrays of building's properties.
-   */
-  public async findAllProperties(buildingId: string) {
-    const buildingEntity = await this.findBuildingById(buildingId);
-
-    if (!buildingEntity) return {};
-
-    const units = await this.unitService.findAllBuildingUnits(buildingId);
-    const parkings = await this.parkingService.findAll(buildingId);
-    const storages = await this.storageService.findAll(buildingId);
-
-    return { building: buildingEntity, units, parkings, storages };
   }
 }

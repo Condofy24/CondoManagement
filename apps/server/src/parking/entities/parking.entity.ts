@@ -1,6 +1,17 @@
 import * as mongoose from 'mongoose';
 
-export const ParkingSchema = new mongoose.Schema(
+export interface ParkingEntity extends Document {
+  _id: mongoose.Types.ObjectId;
+  buildingId: mongoose.Types.ObjectId | Record<string, unknown>;
+  unitId: mongoose.Types.ObjectId | Record<string, unknown>;
+  parkingNumber: number;
+  isOccupiedByRenter: boolean;
+  fees: number;
+}
+
+interface ParkingModel extends mongoose.Model<ParkingEntity> {}
+
+export const ParkingSchema = new mongoose.Schema<ParkingEntity, ParkingModel>(
   {
     buildingId: {
       type: mongoose.Types.ObjectId,
@@ -13,7 +24,7 @@ export const ParkingSchema = new mongoose.Schema(
       required: false,
     },
     parkingNumber: { type: Number, required: true },
-    isOccupied: { type: Boolean, required: true },
+    isOccupiedByRenter: { type: Boolean, required: true },
     fees: { type: Number, required: true },
   },
   {
@@ -21,16 +32,7 @@ export const ParkingSchema = new mongoose.Schema(
   },
 );
 
+export const ParkingUniqueNameIndex = 'parkingNumber_1_buildingId_1';
 ParkingSchema.index({ parkingNumber: 1, buildingId: 1 }, { unique: true });
 
-export const ParkingModel = mongoose.model(
-  'Parking',
-  new mongoose.Schema(ParkingSchema),
-);
-export interface Parking {
-  buildingId: mongoose.Types.ObjectId;
-  unitId?: mongoose.Types.ObjectId;
-  parkingNumber: number;
-  isOccupied: boolean;
-  fees: number;
-}
+export default mongoose.model('Parking', new mongoose.Schema(ParkingSchema));

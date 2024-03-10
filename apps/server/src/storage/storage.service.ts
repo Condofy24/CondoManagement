@@ -1,26 +1,23 @@
 import {
-  HttpException,
-  HttpStatus,
+  BadRequestException,
   Inject,
   Injectable,
+  NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { Storage } from './entities/storage.entity';
+import { StorageEntity } from './entities/storage.entity';
 import { Model } from 'mongoose';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { BuildingService } from '../building/building.service';
-import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { UnitService } from '../unit/unit.service';
-import { response } from 'express';
-import { UpdateStorageDto } from './dto/update-storage.dto';
-import { MongoServerError } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
 
 @Injectable()
 export class StorageService {
   constructor(
     @InjectModel('Storage')
-    private readonly storageModel: Model<Storage>,
+    private readonly storageModel: Model<StorageEntity>,
     @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
     @Inject(forwardRef(() => BuildingService))
@@ -31,163 +28,115 @@ export class StorageService {
     buildingId: string,
     createStorageDto: CreateStorageDto,
   ) {
-    const { storageNumber, isOccupied, fees } = createStorageDto;
-    const buildingExists =
-      await this.buildingService.findBuildingById(buildingId);
-    if (!buildingExists) {
-      throw new HttpException(
-        { error: "Building doesn't exists", status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const storage = await this.storageModel.findOne({
-      storageNumber,
-      buildingId: buildingExists._id,
-    });
-    if (storage) {
-      if (storage.buildingId.equals(buildingExists.id)) {
-        throw new HttpException(
-          { error: 'Storage already exists', status: HttpStatus.BAD_REQUEST },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
-    let storageCount = buildingExists.storageCount;
+    const { storageNumber, isOccupiedByRenter, fees } = createStorageDto;
+
+    const building = await this.buildingService.findBuildingById(buildingId);
+
+    if (!building) throw new BadRequestException('Invalid building Id');
 
     const newStorage = new this.storageModel({
-      buildingId: buildingExists._id,
+      buildingId: buildingId,
       storageNumber,
-      isOccupied,
+      isOccupiedByRenter,
       fees,
     });
-    storageCount++;
 
-    this.buildingService.updateBuilding(buildingExists._id.toString(), {
-      storageCount,
+    let storageEntity;
+
+    try {
+      storageEntity = await newStorage.save();
+    } catch (error) {
+      let errorDescription = 'Storage could not be created';
+
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'A storage with the same storage number already exists for this building.';
+      }
+
+      throw new BadRequestException(error?.message, errorDescription);
+    }
+
+    // update unit count of associted building
+    this.buildingService.updateBuilding(buildingId, {
+      storageCount: building.storageCount + 1,
     });
 
-    const result = await newStorage.save();
-    return result;
+    return storageEntity;
   }
 
   public async linkStorageToUnit(
-    buildingId: string,
+    storageId: string,
     unitId: string,
-    linkStorageToUnitDto: LinkStorageToUnitDto,
-  ) {
-    const { storageNumber } = linkStorageToUnitDto;
-    const unitExsits = await this.unitService.findUnitById(unitId);
-    if (!unitExsits) {
-      throw new HttpException(
-        { error: 'Unit does not exist', status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const storageExists = await this.storageModel.findOne({
-      storageNumber: storageNumber,
-      buildingId: buildingId,
-    });
-    if (!storageExists) {
-      throw new HttpException(
-        { error: 'Storage does not exist', status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+  ): Promise<void> {
+    const unit = await this.unitService.findUnitById(unitId);
+    if (!unit) throw new NotFoundException('Unit does not exist');
 
-    let result = await this.storageModel.findOneAndUpdate(
-      { storageNumber, buildingId },
+    const storage = await this.storageModel.findById(storageId).exec();
+
+    if (!storage) throw new NotFoundException('Storage does not exist');
+    if (storage.unitId)
+      throw new BadRequestException('Storage is already linked to a unit');
+
+    await this.storageModel.findOneAndUpdate(
+      { _id: new ObjectId(storageId) },
       {
         unitId: unitId,
-        isOccupied: true,
       },
     );
-    return result;
   }
 
-  public async findAll(buildingId: string): Promise<Storage[]> {
-    const storage = await this.storageModel.find({ buildingId }).exec();
-    return storage.map(
-      (storage: Storage) =>
-        ({
-          buildingId: storage.buildingId,
-          storageNumber: storage.storageNumber,
-          isOccupied: storage.isOccupied,
-          fees: storage.fees,
-        }) as Storage,
-    );
+  public async findAllBuildingStorages(
+    buildingId: string,
+  ): Promise<StorageEntity[]> {
+    return await this.storageModel.find({ buildingId }).exec();
   }
 
   public async updateStorage(
     storageId: string,
-    updateStorageDto: UpdateStorageDto,
+    updatedFields: Partial<StorageEntity>,
   ) {
-    const { storageNumber, isOccupied, fees } = updateStorageDto;
-
-    const storage = await this.storageModel.findById(storageId);
-    if (!storage) {
-      throw new HttpException(
-        { error: "Storage doesn't exists", status: HttpStatus.BAD_REQUEST },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     try {
-      const result = await this.storageModel.findByIdAndUpdate(storageId, {
-        storageNumber: storageNumber,
-        isOccupied: isOccupied,
-        fees: fees,
-      });
-    } catch (error) {
-      if (error instanceof MongoServerError && error.code === 11000) {
-        throw new HttpException(
-          {
-            error: 'Storage number already taken',
-            status: HttpStatus.BAD_REQUEST,
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      } else if (error instanceof Error) {
-        throw new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-    }
-
-    return {
-      storageNumber,
-      isOccupied,
-      fees,
-    };
-  }
-
-  public async remove(id: string): Promise<any> {
-    const storage = await this.storageModel.findById(id).exec();
-    if (!storage) {
-      throw new HttpException('Storage not found', HttpStatus.BAD_REQUEST);
-    }
-    const buildingId = storage.buildingId.toString();
-    const building = await this.buildingService.findBuildingById(buildingId);
-    if (!building) {
-      throw new HttpException(
+      const updatedStorage = await this.storageModel.findByIdAndUpdate(
+        new ObjectId(storageId),
         {
-          error: "Building doesn't exists",
-          status: HttpStatus.BAD_REQUEST,
+          $set: updatedFields,
         },
-        HttpStatus.BAD_REQUEST,
       );
+
+      if (!updatedStorage) throw new NotFoundException('Storage not found');
+
+      return updatedStorage;
+    } catch (error) {
+      let errorDescription = 'Storage could not be updated';
+
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'A storage with the same storage number already exists for this building.';
+      }
+
+      throw new BadRequestException(error?.message, errorDescription);
     }
-    let storageCount = building.storageCount;
-
-    await this.storageModel.remove(storage);
-    storageCount--;
-    this.buildingService.updateBuilding(buildingId, { storageCount });
-
-    return response.status(HttpStatus.NO_CONTENT);
   }
 
-  public async findByUnitId(unitId: string): Promise<Storage[]> {
-    const unit = await this.unitService.findUnitById(unitId);
-    if (unit) {
-      return this.storageModel.find({ unitId: unitId });
-    }
-    throw new HttpException('Unit does not exist', HttpStatus.NOT_FOUND);
+  public async remove(id: string): Promise<void> {
+    const storage = await this.storageModel
+      .findOneAndRemove({ _id: id })
+      .exec();
+
+    if (!storage) throw new NotFoundException('Storage not found');
+
+    const building = await this.buildingService.findBuildingById(
+      storage.buildingId.toString(),
+    );
+
+    if (!building) return;
+
+    await this.buildingService.updateBuilding(building._id.toString(), {
+      storageCount: building.storageCount - 1,
+    });
+  }
+
+  public async findStorageByUnitId(unitId: string): Promise<StorageEntity[]> {
+    return this.storageModel.find({ unitId }).exec();
   }
 }

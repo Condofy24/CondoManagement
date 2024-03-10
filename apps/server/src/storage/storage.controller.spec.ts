@@ -1,15 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'mongodb';
 import { StorageController } from './storage.controller';
-import { Storage } from './entities/storage.entity';
-import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { StorageService } from './storage.service';
 import { HttpStatus } from '@nestjs/common';
 import { CreateStorageDto } from './dto/create-storage.dto';
 
 const createStorageDto: CreateStorageDto = {
   storageNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
@@ -17,11 +15,7 @@ const storageServiceMock = {
   createStorage: jest.fn(),
   linkStorageToUnit: jest.fn(),
   remove: jest.fn(),
-  findAll: jest.fn(),
-};
-
-const linkStorageToUnitDto: LinkStorageToUnitDto = {
-  storageNumber: 4,
+  findAllBuildingStorages: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -38,10 +32,11 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const storageInfoTestData: Storage = {
+const storageInfoTestData = {
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   storageNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
@@ -49,7 +44,7 @@ const storageInfoTestData2 = {
   id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   storageNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
@@ -94,12 +89,11 @@ describe('StorageController', () => {
         storageInfoTestData,
       );
       const unitId = new ObjectId();
-      //Act
 
+      //Act
       const result = await controller.linkStorageToUnit(
-        storageInfoTestData.buildingId.toString(),
         unitId.toString(),
-        linkStorageToUnitDto,
+        storageInfoTestData._id.toString(),
       );
 
       //Assert
@@ -124,7 +118,9 @@ describe('StorageController', () => {
   describe('findAll', () => {
     it('should forward call to Storage service', async () => {
       //Arrange
-      storageServiceMock.findAll.mockResolvedValue([storageInfoTestData]);
+      storageServiceMock.findAllBuildingStorages.mockResolvedValue([
+        storageInfoTestData,
+      ]);
 
       //Act
       const result = await controller.findAll(

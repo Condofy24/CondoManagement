@@ -9,9 +9,8 @@ import {
 } from '@nestjs/common';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
-import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
-import { UpdateParkingDto } from './dto/update-parking.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateParkingDto } from './dto/update-parking.dto';
 
 @ApiTags('Parking')
 @ApiBearerAuth()
@@ -27,39 +26,36 @@ export class ParkingController {
     return this.parkingService.createParking(buildingId, createParkingDto);
   }
 
-  @Patch('/update/link/:buildingId/:unitId')
+  @Patch('/link/:unitId/:parkingId')
   linkParkingToUnit(
-    @Param('buildingId') buildingId: string,
     @Param('unitId') unitId: string,
-    @Body() linkParkingToUnitDto: LinkParkingToUnitDto,
+    @Param('parkingId') parkingId: string,
   ) {
-    return this.parkingService.linkParkingToUnit(
-      buildingId,
-      unitId,
-      linkParkingToUnitDto,
-    );
+    return this.parkingService.linkParkingToUnit(parkingId, unitId);
   }
 
-  @Patch('update/:parkingId')
+  @Patch(':parkingId')
   updateParking(
     @Param('parkingId') parkingId: string,
     @Body() updateParkingDto: UpdateParkingDto,
   ) {
-    return this.parkingService.updateParking(parkingId, updateParkingDto);
+    return this.parkingService.updateParking(parkingId, {
+      ...updateParkingDto,
+    });
+  }
+
+  @Get('/building/:buildingId')
+  findAll(@Param('buildingId') buildingId: string) {
+    return this.parkingService.findAllBuildingParkings(buildingId);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.parkingService.removeParking(id);
+    return this.parkingService.remove(id);
   }
 
-  @Get(':buildingId')
-  findAll(@Param('buildingId') buildingId: string) {
-    return this.parkingService.findAll(buildingId);
-  }
-
-  @Get('unit/:unitId')
+  @Get('/unit/:unitId')
   findAllByUnitId(@Param('unitId') unitId: string) {
-    return this.parkingService.findByUnitId(unitId);
+    return this.parkingService.findParkingsByUnitId(unitId);
   }
 }

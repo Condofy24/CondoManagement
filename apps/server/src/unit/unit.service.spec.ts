@@ -3,7 +3,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientSession, MongoServerError, ObjectId } from 'mongodb';
 import { BuildingService } from '../building/building.service';
-import { Parking } from '../parking/entities/parking.entity';
 import { ParkingService } from '../parking/parking.service';
 import { UserService } from '../user/user.service';
 import { CreateUnitDto } from './dto/create-unit.dto';
@@ -109,7 +108,8 @@ const registationKeyTestData: Partial<RegistrationKeyEntity> = {
   type: 'owner',
 };
 
-const parkingInfoTestData: Parking = {
+const parkingInfoTestData = {
+  _id: new ObjectId(),
   buildingId: new ObjectId(),
   unitId: unitInfoTestData._id,
   parkingNumber: 7,
@@ -137,7 +137,7 @@ const buildingServiceMock = {
 };
 
 const parkingServiceMock = {
-  findByUnitId: jest.fn().mockResolvedValue([parkingInfoTestData]),
+  findParkingsByUnitId: jest.fn().mockResolvedValue([parkingInfoTestData]),
 };
 
 const userServiceMock = {

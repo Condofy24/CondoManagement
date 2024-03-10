@@ -64,17 +64,6 @@ const userInfoTestData = {
   imageId: 'image123',
 };
 
-const userInfoTestData2 = {
-  _id: new ObjectId(),
-  password: 'test',
-  email: 'user@example.com',
-  name: 'Test User',
-  role: 3,
-  phoneNumber: '1234567890',
-  imageUrl: 'https://example.com/image.jpg',
-  imageId: 'image123',
-};
-
 const paymentsTestData = {
   unitId: new ObjectId(),
   record: [

@@ -1,12 +1,16 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 export class CreateStorageDto {
   @IsNotEmpty()
+  @ApiProperty()
   storageNumber: number;
 
+  @ApiProperty()
   @IsNotEmpty()
-  isOccupied: boolean;
+  isOccupiedByRenter: boolean;
 
   @IsNotEmpty()
-  fees: Number;
+  @ApiProperty()
+  fees: number;
 }

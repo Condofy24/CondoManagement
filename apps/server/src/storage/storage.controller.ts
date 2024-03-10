@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { StorageService } from './storage.service';
-import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
 import { UpdateStorageDto } from './dto/update-storage.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -27,30 +26,27 @@ export class StorageController {
     return this.storageService.createStorage(buildingId, createStorageDto);
   }
 
-  @Patch('/update/link/:buildingId/:unitId')
+  @Patch('/link/:unitId/:storageId')
   linkStorageToUnit(
-    @Param('buildingId') buildingId: string,
     @Param('unitId') unitId: string,
-    @Body() linkStorageToUnitDto: LinkStorageToUnitDto,
+    @Param('storageId') storageId: string,
   ) {
-    return this.storageService.linkStorageToUnit(
-      buildingId,
-      unitId,
-      linkStorageToUnitDto,
-    );
+    return this.storageService.linkStorageToUnit(storageId, unitId);
   }
 
-  @Patch('update/:storageId')
+  @Patch(':storageId')
   updateStorage(
     @Param('storageId') storageId: string,
     @Body() updateStorageDto: UpdateStorageDto,
   ) {
-    return this.storageService.updateStorage(storageId, updateStorageDto);
+    return this.storageService.updateStorage(storageId, {
+      ...updateStorageDto,
+    });
   }
 
-  @Get(':buildingId')
+  @Get('/building/:buildingId')
   findAll(@Param('buildingId') buildingId: string) {
-    return this.storageService.findAll(buildingId);
+    return this.storageService.findAllBuildingStorages(buildingId);
   }
 
   @Delete(':id')
@@ -58,8 +54,8 @@ export class StorageController {
     return this.storageService.remove(id);
   }
 
-  @Get('unit/:unitId')
+  @Get('/unit/:unitId')
   findAllByUnitId(@Param('unitId') unitId: string) {
-    return this.storageService.findByUnitId(unitId);
+    return this.storageService.findStorageByUnitId(unitId);
   }
 }
