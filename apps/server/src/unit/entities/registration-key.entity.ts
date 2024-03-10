@@ -14,7 +14,7 @@ export interface RegistrationKeyEntity extends Document {
   _id: mongoose.Types.ObjectId;
   unitId: mongoose.Types.ObjectId | Record<string, unknown>;
   key: string;
-  type: number;
+  type: string;
   claimedBy: mongoose.Types.ObjectId | Record<string, unknown>;
 }
 
@@ -31,7 +31,7 @@ export const RegistrationKeySchema = new mongoose.Schema<
       required: true,
     },
     key: { type: String, required: true },
-    type: { type: Number, required: true },
+    type: { type: String, enum: ['owner', 'renter'], required: true },
     claimedBy: {
       type: mongoose.Types.ObjectId,
       ref: 'User',

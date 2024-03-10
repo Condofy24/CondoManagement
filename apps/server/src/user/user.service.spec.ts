@@ -6,7 +6,11 @@ import UserDocumentModel, {
 } from './entities/user.entity';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UserService } from './user.service';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CompanyService } from '../company/company.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { Readable } from 'stream';
@@ -16,8 +20,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { CompanyEntity } from '../company/entities/company.entity';
-import { ParkingService } from '../parking/parking.service';
+import { CompanyEntity } from 'src/company/entities/company.entity';
 
 const mockingoose = require('mockingoose'); // eslint-disable-line no-eval
 
@@ -77,10 +80,6 @@ const companyServiceMock = {
   deleteCompany: jest.fn().mockResolvedValue(null),
 };
 
-const parkingServiceMock = {
-  findByUnitId: jest.fn(),
-};
-
 const createManagerDto: CreateManagerDto = {
   email: 'test@example.com',
   password: 'password',
@@ -132,6 +131,7 @@ const employeeInfoTestData = {
 };
 
 const userInfoTestData = {
+  _id: new ObjectId(),
   email: 'user@example.com',
   name: 'Test User',
   role: 4,
@@ -168,6 +168,16 @@ const mongoUniqueIndexException: MongoServerError = {
   code: 110000,
 };
 
+const userModelMock = {
+  db: {
+    startSession: jest.fn(() => ({
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      endSession: jest.fn(),
+    })),
+  },
+};
+
 describe('UserService', () => {
   let service: UserService;
 
@@ -182,10 +192,6 @@ describe('UserService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
-        },
-        {
-          provide: ParkingService,
-          useValue: parkingServiceMock,
         },
         {
           provide: CloudinaryService,
@@ -215,6 +221,8 @@ describe('UserService', () => {
         .toReturn(userInfoTestData, 'save');
 
       companyServiceMock.findCompanyById.mockResolvedValue(false);
+
+      jest.mock('./entities/user.entity', () => userModelMock);
 
       // Act
       const result: any = await service.createManager(createManagerDto);
@@ -396,61 +404,14 @@ describe('UserService', () => {
   });
 
   describe('createUser', () => {
-    it('should create user successfully if information is valid', async () => {
+    it('should throw an error if registration key is invalid', async () => {
       // Arrange
-      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
-      mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
-
-      // Act
-      const result = await service.createUser(createUserDtoTestData);
-
-      // Assert
-      expect(result).toBeDefined();
-    });
-
-    it('should throw an error if email already exists', async () => {
-      // Arrange
-      const error = {
-        ...mongoUniqueIndexException,
-        message: UserUniqueEmailIndex,
-      };
-      mockingoose(UserDocumentModel).toReturn((_: any) => {
-        throw error;
-      }, 'save');
+      unitServiceMock.findUnitRegistrationKey.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.createManager(createManagerDto)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
-
-    it('should throw an error if phone number already exists', async () => {
-      // Arrange
-      const error = {
-        ...mongoUniqueIndexException,
-        message: UserUniquePhoneNumberIndex,
-      };
-      mockingoose(UserDocumentModel).toReturn((_: any) => {
-        throw error;
-      }, 'save');
-
-      // Act & Assert
-      await expect(service.createManager(createManagerDto)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
-
-    it('should upload profile image if its valid', async () => {
-      // Arrange
-      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
-
-      // Act
-      await service.createUser(createUserDtoTestData, imageMockData);
-
-      // Assert
-      expect(cloudinaryServiceMock.uploadFile).toHaveBeenCalledWith(
-        imageMockData,
-      );
+      await expect(
+        service.createUser(createUserDtoTestData, imageMockData),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -475,24 +436,23 @@ describe('UserService', () => {
   describe('remove', () => {
     it('should throw an exception if user doesnt exist', () => {
       // Arrange
-      mockingoose(UserDocumentModel).toReturn(() => {
-        throw new Error();
-      }, 'findOneAndRemove');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOneAndRemove');
 
       // Act & Assert
-      expect(service.remove('test')).rejects.toThrow(HttpException);
+      expect(service.remove(userInfoTestData._id.toString())).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should remove user if it exists', async () => {
       // Arrange
-      mockingoose(UserDocumentModel).toReturn(null, 'findOneAndRemove');
+      mockingoose(UserDocumentModel).toReturn(
+        userInfoTestData,
+        'findOneAndRemove',
+      );
 
       // Act
-      const result = await service.remove('test');
-
-      // Arrange
-      expect(result).toBeDefined();
-      expect(result.statusCode).toBe(204);
+      await service.remove(userInfoTestData._id.toString());
     });
   });
 
@@ -510,13 +470,23 @@ describe('UserService', () => {
   });
 
   describe('updateUser', () => {
-    it('should create user successfully if information is valid', async () => {
+    it('should update user successfully if information is valid', async () => {
       // Arrange
-      mockingoose(UserDocumentModel).toReturn(null, 'findOne');
-      mockingoose(UserDocumentModel).toReturn(userInfoTestData, 'save');
+      const finderMock = (query: any) => {
+        if (query.getQuery()._id === userInfoTestData._id.toString()) {
+          return { ...userInfoTestData, role: 3 };
+        }
+      };
+
+      mockingoose(UserDocumentModel)
+        .toReturn(userInfoTestData, 'findOneAndUpdate')
+        .toReturn(finderMock, 'findOne');
 
       // Act
-      const result = await service.createUser(createUserDtoTestData);
+      const result = await service.updateUser(
+        userInfoTestData._id.toString(),
+        updateUserDtoTestData,
+      );
 
       // Assert
       expect(result).toBeDefined();
@@ -566,7 +536,9 @@ describe('UserService', () => {
         }
       };
 
-      mockingoose(UserDocumentModel).toReturn(finderMock, 'findOne'); // findById is findOne
+      mockingoose(UserDocumentModel)
+        .toReturn(userInfoTestData, 'findOneAndUpdate')
+        .toReturn(finderMock, 'findOne');
 
       // Act
       await service.updateUser('1', updateUserDtoTestData, imageMockData);

@@ -2,27 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'mongodb';
 import { ParkingController } from './parking.controller';
 import { CreateParkingDto } from './dto/create-parking.dto';
-import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
-import { Parking } from './entities/parking.entity';
 import { ParkingService } from './parking.service';
 import { HttpStatus } from '@nestjs/common';
+import { ParkingModel } from './models/parking.model';
+import { ParkingEntity } from './entities/parking.entity';
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
 const parkingServiceMock = {
   createParking: jest.fn(),
   linkParkingToUnit: jest.fn(),
-  removeParking: jest.fn(),
-  findAll: jest.fn(),
+  remove: jest.fn(),
+  findAllBuildingParkings: jest.fn(),
   findByUnitId: jest.fn(),
-};
-
-const linkParkingToUnitDto: LinkParkingToUnitDto = {
-  parkingNumber: 4,
 };
 
 const buildingInfoTestData2 = {
@@ -39,18 +35,19 @@ const buildingInfoTestData2 = {
   fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
 };
 
-const parkingInfoTestData: Parking = {
+const parkingInfoTestData = {
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   parkingNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
 const parkingInfoTestData2 = {
-  id: new ObjectId(),
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   parkingNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
@@ -85,7 +82,9 @@ describe('ParkingController', () => {
       );
 
       //Assert
-      expect(result).toEqual(parkingInfoTestData);
+      expect(result).toMatchObject(
+        new ParkingModel(parkingInfoTestData as ParkingEntity),
+      );
     });
   });
 
@@ -96,26 +95,22 @@ describe('ParkingController', () => {
         parkingInfoTestData,
       );
       const unitId = new ObjectId();
+
       //Act
-
-      const result = await controller.linkParkingToUnit(
-        parkingInfoTestData.buildingId.toString(),
+      await controller.linkParkingToUnit(
         unitId.toString(),
-        linkParkingToUnitDto,
+        parkingInfoTestData._id.toString(),
       );
-
-      //Assert
-      expect(result).toEqual(parkingInfoTestData);
     });
   });
   describe('removeParking', () => {
     it('should forward call to parking service', async () => {
       //Arrange
-      parkingServiceMock.removeParking.mockResolvedValue(HttpStatus.NO_CONTENT);
+      parkingServiceMock.remove.mockResolvedValue(HttpStatus.NO_CONTENT);
 
       //Act
       const result = await controller.remove(
-        parkingInfoTestData2.id.toString(),
+        parkingInfoTestData2._id.toString(),
       );
 
       //Assert
@@ -125,15 +120,19 @@ describe('ParkingController', () => {
   describe('findAll', () => {
     it('should forward call to parking service', async () => {
       //Arrange
-      parkingServiceMock.findAll.mockResolvedValue([parkingInfoTestData]);
+      parkingServiceMock.findAllBuildingParkings.mockResolvedValue([
+        parkingInfoTestData,
+      ]);
 
       //Act
-      const result = await controller.findAll(
+      const result = await controller.findAllBuildingParkings(
         parkingInfoTestData2.buildingId.toString(),
       );
 
       //Assert
-      expect(result).toEqual([parkingInfoTestData]);
+      expect(result).toMatchObject([
+        new ParkingModel(parkingInfoTestData as ParkingEntity),
+      ]);
     });
   });
 });

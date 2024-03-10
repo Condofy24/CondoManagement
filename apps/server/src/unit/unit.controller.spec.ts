@@ -2,9 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UnitService } from './unit.service';
 import { UnitController } from './unit.controller';
 import { CreateUnitDto } from './dto/create-unit.dto';
-import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
 import { HttpStatus } from '@nestjs/common';
+import { UnitEntity } from './entities/unit.entity';
+import { UnitModel } from './models/unit.model';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -14,13 +15,11 @@ const createUnitDto: CreateUnitDto = {
 };
 
 const unitServiceMock = {
-  createUnit: jest.fn(),
-  linkUnitToUser: jest.fn(),
-  remove: jest.fn(),
-  findAll: jest.fn(),
-  findOne: jest.fn(),
-  findOwnerUnits: jest.fn(),
-  findRenterUnit: jest.fn(),
+  createUnit: jest.fn().mockResolvedValue(null),
+  linkUnitToUser: jest.fn().mockResolvedValue(null),
+  remove: jest.fn().mockResolvedValue(null),
+  findAllBuildingUnits: jest.fn().mockResolvedValue(null),
+  findAssociatedUnits: jest.fn().mockResolvedValue(null),
   makeNewPayment: jest.fn(),
   getUnitPayments: jest.fn(),
 };
@@ -40,6 +39,7 @@ const buildingInfoTestData2 = {
 };
 
 const unitInfoTestData = {
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   unitNumber: 4,
   size: 4,
@@ -62,17 +62,6 @@ const userInfoTestData = {
   email: 'user@example.com',
   name: 'Test User',
   role: 4,
-  phoneNumber: '1234567890',
-  imageUrl: 'https://example.com/image.jpg',
-  imageId: 'image123',
-};
-
-const userInfoTestData2 = {
-  _id: new ObjectId(),
-  password: 'test',
-  email: 'user@example.com',
-  name: 'Test User',
-  role: 3,
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
@@ -126,86 +115,47 @@ describe('UnitController', () => {
       expect(result).toEqual(unitInfoTestData);
     });
   });
-  describe('linkUnitToUser', () => {
-    it('should forward call to unit service', async () => {
-      //Arrange
-      unitServiceMock.linkUnitToUser.mockResolvedValue(unitInfoTestData);
 
-      //Act
-      const result = await controller.linkUnitToUser(
-        unitInfoTestData.buildingId.toString(),
-        userInfoTestData._id.toString(),
-        createUnitDto,
-      );
-
-      //Assert
-      expect(result).toEqual(unitInfoTestData);
-    });
-  });
   describe('remove', () => {
     it('should forward call to unit service', async () => {
       //Arrange
       unitServiceMock.remove.mockResolvedValue(HttpStatus.NO_CONTENT);
 
       //Act
-      const result = await controller.remove(unitInfoTestData2.id.toString());
-
-      //Assert
-      expect(result).toEqual(HttpStatus.NO_CONTENT);
+      await controller.remove(unitInfoTestData2.id.toString());
     });
   });
   describe('findAll', () => {
     it('should forward call to unit service', async () => {
       //Arrange
-      unitServiceMock.findAll.mockResolvedValue([unitInfoTestData]);
+      const unitModels = [new UnitModel(unitInfoTestData as UnitEntity)];
+
+      unitServiceMock.findAllBuildingUnits.mockResolvedValue(unitModels);
 
       //Act
-      const result = await controller.findAll(
+      const result = await controller.findBuildingUnits(
         unitInfoTestData2.buildingId.toString(),
       );
 
       //Assert
-      expect(result).toEqual([unitInfoTestData]);
+      expect(result).toMatchObject(unitModels);
     });
   });
-  describe('getUnit', () => {
+
+  describe('findAssociatedUnits', () => {
     it('should forward call to unit service', async () => {
       //Arrange
-      unitServiceMock.findOne.mockResolvedValue(unitInfoTestData);
+      unitServiceMock.findAssociatedUnits.mockResolvedValue([unitInfoTestData]);
 
       //Act
-      const result = await controller.getUnit(unitInfoTestData2.id.toString());
-
-      //Assert
-      expect(result).toEqual(unitInfoTestData);
-    });
-  });
-  describe('findOwnerUnits', () => {
-    it('should forward call to unit service', async () => {
-      //Arrange
-      unitServiceMock.findOwnerUnits.mockResolvedValue([unitInfoTestData]);
-
-      //Act
-      const result = await controller.findOwnerUnits(
+      const result = await controller.findAssocitedUnits(
         userInfoTestData._id.toString(),
       );
 
       //Assert
-      expect(result).toEqual([unitInfoTestData]);
-    });
-  });
-  describe('findRenterUnit', () => {
-    it('should forward call to unit service', async () => {
-      //Arrange
-      unitServiceMock.findRenterUnit.mockResolvedValue(unitInfoTestData);
-
-      //Act
-      const result = await controller.findRenterUnit(
-        userInfoTestData2._id.toString(),
-      );
-
-      //Assert
-      expect(result).toEqual(unitInfoTestData);
+      expect(result).toMatchObject([
+        new UnitModel(unitInfoTestData as UnitEntity),
+      ]);
     });
   });
   describe('makeNewPayment', () => {

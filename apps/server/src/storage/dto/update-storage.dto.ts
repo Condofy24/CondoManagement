@@ -1,12 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
+import { CreateStorageDto } from './create-storage.dto';
 
-export class UpdateStorageDto {
-  @IsNotEmpty()
-  storageNumber: number;
-
-  @IsNotEmpty()
-  isOccupied: boolean;
-
-  @IsNotEmpty()
-  fees: Number;
-}
+export class UpdateStorageDto extends PartialType(CreateStorageDto) {}

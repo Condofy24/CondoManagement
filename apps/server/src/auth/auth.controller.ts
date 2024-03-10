@@ -6,6 +6,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { SignInModel } from './models/sign-in.model';
 
 /**
  * Controller responsible for handling authentication-related requests.
@@ -23,7 +24,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @HttpCode(HttpStatus.UNAUTHORIZED)
   @Post('login')
-  @ApiOkResponse({ description: 'User authenticated' })
+  @ApiOkResponse({ description: 'User authenticated', type: SignInModel })
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);

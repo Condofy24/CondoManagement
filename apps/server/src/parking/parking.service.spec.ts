@@ -5,33 +5,28 @@ import { BuildingService } from '../building/building.service';
 import { MongoServerError, ObjectId } from 'mongodb';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
-import { Parking, ParkingModel } from './entities/parking.entity';
+import ParkingModel from './entities/parking.entity';
 import { UpdateParkingDto } from './dto/update-parking.dto';
-import { LinkParkingToUnitDto } from './dto/link-parking-to-unit.dtp';
 import { HttpException } from '@nestjs/common';
 
 const mockingoose = require('mockingoose');
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
 const updateParkingTest: UpdateParkingDto = {
   parkingNumber: 5,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 70.5,
 };
 
 const updateParkingDtoTestData: UpdateParkingDto = {
   parkingNumber: 7,
   fees: 120,
-  isOccupied: false,
-};
-
-const linkParkingToUnitDto: LinkParkingToUnitDto = {
-  parkingNumber: 8,
+  isOccupiedByRenter: false,
 };
 
 const buildingInfoTestData = {
@@ -49,7 +44,7 @@ const buildingInfoTestData = {
 };
 
 const buildingInfoTestData2 = {
-  id: new ObjectId(),
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -63,7 +58,8 @@ const buildingInfoTestData2 = {
 };
 
 const occupiedUnitInfoTestData = {
-  buildingId: buildingInfoTestData2.id,
+  _id: new ObjectId(),
+  buildingId: buildingInfoTestData2._id,
   ownerId: new ObjectId(),
   renterId: new ObjectId(),
   unitNumber: 5,
@@ -72,27 +68,39 @@ const occupiedUnitInfoTestData = {
   fees: 500,
 };
 
-const parkingInfoTestData: Parking = {
-  buildingId: buildingInfoTestData2.id,
+const parkingInfoTestData = {
+  _id: new ObjectId(),
+  buildingId: buildingInfoTestData2._id,
+  parkingNumber: 7,
+  isOccupiedByRenter: false,
+  fees: 10,
+};
+
+const parkingInfoTestData2 = {
+  _id: new ObjectId(),
+  buildingId: buildingInfoTestData2._id,
   parkingNumber: 7,
   isOccupied: false,
   fees: 10,
 };
 
-const parkingInfoTestData2: Parking = {
-  buildingId: buildingInfoTestData2.id,
-  parkingNumber: 7,
-  isOccupied: false,
-  fees: 10,
+const mongoUniqueIndexException: MongoServerError = {
+  addErrorLabel: (_) => {},
+  hasErrorLabel: (_) => false,
+  name: 'test',
+  message: 'etst',
+  errmsg: 'duplicate ID',
+  errorLabels: [],
+  code: 110000,
 };
 
 const buildingServiceMock = {
-  findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
+  findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
   updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
-  findOne: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
+  findUnitById: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
 };
 
 describe('ParkingService', () => {
@@ -128,7 +136,7 @@ describe('ParkingService', () => {
       //Arrange
       mockingoose(ParkingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
+      buildingServiceMock.findBuildingById.mockResolvedValue({
         id,
         ...buildingInfoTestData,
       });
@@ -147,7 +155,7 @@ describe('ParkingService', () => {
       //Arrange
       mockingoose(ParkingModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue(null);
+      buildingServiceMock.findBuildingById.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
@@ -156,19 +164,18 @@ describe('ParkingService', () => {
     });
     it('should throw an error if parking number already exists', async () => {
       // Arrange
-      const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
-        ...buildingInfoTestData,
-        _id: id,
-      });
-      mockingoose(ParkingModel).toReturn(
-        { ...parkingInfoTestData, buildingId: id },
-        'findOne',
-      );
+      const finderMock = (query: any) => {
+        throw mongoUniqueIndexException;
+      };
+
+      mockingoose(ParkingModel).toReturn(finderMock, 'findOne'); // findById is findOne
 
       // Act and Assert
       await expect(
-        service.createParking(id.toString(), createParkingDto),
+        service.createParking(
+          parkingInfoTestData._id.toString(),
+          createParkingDto,
+        ),
       ).rejects.toThrow(HttpException);
     });
   });
@@ -187,11 +194,7 @@ describe('ParkingService', () => {
       );
 
       // Asssert
-      expect(result).toEqual({
-        parkingNumber: updateParkingDtoTestData.parkingNumber,
-        isOccupied: updateParkingDtoTestData.isOccupied,
-        fees: updateParkingDtoTestData.fees,
-      });
+      expect(result).toMatchObject(updateParkingTest);
     });
     it('should throw an error if the parking does not exsit', async () => {
       // Arrange
@@ -228,7 +231,7 @@ describe('ParkingService', () => {
     });
   });
 
-  describe('findAll', () => {
+  describe('findAllBuildingParkings', () => {
     it('should return all the parkings in a specific building given a valid buildingId', async () => {
       //Arrange
       const parkings = [parkingInfoTestData];
@@ -236,7 +239,7 @@ describe('ParkingService', () => {
       const id = parkingInfoTestData.buildingId;
 
       //Act
-      const result = await service.findAll(id.toString());
+      const result = await service.findAllBuildingParkings(id.toString());
 
       //Assert
       expect(result.length).toBe(parkings.length);
@@ -256,45 +259,40 @@ describe('ParkingService', () => {
       const unitId: ObjectId = new ObjectId();
 
       // Act
-      const result = await service.linkParkingToUnit(
+      await service.linkParkingToUnit(
         parkingInfoTestData2.buildingId.toString(),
         unitId.toString(),
-        linkParkingToUnitDto,
       );
-
-      // Assert
-      expect(result).toBeDefined();
     });
 
     it('should throw an exception if user does not exist', async () => {
       //Arrange
       mockingoose(ParkingModel).toReturn([parkingInfoTestData], 'find');
-      unitServiceMock.findOne.mockResolvedValue(null);
+      unitServiceMock.findUnitById.mockResolvedValue(null);
       const unitId: ObjectId = new ObjectId();
       //Act
       expect(
         service.linkParkingToUnit(
           parkingInfoTestData.buildingId.toString(),
           unitId.toString(),
-          linkParkingToUnitDto,
         ),
       ).rejects.toThrow(HttpException);
     });
   });
-  describe('removeParking', () => {
+  describe('remove', () => {
     it('should remove a parking given its corresponding id', async () => {
-      mockingoose(ParkingModel).toReturn(parkingInfoTestData2, 'findOne');
-      const buildingId = parkingInfoTestData2.buildingId.toString();
-      buildingServiceMock.findOne.mockResolvedValue({
-        buildingId,
-        ...buildingInfoTestData,
-      });
+      mockingoose(ParkingModel).toReturn(
+        parkingInfoTestData2,
+        'findOneAndRemove',
+      );
+
+      buildingServiceMock.findBuildingById.mockResolvedValue(
+        buildingInfoTestData,
+      );
 
       //Act
       const parkingId = new ObjectId();
-      const result = await service.removeParking(parkingId.toString());
-      //Assert
-      expect(result).toBeDefined();
+      const result = await service.remove(parkingId.toString());
     });
   });
 });

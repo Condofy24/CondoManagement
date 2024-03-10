@@ -1,40 +1,36 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpException, NotFoundException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
-import { UnitService } from '../unit/unit.service';
-import { BuildingService } from '../building/building.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MongoServerError, ObjectId } from 'mongodb';
+import { BuildingService } from '../building/building.service';
+import { UnitService } from '../unit/unit.service';
 import { CreateStorageDto } from './dto/create-storage.dto';
-import { StorageService } from './storage.service';
-import { Storage, StorageModel } from './entities/storage.entity';
 import { UpdateStorageDto } from './dto/update-storage.dto';
-import { LinkStorageToUnitDto } from './dto/link-storage-to-unit.dto';
-import { HttpException } from '@nestjs/common';
+import StorageModel from './entities/storage.entity';
+import { StorageService } from './storage.service';
 
 const mockingoose = require('mockingoose');
 
 const createStorageDto: CreateStorageDto = {
   storageNumber: 4,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 4,
 };
 
 const updateStorageTest: UpdateStorageDto = {
   storageNumber: 5,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 70.5,
 };
 
 const updateStorageDtoTestData: UpdateStorageDto = {
   storageNumber: 7,
   fees: 120,
-  isOccupied: false,
-};
-
-const linkStorageToUnitDto: LinkStorageToUnitDto = {
-  storageNumber: 8,
+  isOccupiedByRenter: false,
 };
 
 const buildingInfoTestData = {
+  _id: new ObjectId(),
   companyId: new ObjectId(),
   name: 'khaled',
   address: 'aslkdjfalk',
@@ -71,27 +67,39 @@ const occupiedUnitInfoTestData = {
   fees: 500,
 };
 
-const storageInfoTestData: Storage = {
+const storageInfoTestData = {
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   storageNumber: 7,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 10,
 };
 
-const storageInfoTestData2: Storage = {
+const storageInfoTestData2 = {
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   storageNumber: 7,
-  isOccupied: false,
+  isOccupiedByRenter: false,
   fees: 10,
+};
+
+const mongoUniqueIndexException: MongoServerError = {
+  addErrorLabel: (_) => {},
+  hasErrorLabel: (_) => false,
+  name: 'test',
+  message: 'etst',
+  errmsg: 'duplicate ID',
+  errorLabels: [],
+  code: 110000,
 };
 
 const buildingServiceMock = {
-  findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
+  findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
   updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const unitServiceMock = {
-  findOne: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
+  findUnitById: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
 };
 
 describe('StorageService', () => {
@@ -127,10 +135,9 @@ describe('StorageService', () => {
       //Arrange
       mockingoose(StorageModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
-        _id: id,
-        ...buildingInfoTestData,
-      });
+      buildingServiceMock.findBuildingById.mockResolvedValue(
+        buildingInfoTestData,
+      );
 
       //Act
       const result: any = await service.createStorage(
@@ -146,7 +153,7 @@ describe('StorageService', () => {
       //Arrange
       mockingoose(StorageModel).toReturn(null, 'findOne');
       const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue(null);
+      buildingServiceMock.findBuildingById.mockResolvedValue(null);
 
       //Act and Assert
       await expect(
@@ -155,19 +162,18 @@ describe('StorageService', () => {
     });
     it('should throw an error if Storage number already exists', async () => {
       // Arrange
-      const id = new ObjectId();
-      buildingServiceMock.findOne.mockResolvedValue({
-        id,
-        ...buildingInfoTestData,
-      });
-      mockingoose(StorageModel).toReturn(
-        { ...storageInfoTestData, buildingId: id },
-        'findOne',
-      );
+      const finderMock = (query: any) => {
+        throw mongoUniqueIndexException;
+      };
+
+      mockingoose(StorageModel).toReturn(finderMock, 'findOne'); // findById is findOne
 
       // Act and Assert
       await expect(
-        service.createStorage(id.toString(), createStorageDto),
+        service.createStorage(
+          storageInfoTestData._id.toString(),
+          createStorageDto,
+        ),
       ).rejects.toThrow(HttpException);
     });
   });
@@ -186,12 +192,9 @@ describe('StorageService', () => {
       );
 
       // Asssert
-      expect(result).toEqual({
-        storageNumber: updateStorageDtoTestData.storageNumber,
-        isOccupied: updateStorageDtoTestData.isOccupied,
-        fees: updateStorageDtoTestData.fees,
-      });
+      expect(result).toMatchObject(updateStorageTest);
     });
+
     it('should throw an error if the Storage does not exsit', async () => {
       // Arrange
       const StorageId = new ObjectId();
@@ -201,28 +204,21 @@ describe('StorageService', () => {
         service.updateStorage(StorageId.toString(), updateStorageDtoTestData),
       ).rejects.toThrow(HttpException);
     });
-    //DO this after incase of not enough coverage
+
     it('should throw an error if the new Storage number is already taken', async () => {
       // Arrange
-      const StorageId = new ObjectId();
-
-      const mongoException: MongoServerError = {
-        addErrorLabel: (_) => {},
-        hasErrorLabel: (_) => false,
-        name: 'test',
-        message: 'etst',
-        errmsg: 'duplicate ID',
-        errorLabels: [],
-        code: 110000,
+      const finderMock = (query: any) => {
+        throw mongoUniqueIndexException;
       };
 
-      mockingoose(StorageModel)
-        .toReturn(storageInfoTestData, 'findOne')
-        .toReturn(new Error(), 'findOneAndUpdate');
+      mockingoose(StorageModel).toReturn(finderMock, 'findOneAndUpdate'); // findById is findOne
 
       // Act & Assert
       await expect(
-        service.updateStorage(StorageId.toString(), updateStorageDtoTestData),
+        service.updateStorage(
+          storageInfoTestData._id.toString(),
+          updateStorageDtoTestData,
+        ),
       ).rejects.toThrow(HttpException);
     });
   });
@@ -234,7 +230,7 @@ describe('StorageService', () => {
       const id = storageInfoTestData.buildingId;
 
       //Act
-      const result = await service.findAll(id.toString());
+      const result = await service.findAllBuildingStorages(id.toString());
 
       //Assert
       expect(result.length).toBe(storages.length);
@@ -254,27 +250,22 @@ describe('StorageService', () => {
       const unitId: ObjectId = new ObjectId();
 
       // Act
-      const result = await service.linkStorageToUnit(
-        storageInfoTestData2.buildingId.toString(),
+      await service.linkStorageToUnit(
+        storageInfoTestData2._id.toString(),
         unitId.toString(),
-        linkStorageToUnitDto,
       );
-
-      // Assert
-      expect(result).toBeDefined();
     });
 
     it('should throw an exception if user does not exist', async () => {
       //Arrange
       mockingoose(StorageModel).toReturn([storageInfoTestData], 'find');
-      unitServiceMock.findOne.mockResolvedValue(null);
+      unitServiceMock.findUnitById.mockResolvedValue(null);
       const unitId: ObjectId = new ObjectId();
       //Act
       expect(
         service.linkStorageToUnit(
-          storageInfoTestData.buildingId.toString(),
+          storageInfoTestData2._id.toString(),
           unitId.toString(),
-          linkStorageToUnitDto,
         ),
       ).rejects.toThrow(HttpException);
     });
@@ -282,18 +273,28 @@ describe('StorageService', () => {
 
   describe('remove', () => {
     it('should remove a Storage given its corresponding id', async () => {
-      mockingoose(StorageModel).toReturn(storageInfoTestData2, 'findOne');
-      const buildingId = storageInfoTestData2.buildingId.toString();
-      buildingServiceMock.findOne.mockResolvedValue({
-        buildingId,
-        ...buildingInfoTestData,
-      });
+      mockingoose(StorageModel).toReturn(
+        storageInfoTestData2,
+        'findOneAndRemove',
+      );
+
+      buildingServiceMock.findBuildingById.mockResolvedValue(
+        buildingInfoTestData,
+      );
 
       //Act
       const storageId = new ObjectId();
-      const result = await service.remove(storageId.toString());
-      //Assert
-      expect(result).toBeDefined();
+      await service.remove(storageId.toString());
+    });
+
+    it('should throw an error if storage id is invalid', async () => {
+      // Arrange
+      mockingoose(StorageModel).toReturn(null, 'findAndDelete');
+
+      // Act & Assert
+      await expect(
+        service.remove(storageInfoTestData2._id.toString()),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

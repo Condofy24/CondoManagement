@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -14,7 +12,6 @@ import {
   UserUniqueEmailIndex,
   UserUniquePhoneNumberIndex,
 } from './entities/user.entity';
-import { response } from 'express';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -22,7 +19,6 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
-import { LinkUnitToBuidlingDto } from '../unit/dto/link-unit-to-building.dto';
 import { MongoServerError } from 'mongodb';
 
 @Injectable()
@@ -96,7 +92,9 @@ export class UserService {
    * @returns The created employee.
    * @throws HttpException if there is an error creating the employee.
    */
-  public async createEmployee(createEmployeeDto: CreateEmployeeDto) {
+  public async createEmployee(
+    createEmployeeDto: CreateEmployeeDto,
+  ): Promise<UserEntity> {
     const { email, name, role, companyId, phoneNumber } = createEmployeeDto;
 
     // Check company exists
@@ -138,10 +136,10 @@ export class UserService {
   public async createUser(
     createUserDto: CreateUserDto,
     image?: Express.Multer.File,
-  ) {
+  ): Promise<UserEntity> {
     const { email, password, name, phoneNumber, verfKey } = createUserDto;
 
-    //check if Key exists:
+    // check if Key exists
     const registrationKey =
       await this.unitService.findUnitRegistrationKey(verfKey);
 
@@ -150,52 +148,45 @@ export class UserService {
 
     const { imageUrl, imageId } = await this.uploadProfileImage(image);
 
-    let assignedRole;
-
-    if (registrationKey.type == 0) {
-      assignedRole = 3;
-    }
-    if (registrationKey.type == 1) {
-      assignedRole = 4;
-    }
-
     // Create user
     const newUser = new this.userModel({
       email,
       password,
       name,
-      role: assignedRole,
+      role: registrationKey.type == 'owner' ? 3 : 4,
       phoneNumber,
       imageUrl,
       imageId,
     });
 
-    let createdUser;
+    const session = await this.userModel.db.startSession();
+    session.startTransaction();
+
     try {
-      createdUser = await newUser.save();
+      const createdUser = await newUser.save({ session });
+
+      await this.unitService.linkUnitToUser(
+        createdUser._id.toString(),
+        registrationKey,
+        session,
+      );
+
+      await session.commitTransaction();
+
+      return createdUser;
     } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      )
+        throw error;
       throw new BadRequestException(
         error?.message,
         this.getUserCreateErrorDescription(error),
       );
+    } finally {
+      session.endSession();
     }
-
-    const unitForLink = await this.unitService.findOne(
-      registrationKey.unitId.toString(),
-    );
-
-    const buildingId = unitForLink.buildingId;
-
-    const linkUnitDto = new LinkUnitToBuidlingDto();
-
-    linkUnitDto.unitNumber = unitForLink.unitNumber;
-
-    await this.unitService.linkUnitToUser(
-      buildingId.toString(),
-      newUser._id.toString(),
-      linkUnitDto,
-    );
-    return createdUser;
   }
 
   /**
@@ -222,13 +213,10 @@ export class UserService {
    * @returns The response status.
    * @throws HttpException if the user is not found.
    */
-  public async remove(id: string): Promise<any> {
-    try {
-      await this.userModel.findOneAndRemove({ _id: id }).exec();
-    } catch {
-      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
-    }
-    return response.status(HttpStatus.NO_CONTENT);
+  public async remove(id: string): Promise<void> {
+    const user = await this.userModel.findOneAndRemove({ _id: id }).exec();
+
+    if (!user) throw new NotFoundException('User not found');
   }
 
   /**
@@ -279,21 +267,36 @@ export class UserService {
       user.password = newPassword;
     }
 
-    let imageUrl = '';
-    let imageId = '';
     if (image) {
-      let { imageUrl: newUrl, imageId: newId } =
+      const { imageUrl: newUrl, imageId: newId } =
         await this.uploadProfileImage(image);
-      imageUrl = newUrl;
-      imageId = newId;
-    } else {
-      imageUrl = user.imageUrl;
-      imageId = user.imageId;
+      user.imageUrl = newUrl;
+      user.imageId = newId;
     }
 
+    user.name = name;
+    user.email = email;
+    user.phoneNumber = phoneNumber;
+
     try {
-      return await user.save();
+      const entity = await this.userModel.findByIdAndUpdate(user._id, user);
+
+      if (!entity) throw new NotFoundException('User not found');
+
+      return entity;
     } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+
+      let errorDescription = 'User couldnt be updated';
+
+      if (error instanceof MongoServerError && error.code === 11000) {
+        if (error?.message.includes(UserUniqueEmailIndex))
+          errorDescription = 'A user with the same email exists';
+
+        if (error?.message.includes(UserUniquePhoneNumberIndex))
+          errorDescription = 'A user with the same phone number already exists';
+      }
+
       throw new BadRequestException(
         error?.message,
         this.getUserCreateErrorDescription(error),
@@ -305,15 +308,16 @@ export class UserService {
    * Retrieves all user profiles.
    * @returns An array of user profiles.
    */
-  public async findAll(attribute?: Record<string, string>) {
-    const users = attribute
+  public async findAll(
+    attribute?: Record<string, string>,
+  ): Promise<UserEntity[]> {
+    return attribute
       ? await this.userModel.find(attribute).exec()
       : await this.userModel.find().exec();
-    return users;
   }
 
   private getUserCreateErrorDescription(error: any): string {
-    let errorDescription = 'Manager couldnt be created';
+    let errorDescription = 'User couldnt be created';
 
     if (error instanceof MongoServerError && error.code === 11000) {
       if (error?.message.includes(UserUniqueEmailIndex))

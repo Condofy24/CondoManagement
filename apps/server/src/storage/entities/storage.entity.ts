@@ -1,6 +1,17 @@
 import * as mongoose from 'mongoose';
 
-export const StorageSchema = new mongoose.Schema(
+export interface StorageEntity extends Document {
+  _id: mongoose.Types.ObjectId;
+  buildingId: mongoose.Types.ObjectId | Record<string, unknown>;
+  unitId: mongoose.Types.ObjectId | Record<string, unknown>;
+  storageNumber: number;
+  isOccupiedByRenter: boolean;
+  fees: number;
+}
+
+interface StorageModel extends mongoose.Model<StorageEntity> {}
+
+export const StorageSchema = new mongoose.Schema<StorageEntity, StorageModel>(
   {
     buildingId: {
       type: mongoose.Types.ObjectId,
@@ -13,7 +24,7 @@ export const StorageSchema = new mongoose.Schema(
       required: false,
     },
     storageNumber: { type: Number, required: true },
-    isOccupied: { type: Boolean, required: true },
+    isOccupiedByRenter: { type: Boolean, required: true },
     fees: { type: Number, required: true },
   },
   {
@@ -21,19 +32,10 @@ export const StorageSchema = new mongoose.Schema(
   },
 );
 
+export const StorageUniqueNameIndex = 'storageNumber_1_buildingId_1';
 StorageSchema.index(
   { storageNumberNumber: 1, buildingId: 1 },
   { unique: true },
 );
 
-export const StorageModel = mongoose.model(
-  'Storage',
-  new mongoose.Schema(StorageSchema),
-);
-export interface Storage {
-  buildingId: mongoose.Types.ObjectId;
-  unitId?: mongoose.Types.ObjectId;
-  storageNumber: number;
-  isOccupied: boolean;
-  fees: number;
-}
+export default mongoose.model('Storage', new mongoose.Schema(StorageSchema));

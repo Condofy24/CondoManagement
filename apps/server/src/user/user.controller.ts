@@ -20,7 +20,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreateManagerDto } from './dto/create-manager.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserModel } from './models/user.model';
 
 @ApiTags('User')
@@ -32,6 +38,7 @@ export class UserController {
   @Post()
   @ApiCreatedResponse({ description: 'User created' })
   @UseInterceptors(FileInterceptor('image'))
+  @ApiCreatedResponse({ description: 'User created', type: UserModel })
   async create(
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() image: Express.Multer.File,
@@ -48,8 +55,8 @@ export class UserController {
    * @returns The created manager.
    */
   @Post('manager')
-  @ApiCreatedResponse({ description: 'Manager created' })
   @UseInterceptors(FileInterceptor('image'))
+  @ApiCreatedResponse({ description: 'Manager created', type: UserModel })
   async createManager(
     @Body() createManagerDto: CreateManagerDto,
     @UploadedFile() image: Express.Multer.File,
@@ -66,7 +73,7 @@ export class UserController {
    */
   @Post('employee')
   @UseGuards(PrivilegeGuard)
-  @ApiCreatedResponse({ description: 'Employee created' })
+  @ApiCreatedResponse({ description: 'Employee created', type: UserModel })
   @Roles(0)
   async createEmployee(
     @Body() createEmployeeDto: CreateEmployeeDto,
@@ -81,6 +88,7 @@ export class UserController {
    * @returns All employees of a company.
    */
   @Get('employees/:companyId')
+  @ApiOkResponse({ description: 'Company employees', type: [UserModel] })
   async findEmployees(@Param('companyId') companyId: string) {
     return (await this.userService.findAll({ companyId })).map(
       (user) => new UserModel(user),
@@ -108,8 +116,10 @@ export class UserController {
    * @returns The removed user.
    */
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  @ApiOkResponse({ description: 'User deleted' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async remove(@Param('id') id: string) {
+    await this.userService.remove(id);
   }
 
   /**
@@ -121,11 +131,15 @@ export class UserController {
    */
   @Patch(':id')
   @UseInterceptors(FileInterceptor('image'))
-  updateUser(
+  @ApiOkResponse({ description: 'User updated', type: UserModel })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    return this.userService.updateUser(id, updateUserDto, image);
+    return new UserModel(
+      await this.userService.updateUser(id, updateUserDto, image),
+    );
   }
 }
