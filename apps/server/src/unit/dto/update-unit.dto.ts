@@ -11,4 +11,6 @@ export class UpdateUnitDto {
 
   @IsNotEmpty()
   fees: number;
+
+  lateFeesInterestRate?: number;
 }

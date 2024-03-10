@@ -26,12 +26,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
 import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
+import { ParkingService } from '../parking/parking.service';
 
 @Injectable()
 export class UnitService {
   constructor(
     @InjectModel('Unit')
     private readonly unitModel: Model<UnitEntity>,
+    private readonly parkingService: ParkingService,
     @InjectModel('Payments')
     private readonly paymentsModel: Model<PaymentsEntity>,
     @InjectModel('RegistrationKey')
@@ -43,7 +45,8 @@ export class UnitService {
   ) {}
 
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
-    const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
+    const { unitNumber, size, isOccupiedByRenter, lateFeesInterestRate, fees } =
+      createUnitDto;
 
     const building = await this.buildingService.findOne(buildingId);
 
@@ -54,6 +57,7 @@ export class UnitService {
       unitNumber,
       size,
       isOccupiedByRenter,
+      lateFeesInterestRate,
       fees,
     });
 
@@ -114,7 +118,8 @@ export class UnitService {
   }
 
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
-    const { unitNumber, size, isOccupiedByRenter, fees } = updateUnitDto;
+    const { unitNumber, size, isOccupiedByRenter, lateFeesInterestRate, fees } =
+      updateUnitDto;
     const unit = await this.unitModel.findById(unitId);
     if (!unit) {
       throw new HttpException(
@@ -124,10 +129,11 @@ export class UnitService {
     }
 
     const result = await this.unitModel.findByIdAndUpdate(unitId, {
-      unitNumber: unitNumber,
-      size: size,
-      isOccupiedByRenter: isOccupiedByRenter,
-      fees: fees,
+      unitNumber,
+      size,
+      isOccupiedByRenter,
+      lateFeesInterestRate,
+      fees,
     }); // To return the updated document)
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -154,6 +160,7 @@ export class UnitService {
         }) as UnitEntity,
     );
   }
+
   public async findOne(id: string) {
     const unit = await this.unitModel.findById({ _id: id }).exec();
     if (!unit) {
@@ -173,6 +180,7 @@ export class UnitService {
       fees: unit.fees,
     };
   }
+
   public async remove(id: string): Promise<any> {
     const unit = await this.unitModel.findById(id).exec();
     if (!unit) {
@@ -197,6 +205,7 @@ export class UnitService {
 
     return response.status(HttpStatus.NO_CONTENT);
   }
+
   public async linkUnitToUser(
     buildingId: string,
     userId: string,
@@ -252,6 +261,7 @@ export class UnitService {
       fees: unit.fees,
     };
   }
+
   public async findOwnerUnits(ownerId: string): Promise<UnitEntity[]> {
     const user = await this.userService.findUserById(ownerId);
     if (!user) {
@@ -278,6 +288,7 @@ export class UnitService {
         }) as UnitEntity,
     );
   }
+
   public async findRenterUnit(renterId: string) {
     const user = await this.userService.findUserById(renterId);
     if (!user) {
@@ -355,8 +366,15 @@ export class UnitService {
     units.forEach(async (unit) => {
       if (unit.ownerId) {
         // Reset monthly fees balance and add balance to overdue
-        unit.overdueFees += unit.monthlyFeesBalance;
-        unit.monthlyFeesBalance = unit.fees;
+        const sumOfParkingFees = (
+          await this.parkingService.findByUnitId(unit.id)
+        )?.reduce((acc, current) => {
+          return (acc += current.fees);
+        }, 0);
+        unit.overdueFees +=
+          unit.monthlyFeesBalance +
+          unit.monthlyFeesBalance * (unit.lateFeesInterestRate / 100);
+        unit.monthlyFeesBalance = unit.fees + sumOfParkingFees;
         await unit.save();
       }
     });

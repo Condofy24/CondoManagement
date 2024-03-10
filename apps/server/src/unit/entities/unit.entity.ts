@@ -9,6 +9,7 @@ export interface UnitEntity extends Document {
   size: number;
   isOccupiedByRenter: boolean;
   fees: number;
+  lateFeesInterestRate: number;
   overdueFees: number;
   monthlyFeesBalance: number;
 }
@@ -38,6 +39,7 @@ export const UnitSchema = new mongoose.Schema<UnitEntity, UnitModel>(
     size: { type: Number, required: true },
     isOccupiedByRenter: { type: Boolean, required: true },
     fees: { type: Number, required: true },
+    lateFeesInterestRate: { type: Number, default: 0 },
   },
   {
     timestamps: true, // This enables automatic createdAt and updatedAt fields

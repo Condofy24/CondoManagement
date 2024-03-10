@@ -4,11 +4,14 @@ import { UnitService } from './unit.service';
 import UnitModel, { UnitEntity } from './entities/unit.entity';
 import { HttpException } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
+import PaymentsModel from './entities/payments.entity';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
 import { ObjectId } from 'mongodb';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import RegistationKeyModel from './entities/registration-key.entity';
+import { ParkingService } from '../parking/parking.service';
+import { Parking } from '../parking/entities/parking.entity';
 
 const mockingoose = require('mockingoose');
 
@@ -90,10 +93,22 @@ const userInfoTestData2 = {
   imageId: 'image123',
 };
 
+const parkingInfoTestData: Parking = {
+  buildingId: new ObjectId(),
+  unitId: unitInfoTestData._id,
+  parkingNumber: 7,
+  isOccupied: false,
+  fees: 10,
+};
+
 const buildingServiceMock = {
   findOne: jest.fn().mockResolvedValue(buildingInfoTestData),
   findByIdandUpdateUnitCount: jest.fn().mockResolvedValue(null),
   updateBuilding: jest.fn().mockResolvedValue(buildingInfoTestData),
+};
+
+const parkingServiceMock = {
+  findByUnitId: jest.fn().mockResolvedValue([parkingInfoTestData]),
 };
 
 const userServiceMock = {
@@ -112,9 +127,14 @@ describe('UnitService', () => {
           useValue: UnitModel,
         },
         {
+          provide: getModelToken('Payments'),
+          useValue: PaymentsModel,
+        },
+        {
           provide: getModelToken('RegistrationKey'),
           useValue: RegistationKeyModel,
         },
+        { provide: ParkingService, useValue: parkingServiceMock },
         {
           provide: BuildingService,
           useValue: buildingServiceMock,

@@ -15,17 +15,18 @@ export interface PaymentsEntity extends Document {
   record: mongoose.Types.Array<IUnitPayment>;
 }
 
-interface PaymentModel extends mongoose.Model<PaymentsEntity> {}
+interface PaymentsModel extends mongoose.Model<PaymentsEntity> {}
 
-export const PaymentsSchema = new mongoose.Schema<PaymentsEntity, PaymentModel>(
-  {
-    unitId: {
-      type: mongoose.Types.ObjectId,
-      ref: 'Unit',
-      required: true,
-    },
-    record: { type: [], default: [] },
+export const PaymentsSchema = new mongoose.Schema<
+  PaymentsEntity,
+  PaymentsModel
+>({
+  unitId: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Unit',
+    required: true,
   },
-);
+  record: { type: [], default: [] },
+});
 
 export default mongoose.model('Payments', new mongoose.Schema(PaymentsSchema));

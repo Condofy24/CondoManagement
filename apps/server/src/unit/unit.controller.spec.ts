@@ -4,9 +4,7 @@ import { UnitController } from './unit.controller';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
-import { UserEntity } from '../user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
-import { UnitEntity } from './entities/unit.entity';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,

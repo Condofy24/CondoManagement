@@ -18,6 +18,7 @@ const parkingServiceMock = {
   linkParkingToUnit: jest.fn(),
   removeParking: jest.fn(),
   findAll: jest.fn(),
+  findByUnitId: jest.fn(),
 };
 
 const linkParkingToUnitDto: LinkParkingToUnitDto = {
