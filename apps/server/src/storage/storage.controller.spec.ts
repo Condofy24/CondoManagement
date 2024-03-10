@@ -4,6 +4,8 @@ import { StorageController } from './storage.controller';
 import { StorageService } from './storage.service';
 import { HttpStatus } from '@nestjs/common';
 import { CreateStorageDto } from './dto/create-storage.dto';
+import { StorageModel } from './models/storage.model';
+import { StorageEntity } from './entities/storage.entity';
 
 const createStorageDto: CreateStorageDto = {
   storageNumber: 4,
@@ -79,7 +81,9 @@ describe('StorageController', () => {
       );
 
       //Assert
-      expect(result).toEqual(storageInfoTestData);
+      expect(result).toMatchObject(
+        new StorageModel(storageInfoTestData as StorageEntity),
+      );
     });
   });
   describe('linkStorageToUnit', () => {
@@ -91,13 +95,10 @@ describe('StorageController', () => {
       const unitId = new ObjectId();
 
       //Act
-      const result = await controller.linkStorageToUnit(
+      await controller.linkStorageToUnit(
         unitId.toString(),
         storageInfoTestData._id.toString(),
       );
-
-      //Assert
-      expect(result).toEqual(storageInfoTestData);
     });
   });
 
@@ -128,7 +129,9 @@ describe('StorageController', () => {
       );
 
       //Assert
-      expect(result).toEqual([storageInfoTestData]);
+      expect(result).toEqual([
+        new StorageModel(storageInfoTestData as StorageEntity),
+      ]);
     });
   });
 });

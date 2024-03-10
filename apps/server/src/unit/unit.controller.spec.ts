@@ -4,6 +4,8 @@ import { UnitController } from './unit.controller';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { ObjectId } from 'mongodb';
 import { HttpStatus } from '@nestjs/common';
+import { UnitEntity } from './entities/unit.entity';
+import { UnitModel } from './models/unit.model';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -37,6 +39,7 @@ const buildingInfoTestData2 = {
 };
 
 const unitInfoTestData = {
+  _id: new ObjectId(),
   buildingId: buildingInfoTestData2.id,
   unitNumber: 4,
   size: 4,
@@ -119,26 +122,23 @@ describe('UnitController', () => {
       unitServiceMock.remove.mockResolvedValue(HttpStatus.NO_CONTENT);
 
       //Act
-      const result = await controller.remove(unitInfoTestData2.id.toString());
-
-      //Assert
-      expect(result).toEqual(HttpStatus.NO_CONTENT);
+      await controller.remove(unitInfoTestData2.id.toString());
     });
   });
   describe('findAll', () => {
     it('should forward call to unit service', async () => {
       //Arrange
-      unitServiceMock.findAllBuildingUnits.mockResolvedValue([
-        unitInfoTestData,
-      ]);
+      const unitModels = [new UnitModel(unitInfoTestData as UnitEntity)];
+
+      unitServiceMock.findAllBuildingUnits.mockResolvedValue(unitModels);
 
       //Act
-      const result = await controller.findAll(
+      const result = await controller.findBuildingUnits(
         unitInfoTestData2.buildingId.toString(),
       );
 
       //Assert
-      expect(result).toEqual([unitInfoTestData]);
+      expect(result).toMatchObject(unitModels);
     });
   });
 
@@ -148,12 +148,14 @@ describe('UnitController', () => {
       unitServiceMock.findAssociatedUnits.mockResolvedValue([unitInfoTestData]);
 
       //Act
-      const result = await controller.findOwnerUnits(
+      const result = await controller.findAssocitedUnits(
         userInfoTestData._id.toString(),
       );
 
       //Assert
-      expect(result).toEqual([unitInfoTestData]);
+      expect(result).toMatchObject([
+        new UnitModel(unitInfoTestData as UnitEntity),
+      ]);
     });
   });
   describe('makeNewPayment', () => {

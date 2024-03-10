@@ -14,6 +14,9 @@ import { UnitService } from '../unit/unit.service';
 import { MongoServerError, ObjectId } from 'mongodb';
 
 @Injectable()
+/**
+ * Service for managing storage entities.
+ */
 export class StorageService {
   constructor(
     @InjectModel('Storage')
@@ -24,10 +27,17 @@ export class StorageService {
     private readonly buildingService: BuildingService,
   ) {}
 
+  /**
+   * Creates a new storage unit for a building.
+   * @param buildingId - The ID of the building where the storage unit will be created.
+   * @param createStorageDto - The data required to create the storage unit.
+   * @returns The newly created storage unit entity.
+   * @throws BadRequestException if the building ID is invalid or if a storage unit with the same storage number already exists for the building.
+   */
   public async createStorage(
     buildingId: string,
     createStorageDto: CreateStorageDto,
-  ) {
+  ): Promise<StorageEntity> {
     const { storageNumber, isOccupiedByRenter, fees } = createStorageDto;
 
     const building = await this.buildingService.findBuildingById(buildingId);
@@ -64,6 +74,14 @@ export class StorageService {
     return storageEntity;
   }
 
+  /**
+   * Links a storage to a unit.
+   *
+   * @param storageId - The ID of the storage.
+   * @param unitId - The ID of the unit.
+   * @throws {NotFoundException} If the unit or storage does not exist.
+   * @throws {BadRequestException} If the storage is already linked to a unit.
+   */
   public async linkStorageToUnit(
     storageId: string,
     unitId: string,
@@ -85,16 +103,30 @@ export class StorageService {
     );
   }
 
+  /**
+   * Retrieves all storages associated with a specific building.
+   *
+   * @param buildingId - The ID of the building.
+   * @returns A promise that resolves to an array of StorageEntity objects.
+   */
   public async findAllBuildingStorages(
     buildingId: string,
   ): Promise<StorageEntity[]> {
     return await this.storageModel.find({ buildingId }).exec();
   }
 
+  /**
+   * Updates a storage entity with the specified ID.
+   * @param storageId - The ID of the storage entity to update.
+   * @param updatedFields - The fields to update in the storage entity.
+   * @returns The updated storage entity.
+   * @throws {NotFoundException} If the storage entity with the specified ID is not found.
+   * @throws {BadRequestException} If the storage entity could not be updated due to a duplicate storage number.
+   */
   public async updateStorage(
     storageId: string,
     updatedFields: Partial<StorageEntity>,
-  ) {
+  ): Promise<StorageEntity> {
     try {
       const updatedStorage = await this.storageModel.findByIdAndUpdate(
         new ObjectId(storageId),
@@ -118,6 +150,11 @@ export class StorageService {
     }
   }
 
+  /**
+   * Removes a storage item by its ID.
+   * @param id - The ID of the storage item to be removed.
+   * @throws NotFoundException if the storage item is not found.
+   */
   public async remove(id: string): Promise<void> {
     const storage = await this.storageModel
       .findOneAndRemove({ _id: id })

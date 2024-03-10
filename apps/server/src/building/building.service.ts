@@ -103,7 +103,7 @@ export class BuildingService {
     if (!building) throw new BadRequestException("Building doesn't exists");
 
     if (file) {
-      let {
+      const {
         secure_url: fileUrl,
         public_id: filePublicId,
         asset_id: fileAssetId,

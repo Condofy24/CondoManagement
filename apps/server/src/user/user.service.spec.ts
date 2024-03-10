@@ -6,7 +6,11 @@ import UserDocumentModel, {
 } from './entities/user.entity';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UserService } from './user.service';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CompanyService } from '../company/company.service';
 import { CreateManagerDto } from './dto/create-manager.dto';
 import { Readable } from 'stream';
@@ -432,24 +436,23 @@ describe('UserService', () => {
   describe('remove', () => {
     it('should throw an exception if user doesnt exist', () => {
       // Arrange
-      mockingoose(UserDocumentModel).toReturn(() => {
-        throw new Error();
-      }, 'findOneAndRemove');
+      mockingoose(UserDocumentModel).toReturn(null, 'findOneAndRemove');
 
       // Act & Assert
-      expect(service.remove('test')).rejects.toThrow(HttpException);
+      expect(service.remove(userInfoTestData._id.toString())).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should remove user if it exists', async () => {
       // Arrange
-      mockingoose(UserDocumentModel).toReturn(null, 'findOneAndRemove');
+      mockingoose(UserDocumentModel).toReturn(
+        userInfoTestData,
+        'findOneAndRemove',
+      );
 
       // Act
-      const result = await service.remove('test');
-
-      // Arrange
-      expect(result).toBeDefined();
-      expect(result.statusCode).toBe(204);
+      await service.remove(userInfoTestData._id.toString());
     });
   });
 
@@ -475,7 +478,9 @@ describe('UserService', () => {
         }
       };
 
-      mockingoose(UserDocumentModel).toReturn(finderMock, 'findOne'); // findById is findOne
+      mockingoose(UserDocumentModel)
+        .toReturn(userInfoTestData, 'findOneAndUpdate')
+        .toReturn(finderMock, 'findOne');
 
       // Act
       const result = await service.updateUser(
@@ -531,7 +536,9 @@ describe('UserService', () => {
         }
       };
 
-      mockingoose(UserDocumentModel).toReturn(finderMock, 'findOne'); // findById is findOne
+      mockingoose(UserDocumentModel)
+        .toReturn(userInfoTestData, 'findOneAndUpdate')
+        .toReturn(finderMock, 'findOne');
 
       // Act
       await service.updateUser('1', updateUserDtoTestData, imageMockData);

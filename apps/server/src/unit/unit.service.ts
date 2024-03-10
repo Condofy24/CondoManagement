@@ -26,6 +26,9 @@ import { UnitModel } from './models/unit.model';
 import { response } from 'express';
 
 @Injectable()
+/**
+ * Service class for managing units.
+ */
 export class UnitService {
   constructor(
     @InjectModel('Unit')
@@ -41,6 +44,13 @@ export class UnitService {
     private readonly buildingService: BuildingService,
   ) {}
 
+  /**
+   * Creates a new unit in a building.
+   * @param buildingId - The ID of the building where the unit will be created.
+   * @param createUnitDto - The data required to create the unit.
+   * @returns An object containing the created unit entity and the registration keys for the unit.
+   * @throws BadRequestException if the building ID is invalid or if a unit with the same unit number already exists for the building.
+   */
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
     const { unitNumber, size, isOccupiedByRenter, lateFeesInterestRate, fees } =
       createUnitDto;
@@ -86,34 +96,23 @@ export class UnitService {
     return { unitEntity, registrationKeys };
   }
 
+  /**
+   * Finds a unit registration key.
+   * @param key - The registration key to search for.
+   * @returns A promise that resolves to the unit registration key.
+   */
   public async findUnitRegistrationKey(key: string) {
     return this.registrationKeyModel.findOne({ key });
   }
 
-  private async generateRegistrationKeysForUnit(
-    unitId: ObjectId,
-  ): Promise<CondoRegistrationKeys> {
-    const ownerRegistrationKey = new this.registrationKeyModel({
-      unitId,
-      key: uuidv4(),
-      type: 'owner',
-    });
-
-    const renterRegistrationKey = new this.registrationKeyModel({
-      unitId,
-      key: uuidv4(),
-      type: 'renter',
-    });
-    try {
-      const { key: ownerKey } = await ownerRegistrationKey.save();
-      const { key: renterKey } = await renterRegistrationKey.save();
-
-      return { ownerKey, renterKey };
-    } catch (error) {
-      throw new BadRequestException(error?.message);
-    }
-  }
-
+  /**
+   * Updates a unit with the specified unitId using the provided updatedFields.
+   * @param unitId - The ID of the unit to be updated.
+   * @param updatedFields - The fields to be updated in the unit.
+   * @returns A Promise that resolves to the updated unit.
+   * @throws NotFoundException if the unit with the specified unitId is not found.
+   * @throws BadRequestException if there is an error updating the unit.
+   */
   public async updateUnit(
     unitId: string,
     updatedFields: Partial<UnitEntity>,
@@ -141,6 +140,11 @@ export class UnitService {
     }
   }
 
+  /**
+   * Retrieves all building units based on the provided building ID.
+   * @param buildingId - The ID of the building.
+   * @returns A promise that resolves to an array of UnitModel objects.
+   */
   public async findAllBuildingUnits(buildingId: string): Promise<UnitModel[]> {
     const units = await this.unitModel.find({ buildingId }).exec();
 
@@ -161,10 +165,20 @@ export class UnitService {
     );
   }
 
+  /**
+   * Finds a unit by its ID.
+   * @param id - The ID of the unit.
+   * @returns A promise that resolves to the found unit entity, or null if not found.
+   */
   public async findUnitById(id: string): Promise<UnitEntity | null> {
     return await this.unitModel.findOne({ _id: id }).exec();
   }
 
+  /**
+   * Removes a unit by its ID.
+   * @param id - The ID of the unit to be removed.
+   * @throws NotFoundException if the unit is not found.
+   */
   public async remove(id: string): Promise<void> {
     const unit = await this.unitModel.findOneAndRemove({ _id: id }).exec();
 
@@ -181,6 +195,15 @@ export class UnitService {
     });
   }
 
+  /**
+   * Links a unit to a user using the provided registration key.
+   * Throws an exception if the unit is not found or if it is already associated with a user.
+   * @param userId - The ID of the user to link the unit to.
+   * @param registrationKey - The registration key entity containing the unit ID and type.
+   * @param session - The MongoDB client session to use for the transaction.
+   * @throws {NotFoundException} - If the unit is not found.
+   * @throws {BadRequestException} - If the unit is already associated with a user.
+   */
   public async linkUnitToUser(
     userId: string,
     registrationKey: RegistrationKeyEntity,
@@ -211,6 +234,42 @@ export class UnitService {
       .exec();
   }
 
+  /**
+   * Generates registration keys for a unit.
+   * @param unitId - The ID of the unit.
+   * @returns A promise that resolves to an object containing the generated registration keys for the unit.
+   * @throws BadRequestException if there is an error while generating the registration keys.
+   */
+  private async generateRegistrationKeysForUnit(
+    unitId: ObjectId,
+  ): Promise<CondoRegistrationKeys> {
+    const ownerRegistrationKey = new this.registrationKeyModel({
+      unitId,
+      key: uuidv4(),
+      type: 'owner',
+    });
+
+    const renterRegistrationKey = new this.registrationKeyModel({
+      unitId,
+      key: uuidv4(),
+      type: 'renter',
+    });
+    try {
+      const { key: ownerKey } = await ownerRegistrationKey.save();
+      const { key: renterKey } = await renterRegistrationKey.save();
+
+      return { ownerKey, renterKey };
+    } catch (error) {
+      throw new BadRequestException(error?.message);
+    }
+  }
+
+  /**
+   * Finds the associated units for a given user.
+   * @param userId The ID of the user.
+   * @returns A promise that resolves to an array of UnitEntity objects.
+   * @throws NotFoundException if the user is not found.
+   */
   public async findAssociatedUnits(userId: string): Promise<UnitEntity[]> {
     const user = await this.userService.findUserById(userId);
 
@@ -221,6 +280,13 @@ export class UnitService {
     return await this.unitModel.find({ [filterKey]: userId }).exec();
   }
 
+  /**
+   * Makes a new payment for a specific unit.
+   * @param unitId - The ID of the unit.
+   * @param makeNewPaymentDto - The data for the new payment.
+   * @returns The HTTP response status.
+   * @throws NotFoundException if the unit is not found or not associated with an owner.
+   */
   public async makeNewPayment(
     unitId: string,
     makeNewPaymentDto: MakeNewPaymentDto,
@@ -266,11 +332,22 @@ export class UnitService {
     return response.status(HttpStatus.NO_CONTENT);
   }
 
+  /**
+   * Retrieves the payment details for a specific unit.
+   * @param unitId - The ID of the unit.
+   * @returns A promise that resolves to the payment entity or null if not found.
+   */
   public async getUnitPayments(unitId: string): Promise<PaymentsEntity | null> {
     return this.paymentsModel.findOne({ unitId });
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  /**
+   * Handles the cron job for processing monthly fees for units.
+   * This function retrieves all units, calculates the monthly fees balance,
+   * adds any overdue fees, and updates the unit's monthly fees balance.
+   * If the unit has an owner, the function saves the updated unit.
+   */
   async handleCron() {
     const units = await this.unitModel.find();
     units.forEach(async (unit) => {

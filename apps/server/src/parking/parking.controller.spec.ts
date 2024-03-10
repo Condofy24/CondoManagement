@@ -4,6 +4,8 @@ import { ParkingController } from './parking.controller';
 import { CreateParkingDto } from './dto/create-parking.dto';
 import { ParkingService } from './parking.service';
 import { HttpStatus } from '@nestjs/common';
+import { ParkingModel } from './models/parking.model';
+import { ParkingEntity } from './entities/parking.entity';
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
@@ -80,7 +82,9 @@ describe('ParkingController', () => {
       );
 
       //Assert
-      expect(result).toEqual(parkingInfoTestData);
+      expect(result).toMatchObject(
+        new ParkingModel(parkingInfoTestData as ParkingEntity),
+      );
     });
   });
 
@@ -93,13 +97,10 @@ describe('ParkingController', () => {
       const unitId = new ObjectId();
 
       //Act
-      const result = await controller.linkParkingToUnit(
+      await controller.linkParkingToUnit(
         unitId.toString(),
         parkingInfoTestData._id.toString(),
       );
-
-      //Assert
-      expect(result).toEqual(parkingInfoTestData);
     });
   });
   describe('removeParking', () => {
@@ -124,12 +125,14 @@ describe('ParkingController', () => {
       ]);
 
       //Act
-      const result = await controller.findAll(
+      const result = await controller.findAllBuildingParkings(
         parkingInfoTestData2.buildingId.toString(),
       );
 
       //Assert
-      expect(result).toEqual([parkingInfoTestData]);
+      expect(result).toMatchObject([
+        new ParkingModel(parkingInfoTestData as ParkingEntity),
+      ]);
     });
   });
 });

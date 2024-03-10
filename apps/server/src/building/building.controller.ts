@@ -16,7 +16,12 @@ import { UpdateBuildingDto } from './dto/update-building.dto';
 import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { BuildingModel } from './models/building.model';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 /**
  * Controller for managing building-related operations.
@@ -38,6 +43,7 @@ export class BuildingController {
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(PrivilegeGuard)
   @Roles(0)
+  @ApiCreatedResponse({ description: 'Building created', type: BuildingModel })
   async create(
     @Param('companyId') companyId: string,
     @Body() createBuildingDto: CreateBuildingDto,
@@ -60,18 +66,21 @@ export class BuildingController {
    * @param file - The uploaded file.
    * @returns The updated building.
    */
-  @Patch('update/:companyId/:buildingId')
+  @Patch('update/:buildingId')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
-  update(
+  @ApiOkResponse({ description: 'Building updated', type: BuildingModel })
+  async update(
     @Param('buildingId') buildingId: string,
     @Body() updateBuildingDto: UpdateBuildingDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.buildingService.updateBuilding(
-      buildingId,
-      { ...updateBuildingDto },
-      file,
+    return new BuildingModel(
+      await this.buildingService.updateBuilding(
+        buildingId,
+        { ...updateBuildingDto },
+        file,
+      ),
     );
   }
 
@@ -83,6 +92,10 @@ export class BuildingController {
   @Get(':companyId')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
+  @ApiOkResponse({
+    description: 'All company buildings',
+    type: [BuildingModel],
+  })
   async findAll(@Param('companyId') companyId: string) {
     const buildingEntities = await this.buildingService.findAll(companyId);
 
