@@ -4,7 +4,7 @@ import {
   TManagerSignupSchema,
   TSignupSchema,
 } from "@/lib/validation-schemas";
-import { ChangeEvent, SetStateAction, useRef, useState } from "react";
+import { ChangeEvent, SetStateAction, useRef } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import FormFieldError from "./form-field-error";
 

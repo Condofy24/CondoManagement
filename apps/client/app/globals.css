@@ -67,3 +67,7 @@ body {
 .formInput {
   @apply block rounded-lg border bg-white text-primary dark:text-black/80 focus:border-black/100 focus:outline-none dark:focus:ring-gray-700 focus:ring-1 focus:ring-black/100 focus:ring-opacity-40;
 }
+
+.navItem {
+  @apply bg-secondary transform rounded-lg h-[2.25rem] px-4 py-2 text-sm font-medium tracking-wide duration-300 focus:outline-none text-primary;
+}

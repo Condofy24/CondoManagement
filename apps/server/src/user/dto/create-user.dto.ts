@@ -36,8 +36,7 @@ export class CreateUserDto {
   @ApiProperty()
   phoneNumber: string;
 
-  //To get the verfKey upon signup of a user and checking that its not empty
   @IsNotEmpty()
   @ApiProperty()
-  verfKey: string;
+  registrationKey: string;
 }

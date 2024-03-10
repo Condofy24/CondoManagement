@@ -1,4 +1,4 @@
-import { fetchAssets } from "@/actions";
+import { fetchAssets } from "@/actions/management-actions";
 import { useAppSelector } from "@/redux/store";
 import { BuildingAssetType, Parking, Storage, Unit } from "@/types";
 import { useParams } from "next/navigation";

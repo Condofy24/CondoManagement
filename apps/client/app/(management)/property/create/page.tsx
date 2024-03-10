@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { createProperty } from "@/actions";
+import { createProperty } from "@/actions/management-actions";
 
 export default function PropertyCreationPage() {
   const [loading, setLoading] = useState(false);

@@ -137,14 +137,13 @@ export class UserService {
     createUserDto: CreateUserDto,
     image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    const { email, password, name, phoneNumber, verfKey } = createUserDto;
+    const { email, password, name, phoneNumber, registrationKey } =
+      createUserDto;
 
     // check if Key exists
-    const registrationKey =
-      await this.unitService.findUnitRegistrationKey(verfKey);
+    const key = await this.unitService.findUnitRegistrationKey(registrationKey);
 
-    if (!registrationKey)
-      throw new BadRequestException('Registration Key is invalid');
+    if (!key) throw new BadRequestException('Registration Key is invalid');
 
     const { imageUrl, imageId } = await this.uploadProfileImage(image);
 
@@ -153,7 +152,7 @@ export class UserService {
       email,
       password,
       name,
-      role: registrationKey.type == 'owner' ? 3 : 4,
+      role: key.type == 'owner' ? 3 : 4,
       phoneNumber,
       imageUrl,
       imageId,
@@ -167,7 +166,7 @@ export class UserService {
 
       await this.unitService.linkUnitToUser(
         createdUser._id.toString(),
-        registrationKey,
+        key,
         session,
       );
 

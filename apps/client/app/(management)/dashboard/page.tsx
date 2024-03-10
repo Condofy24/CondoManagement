@@ -4,26 +4,31 @@ import { Property } from "@/types";
 import { useAppSelector } from "@/redux/store";
 import { columns } from "./columns";
 import { DataTable } from "@/app/components/table/data-table";
-import { fetchProperties } from "@/actions";
+import { fetchProperties } from "@/actions/management-actions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 
 export default function ManagementDashboardPage() {
-  const [buildings, setBuildings] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const { admin, token, user } = useAppSelector((state) => state.auth.value);
   const router = useRouter();
 
   useEffect(() => {
-    const result = fetchProperties(admin?.companyId as string, token as string);
+    const loadBuilding = async () => {
+      try {
+        const properties = await fetchProperties(
+          admin?.companyId as string,
+          token as string,
+        );
 
-    if (result instanceof Error) {
-      toast.error("Something went wrong getting your properties information");
-    } else {
-      result.then((data) => {
-        setBuildings(data);
-      });
-    }
+        setProperties(properties);
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    };
+
+    loadBuilding();
   }, [admin?.companyId, token]);
 
   return (
@@ -37,11 +42,15 @@ export default function ManagementDashboardPage() {
         </div>
         <div className="flex items-center space-x-2">
           <Button onClick={() => router.push("/property/create")}>
-            Create Building
+            Create <span className="hidden md:inline ml-1"> Property</span>
           </Button>
         </div>
       </div>
-      <DataTable columns={columns} data={buildings} />
+      <DataTable
+        columns={columns}
+        data={properties}
+        redirectPath="/property/id/dashboard"
+      />
     </div>
   );
 }

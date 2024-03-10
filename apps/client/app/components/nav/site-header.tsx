@@ -3,14 +3,18 @@ import { MainNav } from "@/app/components/nav/main-nav";
 import { ModeToggle } from "../theme/theme-toggle";
 import { UserNav } from "./user-nav";
 import { useAppSelector } from "@/redux/store";
-import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "@/public/logo.png";
+import Link from "next/link";
+import { StaffNav } from "./staff-nav";
 
 export function SiteHeader() {
-  const { loggedIn } = useAppSelector((state) => state.auth.value);
+  const { loggedIn, admin } = useAppSelector((state) => state.auth.value);
   const router = useRouter();
+
+  const isStaff = !!admin?.companyId;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex px-2 h-14 items-center">
@@ -27,13 +31,15 @@ export function SiteHeader() {
         </button>
         {!loggedIn ? (
           <div className="flex flex-row gap-4">
-            <Button className="" onClick={() => router.push("/login")}>
-              Login
-            </Button>
-            <Button className="" onClick={() => router.push("/register")}>
-              Register
-            </Button>
+            <Link
+              className="navItem transition-all hover:text-foreground/80 hover:scale-105"
+              href="/login"
+            >
+              Join us today
+            </Link>
           </div>
+        ) : isStaff ? (
+          <StaffNav />
         ) : (
           <MainNav />
         )}

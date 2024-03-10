@@ -1,9 +1,9 @@
-import { TPropertySchema } from "./lib/validation-schemas";
+import { TPropertySchema } from "../lib/validation-schemas";
 import axios from "axios";
 import { API_URL } from "@/global";
-import { TUnitSchema } from "./lib/unit-validation-schemas";
-import { BuildingAssetType, Parking, Unit, Storage } from "./types";
-import { AssetTypes } from "./app/(management)/property/[id]/dashboard/manage-building-assets-hook";
+import { TUnitSchema } from "../lib/unit-validation-schemas";
+import { BuildingAssetType, Parking, Unit, Storage } from "../types";
+import { AssetTypes } from "../app/(management)/property/[id]/dashboard/manage-building-assets-hook";
 
 export async function createProperty(
   companyId: string,
@@ -45,13 +45,8 @@ export async function createUnit(
   data: TUnitSchema,
   token: string,
 ) {
-  const userData = {
-    ...data,
-    isOccupiedByRenter: getIsOccupiesByRenter(data.isOccupiedByRenter),
-  };
-
   try {
-    const res = await axios.post(`${API_URL}/unit/${buildingId}`, userData, {
+    const res = await axios.post(`${API_URL}/unit/${buildingId}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -62,10 +57,6 @@ export async function createUnit(
     throw new Error("could not create specified unit");
   }
 }
-
-const getIsOccupiesByRenter = (isOccupiedByRenter: string): boolean => {
-  return isOccupiedByRenter === "Yes";
-};
 
 export const fetchAssets = async (
   assetPage: BuildingAssetType,

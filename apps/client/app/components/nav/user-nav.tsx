@@ -1,9 +1,5 @@
 "use client";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import { Button } from "@/app/components/ui/button";
 import {
   DropdownMenu,
@@ -24,8 +20,8 @@ export function UserNav() {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  const logout = () => {
-    dispatch({ type: "auth/reset" });
+  const logout = async () => {
+    await dispatch({ type: "auth/reset" });
     router.push("/");
   };
 
