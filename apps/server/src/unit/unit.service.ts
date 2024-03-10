@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -22,6 +23,7 @@ import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
 import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
 import { ParkingService } from '../parking/parking.service';
 import { UnitModel } from './models/unit.model';
+import { response } from 'express';
 
 @Injectable()
 export class UnitService {
@@ -227,9 +229,8 @@ export class UnitService {
     const unit = await this.unitModel.findOne({ _id: unitId });
 
     if (!unit || !unit?.ownerId) {
-      throw new HttpException(
-        'Unit does not exist or not owned',
-        HttpStatus.BAD_REQUEST,
+      throw new NotFoundException(
+        'Unit not found or not associated with an owner',
       );
     }
 
