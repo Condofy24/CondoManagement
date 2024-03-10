@@ -321,7 +321,7 @@ export class UnitService {
     makeNewPaymentDto: MakeNewPaymentDto,
   ) {
     const { amount } = makeNewPaymentDto;
-    const unit = await this.unitModel.findById(unitId);
+    const unit = await this.unitModel.findOne({ _id: unitId });
 
     if (!unit || !unit?.ownerId) {
       throw new HttpException(
@@ -358,6 +358,8 @@ export class UnitService {
 
     unitPayments.save();
     unit.save();
+
+    return HttpStatus.NO_CONTENT;
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)

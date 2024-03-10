@@ -21,24 +21,7 @@ const unitServiceMock = {
   findOne: jest.fn(),
   findOwnerUnits: jest.fn(),
   findRenterUnit: jest.fn(),
-};
-
-const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
-  unitNumber: 4,
-};
-
-const buildingInfoTestData = {
-  _id: new ObjectId(),
-  companyId: new ObjectId(),
-  name: 'khaled',
-  address: 'aslkdjfalk',
-  unitCount: 56,
-  parkingCount: 53,
-  storageCount: 52,
-  fileUrl:
-    'https://res.cloudinary.com/dzu5t20lr/image/upload/v1708240883/wfypsvm',
-  filePublicId: 'wfypsvm4kykgjtxxolbn',
-  fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
+  makeNewPayment: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -208,6 +191,20 @@ describe('UnitController', () => {
 
       //Assert
       expect(result).toEqual(unitInfoTestData);
+    });
+  });
+  describe('makeNewPayment', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.makeNewPayment.mockResolvedValue(HttpStatus.NO_CONTENT);
+
+      //Act
+      const result = await controller.makeNewPayment('test-id', {
+        amount: 100,
+      });
+
+      //Assert
+      expect(result).toEqual(HttpStatus.NO_CONTENT);
     });
   });
 });

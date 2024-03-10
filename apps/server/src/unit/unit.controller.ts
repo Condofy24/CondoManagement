@@ -79,6 +79,6 @@ export class UnitController {
     @Param('unitId') unitId: string,
     @Body() makeNewPaymentDto: MakeNewPaymentDto,
   ) {
-    this.unitService.makeNewPayment(unitId, makeNewPaymentDto);
+    return this.unitService.makeNewPayment(unitId, makeNewPaymentDto);
   }
 }
