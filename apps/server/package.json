@@ -27,6 +27,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^4.0.1",
     "@nestjs/swagger": "^7.3.0",
     "@trpc/server": "^10.45.0",
     "@types/bcrypt": "^5.0.2",
@@ -89,7 +90,8 @@
       ".module.ts",
       "main.ts",
       ".dto.ts",
-      ".entity.ts"
+      ".entity.ts",
+      ".model.ts"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",

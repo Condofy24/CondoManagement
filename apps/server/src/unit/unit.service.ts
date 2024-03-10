@@ -23,12 +23,19 @@ import {
   RegistrationRoles,
 } from './entities/registration-key.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
+import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
+import { ParkingService } from '../parking/parking.service';
 
 @Injectable()
 export class UnitService {
   constructor(
     @InjectModel('Unit')
     private readonly unitModel: Model<UnitEntity>,
+    private readonly parkingService: ParkingService,
+    @InjectModel('Payments')
+    private readonly paymentsModel: Model<PaymentsEntity>,
     @InjectModel('RegistrationKey')
     private readonly registrationKeyModel: Model<RegistrationKeyEntity>,
     @Inject(forwardRef(() => UserService))
@@ -38,7 +45,8 @@ export class UnitService {
   ) {}
 
   public async createUnit(buildingId: string, createUnitDto: CreateUnitDto) {
-    const { unitNumber, size, isOccupiedByRenter, fees } = createUnitDto;
+    const { unitNumber, size, isOccupiedByRenter, lateFeesInterestRate, fees } =
+      createUnitDto;
 
     const building = await this.buildingService.findOne(buildingId);
 
@@ -49,6 +57,7 @@ export class UnitService {
       unitNumber,
       size,
       isOccupiedByRenter,
+      lateFeesInterestRate,
       fees,
     });
 
@@ -109,7 +118,8 @@ export class UnitService {
   }
 
   public async updateUnit(unitId: string, updateUnitDto: UpdateUnitDto) {
-    const { unitNumber, size, isOccupiedByRenter, fees } = updateUnitDto;
+    const { unitNumber, size, isOccupiedByRenter, lateFeesInterestRate, fees } =
+      updateUnitDto;
     const unit = await this.unitModel.findById(unitId);
     if (!unit) {
       throw new HttpException(
@@ -119,10 +129,11 @@ export class UnitService {
     }
 
     const result = await this.unitModel.findByIdAndUpdate(unitId, {
-      unitNumber: unitNumber,
-      size: size,
-      isOccupiedByRenter: isOccupiedByRenter,
-      fees: fees,
+      unitNumber,
+      size,
+      isOccupiedByRenter,
+      lateFeesInterestRate,
+      fees,
     }); // To return the updated document)
     if (result instanceof Error)
       return new HttpException(' ', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -149,6 +160,7 @@ export class UnitService {
         }) as UnitEntity,
     );
   }
+
   public async findOne(id: string) {
     const unit = await this.unitModel.findById({ _id: id }).exec();
     if (!unit) {
@@ -168,6 +180,7 @@ export class UnitService {
       fees: unit.fees,
     };
   }
+
   public async remove(id: string): Promise<any> {
     const unit = await this.unitModel.findById(id).exec();
     if (!unit) {
@@ -192,6 +205,7 @@ export class UnitService {
 
     return response.status(HttpStatus.NO_CONTENT);
   }
+
   public async linkUnitToUser(
     buildingId: string,
     userId: string,
@@ -247,6 +261,7 @@ export class UnitService {
       fees: unit.fees,
     };
   }
+
   public async findOwnerUnits(ownerId: string): Promise<UnitEntity[]> {
     const user = await this.userService.findUserById(ownerId);
     if (!user) {
@@ -273,6 +288,7 @@ export class UnitService {
         }) as UnitEntity,
     );
   }
+
   public async findRenterUnit(renterId: string) {
     const user = await this.userService.findUserById(renterId);
     if (!user) {
@@ -298,5 +314,75 @@ export class UnitService {
       isOccupiedByRenter: unit.isOccupiedByRenter,
       fees: unit.fees,
     };
+  }
+
+  public async makeNewPayment(
+    unitId: string,
+    makeNewPaymentDto: MakeNewPaymentDto,
+  ) {
+    const { amount } = makeNewPaymentDto;
+    const unit = await this.unitModel.findOne({ _id: unitId });
+
+    if (!unit || !unit?.ownerId) {
+      throw new HttpException(
+        'Unit does not exist or not owned',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let unitPayments = await this.paymentsModel.findOne({ unitId });
+    if (!unitPayments) {
+      unitPayments = await this.paymentsModel.create({ unitId });
+    }
+
+    let newOverdueFees = unit.overdueFees - amount;
+    let newMonthlyBalance = unit.monthlyFeesBalance;
+
+    if (newOverdueFees < 0) {
+      // Remove from monthly balance and reset overdue to 0
+      newMonthlyBalance += newOverdueFees; // overdue fees is negative -> add
+      newOverdueFees = 0;
+    }
+
+    unitPayments.record.push({
+      timeStamp: new Date(),
+      amount,
+      monthBalance: newMonthlyBalance,
+      overdueFees: newOverdueFees,
+      previousMonthBalance: unit?.monthlyFeesBalance,
+      previousOverdueFees: unit?.overdueFees,
+    } as IUnitPayment);
+
+    unit.monthlyFeesBalance = newMonthlyBalance;
+    unit.overdueFees = newOverdueFees;
+
+    unitPayments.save();
+    unit.save();
+
+    return response.status(HttpStatus.NO_CONTENT);
+  }
+
+  public async getUnitPayments(unitId: string): Promise<PaymentsEntity | null> {
+    return this.paymentsModel.findOne({ unitId });
+  }
+
+  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  async handleCron() {
+    const units = await this.unitModel.find();
+    units.forEach(async (unit) => {
+      if (unit.ownerId) {
+        // Reset monthly fees balance and add balance to overdue
+        const sumOfParkingFees = (
+          await this.parkingService.findByUnitId(unit.id)
+        )?.reduce((acc, current) => {
+          return (acc += current.fees);
+        }, 0);
+        unit.overdueFees +=
+          unit.monthlyFeesBalance +
+          unit.monthlyFeesBalance * (unit.lateFeesInterestRate / 100);
+        unit.monthlyFeesBalance = unit.fees + sumOfParkingFees;
+        await unit.save();
+      }
+    });
   }
 }

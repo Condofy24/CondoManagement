@@ -4,9 +4,7 @@ import { UnitController } from './unit.controller';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { LinkUnitToBuidlingDto } from './dto/link-unit-to-building.dto';
 import { ObjectId } from 'mongodb';
-import { UserEntity } from '../user/entities/user.entity';
 import { HttpStatus } from '@nestjs/common';
-import { UnitEntity } from './entities/unit.entity';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -23,24 +21,8 @@ const unitServiceMock = {
   findOne: jest.fn(),
   findOwnerUnits: jest.fn(),
   findRenterUnit: jest.fn(),
-};
-
-const linkUnitToBuildingDto: LinkUnitToBuidlingDto = {
-  unitNumber: 4,
-};
-
-const buildingInfoTestData = {
-  _id: new ObjectId(),
-  companyId: new ObjectId(),
-  name: 'khaled',
-  address: 'aslkdjfalk',
-  unitCount: 56,
-  parkingCount: 53,
-  storageCount: 52,
-  fileUrl:
-    'https://res.cloudinary.com/dzu5t20lr/image/upload/v1708240883/wfypsvm',
-  filePublicId: 'wfypsvm4kykgjtxxolbn',
-  fileAssetId: 'dc1dc5cbafbe598f40a9c1c8938e51c7',
+  makeNewPayment: jest.fn(),
+  getUnitPayments: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -94,6 +76,20 @@ const userInfoTestData2 = {
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
+};
+
+const paymentsTestData = {
+  unitId: new ObjectId(),
+  record: [
+    {
+      timeStamp: new Date(),
+      amount: 100,
+      monthBalance: 100,
+      overdueFees: 0,
+      previousMonthBalance: 0,
+      previousOverdueFees: 0,
+    },
+  ],
 };
 
 describe('UnitController', () => {
@@ -210,6 +206,32 @@ describe('UnitController', () => {
 
       //Assert
       expect(result).toEqual(unitInfoTestData);
+    });
+  });
+  describe('makeNewPayment', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.makeNewPayment.mockResolvedValue(HttpStatus.NO_CONTENT);
+
+      //Act
+      const result = await controller.makeNewPayment('test-id', {
+        amount: 100,
+      });
+
+      //Assert
+      expect(result).toEqual(HttpStatus.NO_CONTENT);
+    });
+  });
+  describe('getPayments', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      unitServiceMock.getUnitPayments.mockResolvedValue(paymentsTestData);
+
+      //Act
+      const result = await controller.getPayments('test-id');
+
+      //Assert
+      expect(result?.record?.[0]?.amount).toBe(100);
     });
   });
 });
