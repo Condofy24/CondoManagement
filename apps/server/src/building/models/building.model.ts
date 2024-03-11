@@ -6,6 +6,9 @@ export class BuildingModel {
   id: string;
 
   @ApiProperty()
+  name: string;
+
+  @ApiProperty()
   companyId: string;
 
   @ApiProperty()
@@ -32,6 +35,7 @@ export class BuildingModel {
   constructor(entity: BuildingEntity) {
     this.id = entity._id.toString();
     this.companyId = entity.companyId.toString();
+    this.name = entity.name;
     this.address = entity.address;
     this.unitCount = entity.unitCount;
     this.parkingCount = entity.parkingCount;

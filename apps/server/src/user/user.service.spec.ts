@@ -102,7 +102,7 @@ const createUserDtoTestData: CreateUserDto = {
   password: 'password',
   name: 'Test Manager',
   phoneNumber: '1224567890',
-  verfKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c',
+  registrationKey: '95ad47ea-82d1-4761-b283-5d37ef71c88c',
 };
 
 const updateUserDtoTestData: UpdateUserDto = {

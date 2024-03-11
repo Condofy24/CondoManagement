@@ -2,14 +2,14 @@ export interface User {
   email: string;
   id: string;
   name: string;
-  role: UserRolesEnum;
+  role: UserRoles;
   phoneNumber: string;
   imageUrl: string;
   imageId: string;
   companyId?: string;
 }
 
-export enum UserRolesEnum {
+export enum UserRoles {
   MANAGER = 0,
   STAFF = 1,
   ACCOUNTANT = 2,
@@ -18,27 +18,52 @@ export enum UserRolesEnum {
 }
 
 export type Property = {
+  id: string;
   name: string;
+  companyId: string;
   address: string;
-  units: number;
-  parking: number;
-  storage: number;
+  unitCount: number;
+  parkingCount: number;
+  storageCount: number;
+  fileUrl: string;
+  filePublicId: string;
+  fileAssetId: string;
+};
+
+export type RegistrationKey = {
+  key: string;
+  type: string;
+  isClaimed: boolean;
 };
 
 export type Unit = {
+  id: string;
+  buildingId: string;
+  ownerId?: string;
+  renterId?: string;
   unitNumber: number;
   size: number;
-  status: boolean;
+  isOccupiedByRenter: boolean;
   fees: number;
+  ownerKey?: RegistrationKey;
+  renterKey?: RegistrationKey;
 };
 
 export type Parking = {
+  id: string;
+  buildingId: string;
+  unitId?: string;
   parkingNumber: number;
+  isOccupiedByRenter: boolean;
   fees: number;
 };
 
 export type Storage = {
+  id: string;
+  buildingId: string;
+  unitId?: string;
   storageNumber: number;
+  isOccupiedByRenter: boolean;
   fees: number;
 };
 

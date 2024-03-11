@@ -42,7 +42,8 @@ export class ParkingService {
 
     const building = await this.buildingService.findBuildingById(buildingId);
 
-    if (!building) throw new BadRequestException('Invalid building Id');
+    if (!building)
+      throw new BadRequestException({ message: 'Invalid building Id' });
 
     const newParking = new this.parkingModel({
       buildingId: buildingId,
@@ -63,7 +64,10 @@ export class ParkingService {
           'A parking with the same storage parking already exists for this building.';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
 
     // update unit count of associted building
@@ -87,13 +91,16 @@ export class ParkingService {
     unitId: string,
   ): Promise<void> {
     const unit = await this.unitService.findUnitById(unitId);
-    if (!unit) throw new NotFoundException('Unit does not exist');
+    if (!unit) throw new NotFoundException({ message: 'Unit does not exist' });
 
     const parking = await this.parkingModel.findById(parkingId).exec();
 
-    if (!parking) throw new NotFoundException('Parking does not exist');
+    if (!parking)
+      throw new NotFoundException({ message: 'Parking does not exist' });
     if (parking.unitId)
-      throw new BadRequestException('Parking is already linked to a unit');
+      throw new BadRequestException({
+        message: 'Parking is already linked to a unit',
+      });
 
     await this.parkingModel.findOneAndUpdate(
       { _id: new ObjectId(parkingId) },
@@ -143,7 +150,8 @@ export class ParkingService {
         },
       );
 
-      if (!updatedParking) throw new NotFoundException('Parking not found');
+      if (!updatedParking)
+        throw new NotFoundException({ message: 'Parking not found' });
 
       return updatedParking;
     } catch (error) {
@@ -154,7 +162,10 @@ export class ParkingService {
           'A parking with the same parking number already exists for this building.';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
   }
 
@@ -169,7 +180,7 @@ export class ParkingService {
       .findOneAndRemove({ _id: id })
       .exec();
 
-    if (!parking) throw new NotFoundException('Parking not found');
+    if (!parking) throw new NotFoundException({ message: 'Parking not found' });
 
     const building = await this.buildingService.findBuildingById(
       parking.buildingId.toString(),

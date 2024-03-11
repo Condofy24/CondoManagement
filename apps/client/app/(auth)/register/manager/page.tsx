@@ -8,19 +8,17 @@ import {
   TSignupSchema,
   managerSignupSchema,
 } from "@/lib/validation-schemas";
-import { registerManager } from "@/redux/services/auth-service";
-import { AppDispatch } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UseFormRegister, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { registerManager } from "@/actions/auth-actions";
 
 export default function ManagerRegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [profilePicError, setProfilePicError] = useState<string | null>(null);
-  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   const {
@@ -31,17 +29,18 @@ export default function ManagerRegistrationPage() {
     resolver: zodResolver(managerSignupSchema),
   });
 
-  const onSubmit = (data: TManagerSignupSchema) => {
+  const onSubmit = async (data: TManagerSignupSchema) => {
     setLoading(true);
 
-    if (profilePic) {
-      dispatch(registerManager({ ...data, profilePic }));
+    try {
+      await registerManager({ ...data, profilePic });
+      toast.success("Registration successful");
       router.push("/login");
-    } else {
-      setProfilePicError("Profile picture is required");
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

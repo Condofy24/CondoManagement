@@ -57,7 +57,8 @@ export class UnitService {
 
     const building = await this.buildingService.findBuildingById(buildingId);
 
-    if (!building) throw new BadRequestException('Invalid building Id');
+    if (!building)
+      throw new BadRequestException({ message: 'Invalid building Id' });
 
     const unit = new this.unitModel({
       buildingId: building._id,
@@ -80,7 +81,10 @@ export class UnitService {
           'A unit with the same unit number already exists for this building.';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
 
     // generate the registration keys for the unit
@@ -125,7 +129,8 @@ export class UnitService {
         },
       );
 
-      if (!updatedUnit) throw new NotFoundException('Unit not found');
+      if (!updatedUnit)
+        throw new NotFoundException({ message: 'Unit not found' });
 
       return updatedUnit;
     } catch (error) {
@@ -136,7 +141,10 @@ export class UnitService {
           'A unit with the same unit number already exists for this building.';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
   }
 
@@ -182,7 +190,7 @@ export class UnitService {
   public async remove(id: string): Promise<void> {
     const unit = await this.unitModel.findOneAndRemove({ _id: id }).exec();
 
-    if (!unit) throw new NotFoundException('Unit not found');
+    if (!unit) throw new NotFoundException({ message: 'Unit not found' });
 
     const building = await this.buildingService.findBuildingById(
       unit.buildingId.toString(),
@@ -214,10 +222,12 @@ export class UnitService {
 
     const unit = await this.unitModel.findById(registrationKey.unitId);
 
-    if (!unit) throw new NotFoundException('Unit not found');
+    if (!unit) throw new NotFoundException({ message: 'Unit not found' });
 
     if (unit[associationKey])
-      throw new BadRequestException('Unit already associated with a user');
+      throw new BadRequestException({
+        message: 'Unit already associated with a user',
+      });
 
     await this.unitModel
       .findByIdAndUpdate(unit._id, {
@@ -273,7 +283,7 @@ export class UnitService {
   public async findAssociatedUnits(userId: string): Promise<UnitEntity[]> {
     const user = await this.userService.findUserById(userId);
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException({ message: 'User not found' });
 
     const filterKey = user.role == 3 ? 'ownerId' : 'renterId';
 
@@ -295,9 +305,9 @@ export class UnitService {
     const unit = await this.unitModel.findOne({ _id: unitId });
 
     if (!unit || !unit?.ownerId) {
-      throw new NotFoundException(
-        'Unit not found or not associated with an owner',
-      );
+      throw new NotFoundException({
+        message: 'Unit not found or not associated with an owner',
+      });
     }
 
     let unitPayments = await this.paymentsModel.findOne({ unitId });

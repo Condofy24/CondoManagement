@@ -7,9 +7,7 @@ import { Unit } from "@/types";
 
 export default function UnitForm() {
   const { asset, mode, setShowDialog } = useAssetManagement();
-  const { register, handleSubmit, errors, onSubmit } = useUnitForm({
-    isEditing: mode === "edit",
-  });
+  const { register, handleSubmit, errors, onSubmit } = useUnitForm();
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
@@ -18,7 +16,7 @@ export default function UnitForm() {
           Unit Number
         </label>
         <Input
-          {...register("unitNumber")}
+          {...register("unitNumber", { valueAsNumber: true })}
           id="unitNumber"
           placeholder="Unit Number"
           className="dark:bg-white dark:text-black"
@@ -36,11 +34,14 @@ export default function UnitForm() {
         <div>
           <label className="inline-flex items-center">
             <input
-              type="radio"
               {...register("isOccupiedByRenter")}
+              type="radio"
               id="occupiedYes"
               className="form-radio h-5 w-5 text-gray-600"
-              value={"Yes"}
+              value="yes"
+              defaultChecked={
+                mode === "edit" ? (asset as Unit).isOccupiedByRenter : true
+              }
             />
             <span className="ml-2">Yes</span>
           </label>
@@ -50,7 +51,10 @@ export default function UnitForm() {
               {...register("isOccupiedByRenter")}
               id="occupiedNo"
               className="form-radio h-5 w-5 text-gray-600"
-              value={"No"}
+              value="no"
+              defaultChecked={
+                mode === "edit" ? (asset as Unit).isOccupiedByRenter : false
+              }
             />
             <span className="ml-2">No</span>
           </label>

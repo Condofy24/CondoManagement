@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UnitEntity } from '../entities/unit.entity';
-import { Allow } from 'class-validator';
 import { RegistrationKeyModel } from './registration-key.model';
 import { RegistrationKeyEntity } from '../entities/registration-key.entity';
 

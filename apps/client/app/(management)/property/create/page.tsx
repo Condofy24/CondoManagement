@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { createProperty } from "@/actions";
+import { createProperty } from "@/actions/management-actions";
 
 export default function PropertyCreationPage() {
   const [loading, setLoading] = useState(false);
@@ -24,17 +24,20 @@ export default function PropertyCreationPage() {
 
   const onSubmit = async (data: TPropertySchema) => {
     if (propertyFile) {
-      const result = await createProperty(
-        admin?.companyId as string,
-        data,
-        propertyFile,
-        token as string,
-      );
-      if (result instanceof Error) {
-        toast.error("Error creating desired property");
-      } else {
-        toast.success("Property creation successful");
+      setLoading(true);
+      try {
+        await createProperty(
+          admin?.companyId as string,
+          data,
+          propertyFile,
+          token as string,
+        );
+        toast.success("Property created successfully");
         router.push("/dashboard");
+      } catch (error) {
+        toast.error((error as Error).message);
+      } finally {
+        setLoading(false);
       }
     }
   };

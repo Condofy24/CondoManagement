@@ -26,15 +26,18 @@ import {
   TableRow,
 } from "@/app/components/ui/table";
 import DataTableToolbar from "./data-table-toolbar";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  redirectPath?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  redirectPath = undefined,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -80,6 +83,13 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
+                {redirectPath && (
+                  <TableHeader
+                    key="redirect"
+                    aria-label="redirect-link"
+                  ></TableHeader>
+                )}
+
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} colSpan={header.colSpan}>
@@ -101,7 +111,19 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="relative h-[3rem]"
                 >
+                  {redirectPath && (
+                    <TableCell onClick={() => console.log("test")}>
+                      <Link
+                        className="absolute top-0 left-0 w-full h-[3rem]"
+                        href={redirectPath.replace(
+                          "id",
+                          (row.original as any).id,
+                        )}
+                      ></Link>
+                    </TableCell>
+                  )}
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(

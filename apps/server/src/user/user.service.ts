@@ -137,14 +137,14 @@ export class UserService {
     createUserDto: CreateUserDto,
     image?: Express.Multer.File,
   ): Promise<UserEntity> {
-    const { email, password, name, phoneNumber, verfKey } = createUserDto;
+    const { email, password, name, phoneNumber, registrationKey } =
+      createUserDto;
 
     // check if Key exists
-    const registrationKey =
-      await this.unitService.findUnitRegistrationKey(verfKey);
+    const key = await this.unitService.findUnitRegistrationKey(registrationKey);
 
-    if (!registrationKey)
-      throw new BadRequestException('Registration Key is invalid');
+    if (!key)
+      throw new BadRequestException({ message: 'Registration Key is invalid' });
 
     const { imageUrl, imageId } = await this.uploadProfileImage(image);
 
@@ -153,7 +153,7 @@ export class UserService {
       email,
       password,
       name,
-      role: registrationKey.type == 'owner' ? 3 : 4,
+      role: key.type == 'owner' ? 3 : 4,
       phoneNumber,
       imageUrl,
       imageId,
@@ -167,7 +167,7 @@ export class UserService {
 
       await this.unitService.linkUnitToUser(
         createdUser._id.toString(),
-        registrationKey,
+        key,
         session,
       );
 
@@ -180,10 +180,11 @@ export class UserService {
         error instanceof NotFoundException
       )
         throw error;
-      throw new BadRequestException(
-        error?.message,
-        this.getUserCreateErrorDescription(error),
-      );
+
+      throw new BadRequestException({
+        error: error?.message,
+        message: this.getUserCreateErrorDescription(error),
+      });
     } finally {
       session.endSession();
     }
@@ -216,7 +217,7 @@ export class UserService {
   public async remove(id: string): Promise<void> {
     const user = await this.userModel.findOneAndRemove({ _id: id }).exec();
 
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException({ message: 'User not found' });
   }
 
   /**
@@ -252,7 +253,9 @@ export class UserService {
     if (user.email != email) {
       const isUserAlreadyExist = await this.userModel.exists({ email: email });
       if (!!isUserAlreadyExist)
-        throw new BadRequestException('Email in use by another user.');
+        throw new BadRequestException({
+          message: 'Email in use by another user.',
+        });
     }
 
     if (user.phoneNumber != phoneNumber) {
@@ -260,7 +263,9 @@ export class UserService {
         phoneNumber: phoneNumber,
       });
       if (!!isUserAlreadyExist)
-        throw new BadRequestException('Phone number in use by another user.');
+        throw new BadRequestException({
+          message: 'Phone number in use by another user.',
+        });
     }
 
     if (newPassword) {
@@ -297,10 +302,10 @@ export class UserService {
           errorDescription = 'A user with the same phone number already exists';
       }
 
-      throw new BadRequestException(
-        error?.message,
-        this.getUserCreateErrorDescription(error),
-      );
+      throw new BadRequestException({
+        message: errorDescription,
+        error: error?.message,
+      });
     }
   }
 

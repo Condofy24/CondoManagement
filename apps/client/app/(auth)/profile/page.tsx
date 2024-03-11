@@ -4,6 +4,8 @@ import RegistationFormInputs from "@/app/components/form/registation-form-inputs
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import UseProfile from "./profile-hooks";
+import { UseFormRegister } from "react-hook-form";
+import { TSignupSchema, TManagerSignupSchema } from "@/lib/validation-schemas";
 
 const UserProfile = () => {
   const {
@@ -24,7 +26,9 @@ const UserProfile = () => {
       onSubmit={handleSubmit(onSubmit)}
     >
       <RegistationFormInputs
-        register={register}
+        register={
+          register as UseFormRegister<TSignupSchema | TManagerSignupSchema>
+        }
         errors={errors}
         profilePic={{ setProfilePic, profilePicError, setProfilePicError }}
         showImagePreview={true} // This prop indicates that we want to show an image preview
