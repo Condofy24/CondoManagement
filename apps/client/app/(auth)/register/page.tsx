@@ -33,12 +33,6 @@ export default function RegistrationPage() {
   const onSubmit = async (data: TSignupSchema) => {
     setLoading(true);
 
-    if (!profilePic) {
-      setProfilePicError("Profile picture is required");
-      setLoading(false);
-      return;
-    }
-
     try {
       await registerUser({ ...data, profilePic });
       toast.success("Registration successful");
@@ -93,6 +87,7 @@ export default function RegistrationPage() {
             `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
               loading ? "cursor-not-allowed opacity-50" : ""
             }`,
+            "bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10",
           )}
         >
           {loading ? (

@@ -1,8 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { User } from "@/types";
-import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
-import toast from "react-hot-toast";
 import { API_URL } from "@/global";
 
 interface LoginInput {
@@ -26,7 +24,6 @@ export const login = createAsyncThunk<LoginResult, LoginInput>(
 
       return data;
     } catch (error: any) {
-      // return custom error message from API if any
       if (error.response && error.response.data.message) {
         return rejectWithValue(error.response.data.message);
       } else {

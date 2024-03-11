@@ -23,7 +23,12 @@ export async function createProperty(
       },
     );
   } catch (error: any) {
-    return new Error("could not create specified property");
+    let message = "An error occured while creating property";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
   }
 }
 
@@ -36,7 +41,12 @@ export async function fetchProperties(companyId: string, token: string) {
     });
     return response.data;
   } catch (error: any) {
-    return new Error("could not fetch properties");
+    let message = "An error occurred while fetching properties";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
   }
 }
 
@@ -54,7 +64,12 @@ export async function createUnit(
 
     return res.status;
   } catch (error: any) {
-    throw new Error("could not create specified unit");
+    let message = "An error occurred while creating unit";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
   }
 }
 

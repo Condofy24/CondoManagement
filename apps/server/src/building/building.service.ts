@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  forwardRef,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,10 +6,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { CompanyService } from '../company/company.service';
 import { MongoServerError, ObjectId } from 'mongodb';
 import { error } from 'console';
-import { StorageService } from '../storage/storage.service';
-import { UnitService } from '../unit/unit.service';
 
-import { ParkingService } from '../parking/parking.service';
 import { BuildingEntity } from './entities/building.entity';
 
 /**
@@ -27,10 +19,6 @@ export class BuildingService {
     private readonly buildingModel: Model<BuildingEntity>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
-    @Inject(forwardRef(() => UnitService))
-    private unitService: UnitService,
-    private parkingService: ParkingService,
-    private storageService: StorageService,
   ) {}
 
   /**
@@ -46,13 +34,15 @@ export class BuildingService {
     file: Express.Multer.File,
     companyId: string,
   ) {
-    if (!file) throw new BadRequestException('Building file is required');
+    if (!file)
+      throw new BadRequestException({ message: 'Building file is required' });
 
     const { name, address } = createBuildingDto;
 
     const companyExists = await this.companyService.findCompanyById(companyId);
 
-    if (!companyExists) throw new BadRequestException('Invalid company Id');
+    if (!companyExists)
+      throw new BadRequestException({ message: 'Invalid company Id' });
 
     const {
       secure_url: fileUrl,
@@ -81,7 +71,10 @@ export class BuildingService {
           'Building could not be created due to unique constraint violation';
       }
 
-      throw new BadRequestException(e?.message, errorDescription);
+      throw new BadRequestException({
+        message: errorDescription,
+        error: e?.message,
+      });
     }
   }
 
@@ -100,7 +93,8 @@ export class BuildingService {
   ): Promise<BuildingEntity> {
     const building = await this.buildingModel.findById(buildingId);
 
-    if (!building) throw new BadRequestException("Building doesn't exists");
+    if (!building)
+      throw new BadRequestException({ message: "Building doesn't exists" });
 
     if (file) {
       const {
@@ -130,11 +124,13 @@ export class BuildingService {
       let errorDescription = 'Building could not be updated';
 
       if (error instanceof MongoServerError && error.code === 11000) {
-        errorDescription =
-          'Building could not be updated due to unique constraint violation';
+        errorDescription = 'Building with the same name already exists';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        message: errorDescription,
+        error: error?.message,
+      });
     }
   }
 

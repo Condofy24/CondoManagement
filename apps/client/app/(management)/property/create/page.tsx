@@ -24,17 +24,20 @@ export default function PropertyCreationPage() {
 
   const onSubmit = async (data: TPropertySchema) => {
     if (propertyFile) {
-      const result = await createProperty(
-        admin?.companyId as string,
-        data,
-        propertyFile,
-        token as string,
-      );
-      if (result instanceof Error) {
-        toast.error("Error creating desired property");
-      } else {
-        toast.success("Property creation successful");
+      setLoading(true);
+      try {
+        await createProperty(
+          admin?.companyId as string,
+          data,
+          propertyFile,
+          token as string,
+        );
+        toast.success("Property created successfully");
         router.push("/dashboard");
+      } catch (error) {
+        toast.error((error as Error).message);
+      } finally {
+        setLoading(false);
       }
     }
   };

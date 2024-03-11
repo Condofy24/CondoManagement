@@ -2,7 +2,9 @@ import { API_URL } from "@/global";
 import { TManagerSignupSchema, TSignupSchema } from "@/lib/validation-schemas";
 import axios from "axios";
 
-export async function registerUser(user: TSignupSchema | { profilePic: File }) {
+export async function registerUser(
+  user: TSignupSchema | { profilePic: File | null },
+) {
   const { profilePic, ...userInfo } = user as any;
   try {
     await axios.post(
@@ -16,6 +18,7 @@ export async function registerUser(user: TSignupSchema | { profilePic: File }) {
     );
   } catch (error: any) {
     let message = "An error occurred while registering your account";
+
     if (error.response && error.response.data.message)
       message = error.response.data.message;
 
@@ -24,7 +27,7 @@ export async function registerUser(user: TSignupSchema | { profilePic: File }) {
 }
 
 export async function registerManager(
-  manager: TManagerSignupSchema | { profilePic: File },
+  manager: TManagerSignupSchema | { profilePic: File | null },
 ) {
   try {
     const { profilePic, company, address, ...managerData } = manager as any;
@@ -45,6 +48,7 @@ export async function registerManager(
     );
   } catch (error: any) {
     let message = "An error occurred while registering your account";
+
     if (error.response && error.response.data.message)
       message = error.response.data.message;
 

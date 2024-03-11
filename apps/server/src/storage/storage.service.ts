@@ -42,7 +42,8 @@ export class StorageService {
 
     const building = await this.buildingService.findBuildingById(buildingId);
 
-    if (!building) throw new BadRequestException('Invalid building Id');
+    if (!building)
+      throw new BadRequestException({ message: 'Invalid building Id' });
 
     const newStorage = new this.storageModel({
       buildingId: buildingId,
@@ -63,7 +64,10 @@ export class StorageService {
           'A storage with the same storage number already exists for this building.';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
 
     // update unit count of associted building
@@ -87,13 +91,16 @@ export class StorageService {
     unitId: string,
   ): Promise<void> {
     const unit = await this.unitService.findUnitById(unitId);
-    if (!unit) throw new NotFoundException('Unit does not exist');
+    if (!unit) throw new NotFoundException({ message: 'Unit does not exist' });
 
     const storage = await this.storageModel.findById(storageId).exec();
 
-    if (!storage) throw new NotFoundException('Storage does not exist');
+    if (!storage)
+      throw new NotFoundException({ message: 'Storage does not exist' });
     if (storage.unitId)
-      throw new BadRequestException('Storage is already linked to a unit');
+      throw new BadRequestException({
+        message: 'Storage is already linked to a unit',
+      });
 
     await this.storageModel.findOneAndUpdate(
       { _id: new ObjectId(storageId) },
@@ -135,7 +142,8 @@ export class StorageService {
         },
       );
 
-      if (!updatedStorage) throw new NotFoundException('Storage not found');
+      if (!updatedStorage)
+        throw new NotFoundException({ message: 'Storage not found' });
 
       return updatedStorage;
     } catch (error) {
@@ -146,7 +154,10 @@ export class StorageService {
           'A storage with the same storage number already exists for this building.';
       }
 
-      throw new BadRequestException(error?.message, errorDescription);
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
   }
 
@@ -160,7 +171,7 @@ export class StorageService {
       .findOneAndRemove({ _id: id })
       .exec();
 
-    if (!storage) throw new NotFoundException('Storage not found');
+    if (!storage) throw new NotFoundException({ message: 'Storage not found' });
 
     const building = await this.buildingService.findBuildingById(
       storage.buildingId.toString(),

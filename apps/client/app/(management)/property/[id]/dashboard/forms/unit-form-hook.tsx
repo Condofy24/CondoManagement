@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 export default function useUnitForm() {
   const buildingId = useParams().id;
   const { token } = useAppSelector((state) => state.auth.value);
-  const { mode } = useAssetManagement();
+  const { mode, setShowDialog } = useAssetManagement();
 
   const {
     register,
@@ -24,12 +24,12 @@ export default function useUnitForm() {
     if (mode === "edit") {
       // Edit unit
     } else {
-      const res = await createUnit(buildingId as string, data, token as string);
-
-      if (res === 201) {
+      try {
+        await createUnit(buildingId as string, data, token as string);
         toast.success("Unit created successfully");
-      } else {
-        toast.error("Failed to create unit");
+        setShowDialog(false);
+      } catch (error) {
+        toast.error((error as Error).message);
       }
     }
   };

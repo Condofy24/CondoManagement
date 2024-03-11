@@ -32,12 +32,6 @@ export default function ManagerRegistrationPage() {
   const onSubmit = async (data: TManagerSignupSchema) => {
     setLoading(true);
 
-    if (!profilePic) {
-      setProfilePicError("Profile picture is required");
-      setLoading(false);
-      return;
-    }
-
     try {
       await registerManager({ ...data, profilePic });
       toast.success("Registration successful");
