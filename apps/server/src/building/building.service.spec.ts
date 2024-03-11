@@ -99,21 +99,14 @@ const mongoUniqueIndexException: MongoServerError = {
 const companyServiceMock = {
   findCompanyById: jest.fn().mockResolvedValue(companyInfoTestData),
 };
-const unitServiceMock = {
-  findAll: jest.fn().mockResolvedValue([]),
-};
-const parkingServiceMock = {
-  findAll: jest.fn().mockResolvedValue([]),
-};
-const storageServiceMock = {
-  findAll: jest.fn().mockResolvedValue([]),
-};
 const userServiceMock = {
   findOne: jest.fn(),
 };
 const jwtServiceMock = {
   signAsync: jest.fn(),
 };
+
+const unitServiceMock = {};
 
 describe('BuildingService', () => {
   let service: BuildingService;
@@ -145,14 +138,6 @@ describe('BuildingService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
-        },
-        {
-          provide: ParkingService,
-          useValue: parkingServiceMock,
-        },
-        {
-          provide: StorageService,
-          useValue: storageServiceMock,
         },
       ],
     }).compile();

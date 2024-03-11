@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,6 +13,7 @@ import { MongoServerError, ObjectId } from 'mongodb';
 import { error } from 'console';
 
 import { BuildingEntity } from './entities/building.entity';
+import { UnitService } from '../unit/unit.service';
 
 /**
  * Service class for managing buildings.
@@ -19,6 +25,8 @@ export class BuildingService {
     private readonly buildingModel: Model<BuildingEntity>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
+    @Inject(forwardRef(() => UnitService))
+    private unitService: UnitService,
   ) {}
 
   /**

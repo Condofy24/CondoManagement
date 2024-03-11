@@ -165,6 +165,7 @@ describe('UnitService', () => {
           provide: getModelToken('Unit'),
           useValue: UnitModel,
         },
+        { provide: ParkingService, useValue: parkingServiceMock },
         {
           provide: getModelToken('Payments'),
           useValue: PaymentsModel,
@@ -173,7 +174,6 @@ describe('UnitService', () => {
           provide: getModelToken('RegistrationKey'),
           useValue: RegistationKeyModel,
         },
-        { provide: ParkingService, useValue: parkingServiceMock },
         {
           provide: BuildingService,
           useValue: buildingServiceMock,
