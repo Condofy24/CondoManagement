@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { RegistrationKey, Unit } from "@/types";
+import { RegistrationKey, Unit, UnitCol } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -60,7 +60,7 @@ const RegistrationKeysPopover = ({
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    ownerKey.isClaimed ? "bg-red-400" : "bg-green-400",
+                    ownerKey.isClaimed ? "bg-red-400" : "bg-green-400"
                   )}
                 >
                   {ownerKey.isClaimed ? "Claimed" : "Available"}
@@ -85,7 +85,7 @@ const RegistrationKeysPopover = ({
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    renterKey.isClaimed ? "bg-red-400" : "bg-green-400",
+                    renterKey.isClaimed ? "bg-red-400" : "bg-green-400"
                   )}
                 >
                   {renterKey.isClaimed ? "Claimed" : "Available"}
@@ -135,7 +135,7 @@ const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
   );
 };
 
-export const unitColumns: ColumnDef<Unit>[] = [
+export const unitColumns: ColumnDef<UnitCol>[] = [
   {
     accessorKey: "unitNumber",
     header: ({ column }) => {
@@ -151,18 +151,22 @@ export const unitColumns: ColumnDef<Unit>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: StatusCell,
-  },
-  {
     accessorKey: "size",
-    header: "Size",
+    header: "Size (sqr feet)",
   },
 
   {
     accessorKey: "fees",
-    header: "Fees",
+    header: "Fees ($/sqr foot)",
+  },
+  {
+    accessorKey: "financialStatus",
+    header: "Financial Status",
+  },
+  {
+    accessorKey: "availability",
+    header: "Availability",
+    cell: StatusCell,
   },
   {
     header: "Registration Keys",

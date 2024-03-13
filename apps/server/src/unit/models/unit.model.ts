@@ -58,6 +58,7 @@ export class UnitModel {
     this.lateFeesInterestRate = entity.lateFeesInterestRate;
     this.monthlyFeesBalance = entity.monthlyFeesBalance;
     this.overdueFees = entity.overdueFees;
+    this.fees = entity.fees;
 
     if (ownerKey) this.ownerKey = new RegistrationKeyModel(ownerKey);
     if (renterKey) this.renterKey = new RegistrationKeyModel(renterKey);

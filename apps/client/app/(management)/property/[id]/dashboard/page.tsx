@@ -1,7 +1,13 @@
 "use client";
 
 import { ManagerOptions } from "./manager-options";
-import { BuildingAssetType, Parking, Unit, Storage } from "@/types";
+import {
+  BuildingAssetType,
+  Parking,
+  Unit,
+  Storage,
+  IFinancialStatus,
+} from "@/types";
 import UseAssets from "./manage-building-assets-hook";
 import { unitColumns } from "./table-columns/unit-columns";
 import { assetsColumns } from "./table-columns/assets-columns";
@@ -48,9 +54,18 @@ const getTable = (
   assets: Unit[] | Parking[] | Storage[]
 ) => {
   switch (assetPage) {
-    case BuildingAssetType.unit:
-      return <DataTable columns={unitColumns} data={assets as Unit[]} />;
-
+    case BuildingAssetType.unit: {
+      const mappedAssets = (assets as Unit[]).map((asset: Unit) => ({
+        ...asset,
+        availability: asset.ownerKey?.isClaimed || asset.renterKey?.isClaimed,
+        financialStatus: (asset.overdueFees && asset.overdueFees > 0
+          ? "Overdue Fees"
+          : asset.monthlyFeesBalance && asset.monthlyFeesBalance > 0
+            ? "Monthly Fees Due"
+            : "Paid") as IFinancialStatus,
+      }));
+      return <DataTable columns={unitColumns} data={mappedAssets} />;
+    }
     case BuildingAssetType.parking:
       return (
         <DataTable
