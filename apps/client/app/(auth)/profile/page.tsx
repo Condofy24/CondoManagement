@@ -5,7 +5,10 @@ import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import UseProfile from "./profile-hooks";
 import { UseFormRegister } from "react-hook-form";
-import { TSignupSchema, TManagerSignupSchema } from "@/lib/validation-schemas";
+import {
+  TManagerSignupSchema,
+  TResidentSignupSchema,
+} from "@/lib/validation-schemas";
 
 const UserProfile = () => {
   const {
@@ -27,7 +30,9 @@ const UserProfile = () => {
     >
       <RegistrationFormInputs
         register={
-          register as UseFormRegister<TSignupSchema | TManagerSignupSchema>
+          register as UseFormRegister<
+            TResidentSignupSchema | TManagerSignupSchema
+          >
         }
         errors={errors}
         profilePic={{ setProfilePic, profilePicError, setProfilePicError }}

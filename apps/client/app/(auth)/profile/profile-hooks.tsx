@@ -1,4 +1,8 @@
-import { TSignupSchema, signupSchema } from "@/lib/validation-schemas";
+import {
+  TResidentSignupSchema,
+  TSignupSchema,
+  residentSignupSchema,
+} from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -23,9 +27,9 @@ export default function UseProfile() {
     formState: { errors },
     reset,
     formState,
-  } = useForm<TSignupSchema>({
+  } = useForm<TResidentSignupSchema>({
     defaultValues: user, // Set the default values as the current user data
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(residentSignupSchema),
   });
 
   const onSubmit = async (data: TSignupSchema) => {

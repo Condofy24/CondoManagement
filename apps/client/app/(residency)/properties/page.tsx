@@ -20,12 +20,6 @@ import toast from "react-hot-toast";
 
 export default function OwnerPropertiesDashboardPage() {
   const { loggedIn, user, token } = useAppSelector((state) => state.auth.value);
-
-  const isOwner = user?.role === 4;
-  if (!loggedIn || !isOwner) {
-    return notFound();
-  }
-
   const [loading, setLoading] = useState(false);
 
   const {
@@ -35,6 +29,11 @@ export default function OwnerPropertiesDashboardPage() {
   } = useForm<TUnitKeySchema>({
     resolver: zodResolver(unitKeySchema),
   });
+
+  const isOwner = user?.role === 4;
+  if (!loggedIn || !isOwner) {
+    return notFound();
+  }
 
   const onSubmit = async (data: TUnitKeySchema) => {
     setLoading(true);
