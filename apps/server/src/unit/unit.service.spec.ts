@@ -1,4 +1,9 @@
-import { BadRequestException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientSession, MongoServerError, ObjectId } from 'mongodb';
@@ -239,6 +244,40 @@ describe('UnitService', () => {
       ).rejects.toThrow(BadRequestException);
     });
   });
+
+  describe('claimOwnerUnit', () => {
+    it('should throw an error if user not found', async () => {
+      // Arrange
+      userServiceMock.findUserById.mockResolvedValue(null);
+
+      // Act and Assert
+      await expect(service.claimOwnerUnit('key', 'userId')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw an error if user doesnt have owner role', async () => {
+      // Arrange
+      userServiceMock.findUserById.mockResolvedValue({ role: 3 });
+
+      // Act and Assert
+      await expect(service.claimOwnerUnit('key', 'userId')).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw an error if key not found', async () => {
+      // Arrange
+      userServiceMock.findUserById.mockResolvedValue({ role: 4 });
+      mockingoose(RegistationKeyModel).toReturn(null, 'findOne');
+
+      // Act and Assert
+      await expect(service.claimOwnerUnit('key', 'userId')).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+  });
+
   describe('findAll', () => {
     it('should return all the units in a specific building given a valid buildingId', async () => {
       //Arrange

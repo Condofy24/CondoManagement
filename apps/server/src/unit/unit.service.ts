@@ -203,6 +203,43 @@ export class UnitService {
     });
   }
 
+  public async claimOwnerUnit(userId: string, unitKey: string) {
+    const user = await this.userService.findUserById(userId);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.role !== 4)
+      throw new BadRequestException({
+        message: 'Must be an owner to claim a unit',
+      });
+
+    const key = await this.findUnitRegistrationKey(unitKey);
+
+    if (!key) throw new BadRequestException({ message: 'Invalid unit key.' });
+
+    const session = await this.unitModel.db.startSession();
+    session.startTransaction();
+
+    try {
+      await this.linkUnitToUser(userId, key, session);
+
+      await session.commitTransaction();
+    } catch (error) {
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      )
+        throw error;
+
+      throw new BadRequestException({
+        error: error?.message,
+        message: error?.message || "Couldn't claim unit",
+      });
+    } finally {
+      session.endSession();
+    }
+  }
+
   /**
    * Links a unit to a user using the provided registration key.
    * Throws an exception if the unit is not found or if it is already associated with a user.
@@ -226,7 +263,7 @@ export class UnitService {
 
     if (unit[associationKey])
       throw new BadRequestException({
-        message: 'Unit already associated with a user',
+        message: 'Invalid Key',
       });
 
     await this.unitModel

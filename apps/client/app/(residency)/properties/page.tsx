@@ -1,4 +1,5 @@
 "use client";
+import { claimOwnerUnit } from "@/actions/resident-actions";
 import FormFieldError from "@/app/components/form/form-field-error";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { Button } from "@/app/components/ui/button";
@@ -18,7 +19,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 export default function OwnerPropertiesDashboardPage() {
-  const { loggedIn, user } = useAppSelector((state) => state.auth.value);
+  const { loggedIn, user, token } = useAppSelector((state) => state.auth.value);
 
   const isOwner = user?.role === 4;
   if (!loggedIn || !isOwner) {
@@ -39,7 +40,8 @@ export default function OwnerPropertiesDashboardPage() {
     setLoading(true);
 
     try {
-      toast.success("Registration successful");
+      await claimOwnerUnit(data, token as string);
+      toast.success("Unit claimed");
     } catch (error) {
       toast.error((error as Error).message);
     } finally {
