@@ -62,7 +62,7 @@ export default function OwnerPropertiesDashboardPage() {
           <Card>
             <Popover>
               <PopoverTrigger>
-                <Button>Claim new unit</Button>
+                <Button>Claim Property</Button>
               </PopoverTrigger>
               <PopoverContent>
                 <form
@@ -72,7 +72,7 @@ export default function OwnerPropertiesDashboardPage() {
                   <div className="flex flex-col items-start mt-2 mb-2 dark:bg-gray-800 p-4 border-1 shadow-black border-gray-700 bg-gray-200/45 rounded-lg">
                     <div className="flex flex-col w-full">
                       <h2 className=" flex justify-center mb-3 px-3 text-white outline-none font-semibold text-lg text-gray-700/90 dark:text-white/80">
-                        Condo Key
+                        Property Key
                       </h2>
 
                       <div className="flex-grow flex flex-col">
