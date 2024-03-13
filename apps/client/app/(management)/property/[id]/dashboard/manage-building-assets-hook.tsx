@@ -10,7 +10,7 @@ export type AssetTypes = Unit[] | Parking[] | Storage[];
 
 export default function useBuildingAsset() {
   const [assetPage, setAssetPage] = useState<BuildingAssetType>(
-    BuildingAssetType.unit
+    BuildingAssetType.unit,
   );
   const { setCurrentAssets, currentAssets } = useAssetManagement();
   const { token } = useAppSelector((state) => state.auth.value);
@@ -21,7 +21,7 @@ export default function useBuildingAsset() {
       const data = await fetchAssets(
         assetPage,
         buildingId as string,
-        token as string
+        token as string,
       );
       setCurrentAssets(data as AssetTypes);
     } catch (error) {

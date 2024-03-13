@@ -52,7 +52,7 @@ const getTitle = (assetPage: BuildingAssetType, assetID: string) => {
 
 const getTable = (
   assetPage: BuildingAssetType,
-  assets: Unit[] | Parking[] | Storage[]
+  assets: Unit[] | Parking[] | Storage[],
 ) => {
   switch (assetPage) {
     case BuildingAssetType.unit: {

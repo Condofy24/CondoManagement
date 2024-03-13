@@ -60,7 +60,7 @@ const RegistrationKeysPopover = ({
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    ownerKey.isClaimed ? "bg-red-400" : "bg-green-400"
+                    ownerKey.isClaimed ? "bg-red-400" : "bg-green-400",
                   )}
                 >
                   {ownerKey.isClaimed ? "Claimed" : "Available"}
@@ -85,7 +85,7 @@ const RegistrationKeysPopover = ({
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    renterKey.isClaimed ? "bg-red-400" : "bg-green-400"
+                    renterKey.isClaimed ? "bg-red-400" : "bg-green-400",
                   )}
                 >
                   {renterKey.isClaimed ? "Claimed" : "Available"}

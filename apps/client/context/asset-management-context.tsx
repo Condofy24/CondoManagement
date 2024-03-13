@@ -64,7 +64,7 @@ export const useAssetManagement = () => {
 
   if (context === null) {
     throw new Error(
-      "useAssetManagement must be used within an AssetManagementContextProvider"
+      "useAssetManagement must be used within an AssetManagementContextProvider",
     );
   }
 
