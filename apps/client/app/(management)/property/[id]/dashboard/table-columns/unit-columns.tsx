@@ -108,7 +108,8 @@ const RegistrationKeysPopover = ({
 };
 
 const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
-  const { setAsset, setMode, setShowDialog } = useAssetManagement();
+  const { setAsset, setMode, setShowPaymentDialog, setShowDialog } =
+    useAssetManagement();
 
   return (
     <DropdownMenu>
@@ -129,6 +130,14 @@ const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
           }}
         >
           Edit Unit details
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setAsset(unit);
+            setShowPaymentDialog(true);
+          }}
+        >
+          Add Payment
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

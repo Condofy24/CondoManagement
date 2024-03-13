@@ -11,7 +11,9 @@ type Mode = "create" | "edit";
 
 type AssetManagementContextType = {
   showDialog: boolean;
+  showPaymentDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
+  setShowPaymentDialog: Dispatch<SetStateAction<boolean>>;
   mode: Mode;
   setMode: Dispatch<SetStateAction<Mode>>;
   asset: BuildingAsset | null;
@@ -29,6 +31,7 @@ export default function AssetManagementContextProvider({
   children,
 }: AssetManagementContextProviderProps) {
   const [showDialog, setShowDialog] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [asset, setAsset] = useState<BuildingAsset | null>(null);
   const [mode, setMode] = useState<Mode>("create");
 
@@ -40,6 +43,8 @@ export default function AssetManagementContextProvider({
         mode,
         setMode,
         asset,
+        showPaymentDialog,
+        setShowPaymentDialog,
         setAsset,
       }}
     >
@@ -53,7 +58,7 @@ export const useAssetManagement = () => {
 
   if (context === null) {
     throw new Error(
-      "useAssetManagement must be used within an AssetManagementContextProvider",
+      "useAssetManagement must be used within an AssetManagementContextProvider"
     );
   }
 
