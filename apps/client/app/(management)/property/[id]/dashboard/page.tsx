@@ -13,7 +13,6 @@ import { unitColumns } from "./table-columns/unit-columns";
 import { assetsColumns } from "./table-columns/assets-columns";
 import CreateUpdateAssetModal from "./create-update-asset-modal";
 import { DataTable } from "@/app/components/table/data-table";
-import AssetManagementContextProvider from "@/context/asset-management-context";
 import { useParams } from "next/navigation";
 import AddPaymentModal from "./make-payment-modal";
 
@@ -22,23 +21,21 @@ export default function AssetsDashboard() {
   const assetID = useParams().id;
 
   return (
-    <AssetManagementContextProvider>
-      <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
-        <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
-          {getTitle(assetPage, assetID as string)}
-        </p>
-        <div className="w:fit">
-          <ManagerOptions setAssetPage={setAssetPage} />
-        </div>
-        <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
-          <CreateUpdateAssetModal assetName={assetPage} />
-        </div>
-        <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
-          <AddPaymentModal />
-        </div>
-        {getTable(assetPage, assets)}
+    <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
+      <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
+        {getTitle(assetPage, assetID as string)}
+      </p>
+      <div className="w:fit">
+        <ManagerOptions setAssetPage={setAssetPage} />
       </div>
-    </AssetManagementContextProvider>
+      <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
+        <CreateUpdateAssetModal assetName={assetPage} />
+      </div>
+      <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
+        <AddPaymentModal />
+      </div>
+      {getTable(assetPage, assets)}
+    </div>
   );
 }
 
@@ -63,11 +60,12 @@ const getTable = (
         ...asset,
         availability: asset.ownerKey?.isClaimed || asset.renterKey?.isClaimed,
         financialStatus: (asset.overdueFees && asset.overdueFees > 0
-          ? "Overdue Fees"
+          ? `Overdue Fees: ${asset.overdueFees}`
           : asset.monthlyFeesBalance && asset.monthlyFeesBalance > 0
-            ? "Monthly Fees Due"
-            : "Paid") as IFinancialStatus,
+            ? `Monthly Fees Due: ${asset.monthlyFeesBalance}`
+            : `Paid: $ ${asset.monthlyFeesBalance} balance`) as IFinancialStatus,
       }));
+      console.log(mappedAssets);
       return <DataTable columns={unitColumns} data={mappedAssets} />;
     }
     case BuildingAssetType.parking:

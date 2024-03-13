@@ -3,6 +3,7 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
+import AssetManagementContextProvider from "@/context/asset-management-context";
 
 type ManagementLayoutProps = {
   children: React.ReactNode;
@@ -13,5 +14,9 @@ export default function ManagementLayout({ children }: ManagementLayoutProps) {
 
   if (!loggedIn) return notFound();
 
-  return <div>{children}</div>;
+  return (
+    <AssetManagementContextProvider>
+      <div>{children}</div>
+    </AssetManagementContextProvider>
+  );
 }

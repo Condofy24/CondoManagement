@@ -1,4 +1,5 @@
 import { fetchAssets } from "@/actions/management-actions";
+import { useAssetManagement } from "@/context/asset-management-context";
 import { useAppSelector } from "@/redux/store";
 import { BuildingAssetType, Parking, Storage, Unit } from "@/types";
 import { useParams } from "next/navigation";
@@ -9,28 +10,28 @@ export type AssetTypes = Unit[] | Parking[] | Storage[];
 
 export default function useBuildingAsset() {
   const [assetPage, setAssetPage] = useState<BuildingAssetType>(
-    BuildingAssetType.unit,
+    BuildingAssetType.unit
   );
+  const { setCurrentAssets, currentAssets } = useAssetManagement();
   const { token } = useAppSelector((state) => state.auth.value);
   const { id: buildingId } = useParams();
-  const [assets, setAssets] = useState<AssetTypes>([]);
+
+  const getAssetsByPage = async () => {
+    try {
+      const data = await fetchAssets(
+        assetPage,
+        buildingId as string,
+        token as string
+      );
+      setCurrentAssets(data as AssetTypes);
+    } catch (error) {
+      toast.error("Error fetching assets: " + error);
+    }
+  };
 
   useEffect(() => {
-    const getAssetsByPage = async () => {
-      try {
-        const data = await fetchAssets(
-          assetPage,
-          buildingId as string,
-          token as string,
-        );
-        setAssets(data);
-      } catch (error) {
-        toast.error("Error fetching assets: " + error);
-      }
-    };
-
     getAssetsByPage();
   }, [assetPage, buildingId, token]);
 
-  return { assetPage, setAssetPage, assets };
+  return { assetPage, getAssetsByPage, setAssetPage, assets: currentAssets };
 }

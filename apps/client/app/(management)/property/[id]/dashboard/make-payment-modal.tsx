@@ -11,7 +11,7 @@ import { Unit } from "@/types";
 export default function AddPaymentModal() {
   const { showPaymentDialog, setShowPaymentDialog, asset } =
     useAssetManagement();
-  console.log(asset);
+
   return (
     <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
       <DialogContent>
