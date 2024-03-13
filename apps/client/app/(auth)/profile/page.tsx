@@ -1,11 +1,14 @@
 "use client";
 
-import RegistationFormInputs from "@/app/components/form/registation-form-inputs";
+import RegistrationFormInputs from "@/app/components/form/registation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import UseProfile from "./profile-hooks";
 import { UseFormRegister } from "react-hook-form";
-import { TSignupSchema, TManagerSignupSchema } from "@/lib/validation-schemas";
+import {
+  TManagerSignupSchema,
+  TResidentSignupSchema,
+} from "@/lib/validation-schemas";
 
 const UserProfile = () => {
   const {
@@ -25,9 +28,11 @@ const UserProfile = () => {
       className="w-full max-w-md text-primary"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <RegistationFormInputs
+      <RegistrationFormInputs
         register={
-          register as UseFormRegister<TSignupSchema | TManagerSignupSchema>
+          register as UseFormRegister<
+            TResidentSignupSchema | TManagerSignupSchema
+          >
         }
         errors={errors}
         profilePic={{ setProfilePic, profilePicError, setProfilePicError }}

@@ -5,11 +5,15 @@ import axios from "axios";
 export async function registerUser(
   user: TSignupSchema | { profilePic: File | null },
 ) {
-  const { profilePic, ...userInfo } = user as any;
+  const {
+    profilePic: image,
+    unitKey: registrationKey,
+    ...userInfo
+  } = user as any;
   try {
     await axios.post(
       `${API_URL}/user`,
-      { image: profilePic, ...userInfo },
+      { image, registrationKey, ...userInfo },
       {
         headers: {
           "Content-Type": "multipart/form-data",

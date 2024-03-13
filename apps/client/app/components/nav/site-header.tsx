@@ -1,5 +1,5 @@
 "use client";
-import { MainNav } from "@/app/components/nav/main-nav";
+import { ResidentNav } from "@/app/components/nav/resident-nav";
 import { ModeToggle } from "../theme/theme-toggle";
 import { UserNav } from "./user-nav";
 import { useAppSelector } from "@/redux/store";
@@ -41,7 +41,7 @@ export function SiteHeader() {
         ) : isStaff ? (
           <StaffNav />
         ) : (
-          <MainNav />
+          <ResidentNav />
         )}
 
         <div className="flex flex-1 items-center justify-end space-x-2 md:justify-end">

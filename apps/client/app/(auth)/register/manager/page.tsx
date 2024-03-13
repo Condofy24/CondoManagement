@@ -1,11 +1,11 @@
 "use client";
 import FormFieldError from "@/app/components/form/form-field-error";
-import RegistationFormInputs from "@/app/components/form/registation-form-inputs";
+import RegistrationFormInputs from "@/app/components/form/registation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import {
   TManagerSignupSchema,
-  TSignupSchema,
+  TResidentSignupSchema,
   managerSignupSchema,
 } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,9 +74,11 @@ export default function ManagerRegistrationPage() {
           </div>
         </div>
       </div>
-      <RegistationFormInputs
+      <RegistrationFormInputs
         register={
-          register as UseFormRegister<TSignupSchema | TManagerSignupSchema>
+          register as UseFormRegister<
+            TResidentSignupSchema | TManagerSignupSchema
+          >
         }
         errors={errors}
         profilePic={{ setProfilePic, profilePicError, setProfilePicError }}

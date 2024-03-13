@@ -292,18 +292,8 @@ export class UserService {
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
 
-      let errorDescription = 'User couldnt be updated';
-
-      if (error instanceof MongoServerError && error.code === 11000) {
-        if (error?.message.includes(UserUniqueEmailIndex))
-          errorDescription = 'A user with the same email exists';
-
-        if (error?.message.includes(UserUniquePhoneNumberIndex))
-          errorDescription = 'A user with the same phone number already exists';
-      }
-
       throw new BadRequestException({
-        message: errorDescription,
+        message: 'Something went wrong while updating user account.',
         error: error?.message,
       });
     }

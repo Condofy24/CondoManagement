@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb';
 import { HttpStatus } from '@nestjs/common';
 import { UnitEntity } from './entities/unit.entity';
 import { UnitModel } from './models/unit.model';
+import { JwtService } from '@nestjs/jwt';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -22,6 +23,7 @@ const unitServiceMock = {
   findAssociatedUnits: jest.fn().mockResolvedValue(null),
   makeNewPayment: jest.fn(),
   getUnitPayments: jest.fn(),
+  claimOwnerUnit: jest.fn().mockResolvedValue(null),
 };
 
 const buildingInfoTestData2 = {
@@ -92,6 +94,10 @@ describe('UnitController', () => {
           provide: UnitService,
           useValue: unitServiceMock,
         },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
       ],
     }).compile();
     controller = module.get<UnitController>(UnitController);
@@ -139,6 +145,22 @@ describe('UnitController', () => {
 
       //Assert
       expect(result).toMatchObject(unitModels);
+    });
+  });
+
+  describe('claimOwnerUnit', () => {
+    it('should forward call to unit service', async () => {
+      // Arrange
+      const req = { user: { sub: userInfoTestData._id } };
+
+      //Act
+      await controller.claimOwnerUnit('key', req);
+
+      //Assert
+      expect(unitServiceMock.claimOwnerUnit).toHaveBeenCalledWith(
+        userInfoTestData._id,
+        'key',
+      );
     });
   });
 

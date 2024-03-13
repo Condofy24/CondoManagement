@@ -36,7 +36,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  @ApiCreatedResponse({ description: 'User created' })
   @UseInterceptors(FileInterceptor('image'))
   @ApiCreatedResponse({ description: 'User created', type: UserModel })
   async create(

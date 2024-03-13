@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Delete,
+  Request,
   Get,
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UnitService } from './unit.service';
@@ -19,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
 import { UnitModel } from './models/unit.model';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Unit')
 @ApiBearerAuth()
@@ -82,6 +85,16 @@ export class UnitController {
    */
   async findBuildingUnits(@Param('buildingId') buildingId: string) {
     return await this.unitService.findAllBuildingUnits(buildingId);
+  }
+
+  @Post('/claim/:key')
+  @UseGuards(AuthGuard)
+  async claimOwnerUnit(
+    @Param('key') key: string,
+    @Request()
+    req: any,
+  ) {
+    return await this.unitService.claimOwnerUnit(req.user.sub, key);
   }
 
   @Get('/findAssociatedUnits/:userId')

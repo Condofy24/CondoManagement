@@ -528,6 +528,28 @@ describe('UserService', () => {
       ).rejects.toThrow(HttpException);
     });
 
+    it('should rethrow is error thrown is of type NotFoundException', async () => {
+      // Arrange
+      mockingoose(UserDocumentModel).toReturn((_: any) => {
+        throw new NotFoundException();
+      }, 'findOneAndUpdate');
+
+      // Act & Assert
+      await expect(
+        service.updateUser('1', updateUserDtoTestData),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw an error occurs when updating user', async () => {
+      // Arrange
+      mockingoose(UserDocumentModel).toReturn(new Error(), 'findOneAndUpdate');
+
+      // Act & Assert
+      await expect(
+        service.updateUser('1', updateUserDtoTestData),
+      ).rejects.toThrow(HttpException);
+    });
+
     it('should update profile image if its valid', async () => {
       // Arrange
       const finderMock = (query: any) => {
