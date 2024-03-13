@@ -13,7 +13,7 @@ import { useParams } from "next/navigation";
 export default function AssetsDashboard() {
   const { assetPage, setAssetPage, assets } = UseAssets();
   const assetID = useParams().id;
-
+  console.log(assetPage, assets);
   return (
     <AssetManagementContextProvider>
       <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
@@ -45,7 +45,7 @@ const getTitle = (assetPage: BuildingAssetType, assetID: string) => {
 
 const getTable = (
   assetPage: BuildingAssetType,
-  assets: Unit[] | Parking[] | Storage[],
+  assets: Unit[] | Parking[] | Storage[]
 ) => {
   switch (assetPage) {
     case BuildingAssetType.unit:
