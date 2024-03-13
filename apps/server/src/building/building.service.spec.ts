@@ -283,4 +283,17 @@ describe('BuildingService', () => {
       ).rejects.toThrow(HttpException);
     });
   });
+
+  describe('findAll', () => {
+    it('should return all company buildings', async () => {
+      // Arrange
+      mockingoose(BuildingModel).toReturn([buildingInfoTestData], 'find');
+
+      // Act
+      const result = await service.findAll(new ObjectId().toString());
+
+      // Assert
+      expect(result).toMatchObject([buildingInfoTestData]);
+    });
+  });
 });
