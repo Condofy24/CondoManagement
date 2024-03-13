@@ -3,17 +3,17 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-export function MainNav() {
+export function ResidentNav() {
   const pathname = usePathname();
 
   return (
     <div className="mr-2 md:mr-4 flex">
       <nav className="flex items-center gap-6 text-sm">
         <Link
-          href="/dashboard"
+          href="/properties"
           className={cn(
             "navItem transition-all hover:text-foreground/80 hover:scale-105",
-            pathname.includes("dashboard")
+            pathname.includes("properties")
               ? "text-foreground"
               : "text-foreground/60",
           )}

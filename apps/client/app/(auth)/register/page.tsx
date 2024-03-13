@@ -1,11 +1,12 @@
 "use client";
 
-import RegistationFormInputs from "@/app/components/form/registation-form-inputs";
+import RegistrationFormInputs from "@/app/components/form/registation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import {
   TManagerSignupSchema,
-  TSignupSchema,
+  TResidentSignupSchema,
+  residentSignupSchema,
   signupSchema,
 } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,11 +27,11 @@ export default function RegistrationPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TSignupSchema>({
-    resolver: zodResolver(signupSchema),
+  } = useForm<TResidentSignupSchema>({
+    resolver: zodResolver(residentSignupSchema),
   });
 
-  const onSubmit = async (data: TSignupSchema) => {
+  const onSubmit = async (data: TResidentSignupSchema) => {
     setLoading(true);
 
     try {
@@ -64,17 +65,19 @@ export default function RegistrationPage() {
               type="text"
               className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-white"
               placeholder="Key"
-              {...register("registrationKey")}
+              {...register("unitKey")}
             />
 
-            <FormFieldError fieldError={errors.registrationKey} />
+            <FormFieldError fieldError={errors.unitKey} />
           </div>
         </div>
       </div>
 
-      <RegistationFormInputs
+      <RegistrationFormInputs
         register={
-          register as UseFormRegister<TSignupSchema | TManagerSignupSchema>
+          register as UseFormRegister<
+            TResidentSignupSchema | TManagerSignupSchema
+          >
         }
         errors={errors}
         profilePic={{ setProfilePic, profilePicError, setProfilePicError }}

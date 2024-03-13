@@ -2,6 +2,7 @@ import {
   ACCEPTED_FILE_TYPES,
   MAX_UPLOAD_SIZE,
   TManagerSignupSchema,
+  TResidentSignupSchema,
   TSignupSchema,
 } from "@/lib/validation-schemas";
 import { ChangeEvent, SetStateAction, useRef } from "react";
@@ -9,7 +10,7 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 import FormFieldError from "./form-field-error";
 
 type RegistationFormInputsProps = {
-  register: UseFormRegister<TSignupSchema | TManagerSignupSchema>;
+  register: UseFormRegister<TResidentSignupSchema | TManagerSignupSchema>;
   errors: FieldErrors<TSignupSchema>;
   profilePic: {
     setProfilePic: React.Dispatch<SetStateAction<File | null>>;
@@ -20,7 +21,7 @@ type RegistationFormInputsProps = {
   showImagePreview?: boolean;
   imageUrl?: string; // URL of the image to be displayed
 };
-export default function RegistationFormInputs({
+export default function RegistrationFormInputs({
   register,
   errors,
   profilePic: { setProfilePic, profilePicError, setProfilePicError },
@@ -31,11 +32,7 @@ export default function RegistationFormInputs({
 
   const handleProfilePicChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
-    if (!file) {
-      setProfilePic(null);
-      setProfilePicError("Profile picture is required.");
-      return;
-    }
+
     if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
       setProfilePic(null);
       setProfilePicError("Please upload a valid image file (jpeg, jpg, png)");
