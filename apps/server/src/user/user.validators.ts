@@ -3,7 +3,7 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { UserRolesEnum } from './user.model';
+import { UserRoles } from './user.model';
 
 /**
  * Custom validator constraint for checking if a user role is valid.
@@ -18,7 +18,7 @@ export class IsValidRole implements ValidatorConstraintInterface {
    * @returns A boolean indicating if the value is a valid role.
    */
   validate(value: any, _args: ValidationArguments) {
-    const validValues = Object.keys(UserRolesEnum).filter((item) => {
+    const validValues = Object.keys(UserRoles).filter((item) => {
       return !isNaN(Number(item));
     });
     return validValues.includes(value);

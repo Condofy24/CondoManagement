@@ -24,6 +24,7 @@ import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
 import { ParkingService } from '../parking/parking.service';
 import { UnitModel } from './models/unit.model';
 import { response } from 'express';
+import { UserRoles } from 'src/user/user.model';
 
 @Injectable()
 /**
@@ -208,7 +209,7 @@ export class UnitService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    if (user.role !== 4)
+    if (user.role !== UserRoles.OWNER)
       throw new BadRequestException({
         message: 'Must be an owner to claim a unit',
       });

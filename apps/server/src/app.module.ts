@@ -17,11 +17,14 @@ import { ParkingController } from './parking/parking.controller';
 import { StorageModule } from './storage/storage.module';
 import { StorageController } from './storage/storage.controller';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MongooseModule.forRoot(
-      'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/dev?retryWrites=true&w=majority', // TODO: Move password to env
+      process.env.MONGO_CONNECTION_URI ||
+        'mongodb+srv://capstone:marioisgay@condofy.drswlo1.mongodb.net/dev?retryWrites=true&w=majority', // TODO: Move password to env
     ),
     ScheduleModule.forRoot(),
     UserModule,

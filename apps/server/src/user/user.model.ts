@@ -1,7 +1,7 @@
 /**
  * Enum representing the roles of a user.
  */
-export enum UserRolesEnum {
+export enum UserRoles {
   MANAGER = 0,
   STAFF = 1,
   ACCOUNTANT = 2,
