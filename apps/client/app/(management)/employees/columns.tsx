@@ -18,6 +18,8 @@ import {
 import { deleteEmployee } from "@/actions/management-actions";
 import { useAppSelector } from "@/redux/store";
 import toast from "react-hot-toast";
+import { EmployeesContext } from "@/context/employees-context";
+import { useContext } from "react";
 
 const DeletePopover = ({
   employeeId,
@@ -27,11 +29,13 @@ const DeletePopover = ({
   employeeName: string;
 }) => {
   const token = useAppSelector((state) => state.auth.value.token);
+  const { setRefetch } = useContext(EmployeesContext);
 
   const onClickHandler = async () => {
     try {
       await deleteEmployee(employeeId, token as string);
       toast.success(`Deleted ${employeeName}`);
+      setRefetch(true);
     } catch (error) {
       toast.error((error as Error).message);
     }
