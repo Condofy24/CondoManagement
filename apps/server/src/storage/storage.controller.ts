@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { StorageModel } from './models/storage.model';
+import { StorageEntity } from './entities/storage.entity';
 
 @ApiTags('Storage')
 @ApiBearerAuth()
@@ -90,7 +91,7 @@ export class StorageController {
    */
   async findAll(@Param('buildingId') buildingId: string) {
     return (await this.storageService.findAllBuildingStorages(buildingId)).map(
-      (e) => new StorageModel(e),
+      (storage: StorageEntity) => new StorageModel(storage),
     );
   }
 
@@ -113,7 +114,7 @@ export class StorageController {
    * @returns An array of storage items.
    */
   async findAllByUnitId(@Param('unitId') unitId: string) {
-    return (await this.storageService.findStorageByUnitId(unitId)).map(
+    return (await this.storageService.findStoragesByUnitId(unitId)).map(
       (e) => new StorageModel(e),
     );
   }

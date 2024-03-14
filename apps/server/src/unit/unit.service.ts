@@ -26,6 +26,11 @@ import { UnitModel } from './models/unit.model';
 import { response } from 'express';
 import { UserRoles } from 'src/user/user.model';
 import { BuildingEntity } from 'src/building/entities/building.entity';
+import { StorageService } from 'src/storage/storage.service';
+import { ParkingEntity } from 'src/parking/entities/parking.entity';
+import { StorageEntity } from 'src/storage/entities/storage.entity';
+import { ParkingModel } from 'src/parking/models/parking.model';
+import { StorageModel } from 'src/storage/models/storage.model';
 
 @Injectable()
 /**
@@ -35,6 +40,7 @@ export class UnitService {
   constructor(
     @InjectModel('Unit')
     private readonly unitModel: Model<UnitEntity>,
+    private readonly storageService: StorageService,
     private readonly parkingService: ParkingService,
     @InjectModel('Payments')
     private readonly paymentsModel: Model<PaymentsEntity>,
@@ -170,8 +176,14 @@ export class UnitService {
           type: 'renter',
         });
 
+        const { parkings, storages } = await this.getUnitAmmunitites(
+          unit._id.toString(),
+        );
+
         return new UnitModel({
           entity: unit,
+          parkings: parkings.map((p) => new ParkingModel(p)),
+          storages: storages.map((s) => new StorageModel(s)),
           ownerKey: ownerKey || undefined,
           renterKey: renterKey || undefined,
         });
@@ -336,14 +348,33 @@ export class UnitService {
 
     return Promise.all(
       units.map(async (unit: UnitEntity) => {
-        const building: BuildingEntity | null =
-          await this.buildingService.findBuildingById(
+        const building: BuildingEntity | undefined =
+          (await this.buildingService.findBuildingById(
             unit.buildingId.toString(),
-          );
+          )) || undefined;
 
-        return new UnitModel({ entity: unit, building: building || undefined });
+        const { parkings, storages } = await this.getUnitAmmunitites(
+          unit._id.toString(),
+        );
+
+        return new UnitModel({
+          entity: unit,
+          parkings: parkings.map((p) => new ParkingModel(p)),
+          storages: storages.map((s) => new StorageModel(s)),
+          building: building,
+        });
       }),
     );
+  }
+
+  private async getUnitAmmunitites(unitId: string): Promise<{
+    parkings: ParkingEntity[];
+    storages: StorageEntity[];
+  }> {
+    const parkings = await this.parkingService.findParkingsByUnitId(unitId);
+    const storages = await this.storageService.findStoragesByUnitId(unitId);
+
+    return { parkings, storages };
   }
 
   /**
@@ -408,6 +439,7 @@ export class UnitService {
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_MINUTE)
   /**
    * Handles the cron job for processing monthly fees for units.
    * This function retrieves all units, calculates the monthly fees balance,
@@ -419,15 +451,26 @@ export class UnitService {
     units.forEach(async (unit) => {
       if (unit.ownerId) {
         // Reset monthly fees balance and add balance to overdue
-        const sumOfParkingFees = (
-          await this.parkingService.findParkingsByUnitId(unit.id)
-        )?.reduce((acc, current) => {
+
+        const { parkings, storages } = await this.getUnitAmmunitites(
+          unit._id.toString(),
+        );
+
+        const totalParkingFees = parkings.reduce((acc, current) => {
           return (acc += current.fees);
         }, 0);
+
+        const totalStorageFees = storages.reduce((acc, current) => {
+          return (acc += current.fees);
+        }, 0);
+
         unit.overdueFees +=
           unit.monthlyFeesBalance +
           unit.monthlyFeesBalance * (unit.lateFeesInterestRate / 100);
-        unit.monthlyFeesBalance = unit.fees + sumOfParkingFees;
+
+        unit.monthlyFeesBalance =
+          unit.fees + totalParkingFees + totalStorageFees;
+
         await unit.save();
       }
     });

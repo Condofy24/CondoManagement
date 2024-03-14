@@ -62,6 +62,8 @@ export class UnitController {
   ) {
     return new UnitModel({
       entity: await this.unitService.updateUnit(buildingId, updateUnitDto),
+      parkings: [],
+      storages: [],
     });
   }
 

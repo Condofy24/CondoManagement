@@ -7,7 +7,8 @@ import { BuildingModule } from '../building/building.module';
 import { UserModule } from '../user/user.module';
 import { RegistrationKeySchema } from './entities/registration-key.entity';
 import { PaymentsSchema } from './entities/payments.entity';
-import { ParkingModule } from 'src/parking/parking.module';
+import { ParkingModule } from '../parking/parking.module';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ParkingModule } from 'src/parking/parking.module';
     forwardRef(() => BuildingModule),
     forwardRef(() => UserModule),
     ParkingModule,
+    StorageModule,
   ],
   controllers: [UnitController],
   providers: [UnitService],

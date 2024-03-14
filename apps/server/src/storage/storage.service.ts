@@ -184,7 +184,7 @@ export class StorageService {
     });
   }
 
-  public async findStorageByUnitId(unitId: string): Promise<StorageEntity[]> {
+  public async findStoragesByUnitId(unitId: string): Promise<StorageEntity[]> {
     return this.storageModel.find({ unitId }).exec();
   }
 }
