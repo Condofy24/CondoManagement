@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 
 function StatusCell({ getValue }: any) {
   const isOccupied = getValue();
-
+  console.log(isOccupied);
   return (
     <div>
       {isOccupied === true ? (

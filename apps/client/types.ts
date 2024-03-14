@@ -47,7 +47,16 @@ export type Unit = {
   fees: number;
   ownerKey?: RegistrationKey;
   renterKey?: RegistrationKey;
+  lateFeesInterestRate?: number;
+  overdueFees?: number;
+  monthlyFeesBalance?: number;
 };
+
+export type IFinancialStatus = "Paid" | "Monthly Fees Due" | "Overdue Fees";
+
+export interface UnitCol extends Unit {
+  financialStatus?: IFinancialStatus;
+}
 
 export type Parking = {
   id: string;

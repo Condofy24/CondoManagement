@@ -34,6 +34,15 @@ export class UnitModel {
   @ApiProperty()
   renterKey?: RegistrationKeyModel;
 
+  @ApiProperty()
+  lateFeesInterestRate?: number;
+
+  @ApiProperty()
+  overdueFees?: number;
+
+  @ApiProperty()
+  monthlyFeesBalance?: number;
+
   constructor(
     entity: UnitEntity,
     ownerKey?: RegistrationKeyEntity | null,
@@ -46,6 +55,10 @@ export class UnitModel {
     this.unitNumber = entity.unitNumber;
     this.size = entity.size;
     this.isOccupiedByRenter = entity.isOccupiedByRenter;
+    this.lateFeesInterestRate = entity.lateFeesInterestRate;
+    this.monthlyFeesBalance = entity.monthlyFeesBalance;
+    this.overdueFees = entity.overdueFees;
+    this.fees = entity.fees;
 
     if (ownerKey) this.ownerKey = new RegistrationKeyModel(ownerKey);
     if (renterKey) this.renterKey = new RegistrationKeyModel(renterKey);

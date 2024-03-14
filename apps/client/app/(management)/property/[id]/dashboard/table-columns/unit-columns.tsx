@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { RegistrationKey, Unit } from "@/types";
+import { RegistrationKey, Unit, UnitCol } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -108,7 +108,8 @@ const RegistrationKeysPopover = ({
 };
 
 const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
-  const { setAsset, setMode, setShowDialog } = useAssetManagement();
+  const { setAsset, setMode, setShowPaymentDialog, setShowDialog } =
+    useAssetManagement();
 
   return (
     <DropdownMenu>
@@ -130,12 +131,20 @@ const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
         >
           Edit Unit details
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setAsset(unit);
+            setShowPaymentDialog(true);
+          }}
+        >
+          Add Payment
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-export const unitColumns: ColumnDef<Unit>[] = [
+export const unitColumns: ColumnDef<UnitCol>[] = [
   {
     accessorKey: "unitNumber",
     header: ({ column }) => {
@@ -151,18 +160,22 @@ export const unitColumns: ColumnDef<Unit>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: StatusCell,
-  },
-  {
     accessorKey: "size",
-    header: "Size",
+    header: "Size (sqr feet)",
   },
 
   {
     accessorKey: "fees",
-    header: "Fees",
+    header: "Fees ($/sqr foot)",
+  },
+  {
+    accessorKey: "financialStatus",
+    header: "Financial Status",
+  },
+  {
+    accessorKey: "availability",
+    header: "Availability",
+    cell: StatusCell,
   },
   {
     header: "Registration Keys",
