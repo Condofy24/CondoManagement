@@ -37,7 +37,7 @@ export default function ManagementDashboardPage() {
     };
     loadEmployees();
   }, [admin?.companyId, token]);
-  console.log(employees);
+
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
       <div className="flex items-center justify-between space-y-2">

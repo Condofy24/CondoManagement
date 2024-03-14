@@ -2,16 +2,66 @@
 
 import { Button } from "@/app/components/ui/button";
 import { Employee } from "@/types";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/app/components/ui/popover";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/app/components/ui/card";
+import { deleteEmployee } from "@/actions/management-actions";
+import { useAppSelector } from "@/redux/store";
+import toast from "react-hot-toast";
+
+const DeletePopover = ({
+  employeeId,
+  employeeName,
+}: {
+  employeeId: string;
+  employeeName: string;
+}) => {
+  const token = useAppSelector((state) => state.auth.value.token);
+
+  const onClickHandler = async () => {
+    try {
+      await deleteEmployee(employeeId, token as string);
+      toast.success(`Deleted ${employeeName}`);
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
+  return (
+    <Popover>
+      <PopoverTrigger>Delete</PopoverTrigger>
+      <PopoverContent className="w-full">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle>Delete User</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center gap-4">
+              This cannot be undone. All access will be removed.
+              <Button
+                className="bg-red-400"
+                variant="outline"
+                onClick={onClickHandler}
+              >
+                Confirm
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export const columns: ColumnDef<Employee>[] = [
   {
@@ -41,22 +91,13 @@ export const columns: ColumnDef<Employee>[] = [
     header: "Role",
   },
   {
-    id: "actions",
+    header: "Delete",
     cell: ({ row }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Delete Employee</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <DeletePopover
+          employeeName={row.original.name}
+          employeeId={row.original.id}
+        />
       );
     },
   },
