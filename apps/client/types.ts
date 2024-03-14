@@ -39,6 +39,8 @@ export type RegistrationKey = {
 export type Unit = {
   id: string;
   buildingId: string;
+  buildingName?: string;
+  buildingAddress?: string;
   ownerId?: string;
   renterId?: string;
   unitNumber: number;

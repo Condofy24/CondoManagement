@@ -25,6 +25,7 @@ import { ParkingService } from '../parking/parking.service';
 import { UnitModel } from './models/unit.model';
 import { response } from 'express';
 import { UserRoles } from 'src/user/user.model';
+import { BuildingEntity } from 'src/building/entities/building.entity';
 
 @Injectable()
 /**
@@ -169,7 +170,11 @@ export class UnitService {
           type: 'renter',
         });
 
-        return new UnitModel(unit, ownerKey, renterKey);
+        return new UnitModel({
+          entity: unit,
+          ownerKey: ownerKey || undefined,
+          renterKey: renterKey || undefined,
+        });
       }),
     );
   }
@@ -318,14 +323,27 @@ export class UnitService {
    * @returns A promise that resolves to an array of UnitEntity objects.
    * @throws NotFoundException if the user is not found.
    */
-  public async findAssociatedUnits(userId: string): Promise<UnitEntity[]> {
+  public async findAssociatedUnits(userId: string): Promise<UnitModel[]> {
     const user = await this.userService.findUserById(userId);
 
     if (!user) throw new NotFoundException({ message: 'User not found' });
 
     const filterKey = user.role == 3 ? 'ownerId' : 'renterId';
 
-    return await this.unitModel.find({ [filterKey]: userId }).exec();
+    const units: UnitEntity[] = await this.unitModel
+      .find({ [filterKey]: userId })
+      .exec();
+
+    return Promise.all(
+      units.map(async (unit: UnitEntity) => {
+        const building: BuildingEntity | null =
+          await this.buildingService.findBuildingById(
+            unit.buildingId.toString(),
+          );
+
+        return new UnitModel({ entity: unit, building: building || undefined });
+      }),
+    );
   }
 
   /**

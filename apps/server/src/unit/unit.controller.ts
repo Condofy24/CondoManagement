@@ -60,9 +60,9 @@ export class UnitController {
     @Param('unitId') buildingId: string,
     @Body() updateUnitDto: UpdateUnitDto,
   ) {
-    return new UnitModel(
-      await this.unitService.updateUnit(buildingId, updateUnitDto),
-    );
+    return new UnitModel({
+      entity: await this.unitService.updateUnit(buildingId, updateUnitDto),
+    });
   }
 
   @Delete(':id')
@@ -106,9 +106,7 @@ export class UnitController {
    * @returns An array of units associated with the owner/tenant.
    */
   async findAssocitedUnits(@Param('userId') userId: string) {
-    const entities = await this.unitService.findAssociatedUnits(userId);
-
-    return entities.map((entity) => new UnitModel(entity));
+    return await this.unitService.findAssociatedUnits(userId);
   }
 
   @Post('/makeNewPayment/:unitId')
