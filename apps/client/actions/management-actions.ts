@@ -9,7 +9,7 @@ export async function createProperty(
   companyId: string,
   buildingData: TPropertySchema,
   file: File,
-  token: string
+  token: string,
 ) {
   try {
     await axios.post(
@@ -20,7 +20,7 @@ export async function createProperty(
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
   } catch (error: any) {
     let message = "An error occured while creating property";
@@ -89,7 +89,7 @@ export async function deleteEmployee(employeeId: string, token: string) {
 export async function createUnit(
   buildingId: string,
   data: TUnitSchema,
-  token: string
+  token: string,
 ) {
   try {
     const res = await axios.post(`${API_URL}/unit/${buildingId}`, data, {
@@ -112,7 +112,7 @@ export async function createUnit(
 export const fetchAssets = async (
   assetPage: BuildingAssetType,
   buildingId: string,
-  token: string
+  token: string,
 ): Promise<AssetTypes> => {
   switch (assetPage) {
     case BuildingAssetType.unit:
@@ -120,7 +120,7 @@ export const fetchAssets = async (
         `${API_URL}/unit/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       return unitData;
 
@@ -129,7 +129,7 @@ export const fetchAssets = async (
         `${API_URL}/parking/building/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       return parkingData;
 
@@ -138,7 +138,7 @@ export const fetchAssets = async (
         `${API_URL}/storage/building/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       return storageData;
 

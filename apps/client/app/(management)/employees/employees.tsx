@@ -4,7 +4,6 @@ import { EmployeesContext } from "@/context/employees-context";
 import { DataTable } from "@/app/components/table/data-table";
 import { fetchEmployees } from "@/actions/management-actions";
 import toast from "react-hot-toast";
-import { Button } from "@/app/components/ui/button";
 import { FetchedEmployee, UserRoles } from "@/types";
 import { useAppSelector } from "@/redux/store";
 
@@ -17,7 +16,7 @@ const Employees = () => {
     try {
       const employees = await fetchEmployees(
         admin?.companyId as string,
-        token as string
+        token as string,
       );
 
       setEmployees(
@@ -26,7 +25,7 @@ const Employees = () => {
           name:
             employee.id === user.id ? `${employee.name} (You)` : employee.name,
           role: UserRoles[employee.role].toLowerCase(),
-        }))
+        })),
       );
     } catch (error) {
       toast.error((error as Error).message);
