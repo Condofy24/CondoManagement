@@ -9,6 +9,7 @@ import {
 import { Separator } from "@/app/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Unit } from "@/types";
+import { BalanceProgress } from "./balance-progress";
 
 type OwnerPropertyProps = {
   property: Unit;
@@ -27,6 +28,12 @@ const PropertyInfo = ({ title, value }: PropertyInfoProps) => (
 );
 
 export default function OwnerProperty({ property }: OwnerPropertyProps) {
+  // const monthlyBalanceProgress =
+  //   property.monthlyFeesBalance == 0
+  //     ? 0
+  //     : (property.fees - (property.monthlyFeesBalance as number)) /
+  //       property.fees;
+  const monthlyBalanceProgress = 50;
   return (
     <Card className="w-[400px]">
       <CardHeader className="flex flex-col gap-2">
@@ -41,7 +48,7 @@ export default function OwnerProperty({ property }: OwnerPropertyProps) {
         <PropertyInfo title="Fees" value={property.fees} />
         <div
           className={cn(
-            "rounded-lg p-1 md:mx-16 font-semibold text-center",
+            "rounded-lg p-1 font-semibold text-center",
             property.isOccupiedByRenter ? "bg-red-400" : "bg-green-400",
           )}
         >
@@ -50,6 +57,18 @@ export default function OwnerProperty({ property }: OwnerPropertyProps) {
             : "Available To Rent"}
         </div>
         <Separator className="my-3" orientation="horizontal" />
+        <div className="flex gap-2 items-center flex-nowrap">
+          Monthly Balance
+          <BalanceProgress
+            className="h-8 bg-green-400"
+            value={monthlyBalanceProgress}
+          >
+            {(property.monthlyFeesBalance as number).toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            })}
+          </BalanceProgress>
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between"></CardFooter>
     </Card>

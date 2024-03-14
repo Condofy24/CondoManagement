@@ -49,8 +49,8 @@ export default function OwnerPropertiesDashboardPage() {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          properties.map((prop) => {
-            return <OwnerProperty property={prop} />;
+          properties.map((property) => {
+            return <OwnerProperty property={property} />;
           })
         )}
       </div>
