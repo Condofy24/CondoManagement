@@ -20,6 +20,17 @@ export const unitSchema = object({
 
 export type TUnitSchema = TypeOf<typeof unitSchema>;
 
+export const addPaymentSchema = object({
+  amount: z.coerce
+    .number({
+      required_error: "Amount is required",
+      invalid_type_error: "Amount must be a number",
+    })
+    .positive({ message: "Paid amount must be a positive number" }),
+});
+
+export type TAddPaymentSchema = TypeOf<typeof addPaymentSchema>;
+
 export const assetSchema = object({
   assetNumber: z.coerce
     .number({

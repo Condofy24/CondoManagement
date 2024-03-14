@@ -1,7 +1,7 @@
 import { TPropertySchema } from "../lib/validation-schemas";
 import axios from "axios";
 import { API_URL } from "@/global";
-import { TUnitSchema } from "../lib/unit-validation-schemas";
+import { TAddPaymentSchema, TUnitSchema } from "../lib/unit-validation-schemas";
 import { BuildingAssetType, Parking, Unit, Storage } from "../types";
 import { AssetTypes } from "../app/(management)/property/[id]/dashboard/manage-building-assets-hook";
 
@@ -65,6 +65,33 @@ export async function createUnit(
     return res.status;
   } catch (error: any) {
     let message = "An error occurred while creating unit";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function addNewPayment(
+  unitId: string,
+  data: TAddPaymentSchema,
+  token: string,
+) {
+  try {
+    const res = await axios.post(
+      `${API_URL}/unit/makeNewPayment/${unitId}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Keep: Unused in the backend but will be used later
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while making payment";
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;
