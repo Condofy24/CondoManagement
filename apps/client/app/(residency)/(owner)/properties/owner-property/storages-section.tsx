@@ -26,11 +26,11 @@ const StorageInfo = ({ storage }: { storage: Storage }) => (
     </div>
     <div
       className={cn(
-        "rounded-lg p-1 text-sm font-semibold text-center",
-        storage.isOccupiedByRenter ? "bg-red-400" : "bg-green-400",
+        "rounded-lg p-1 text-sm font-semibold flex flex-1 items-center justify-center",
+        storage.isOccupiedByRenter ? "bg-red-500" : "bg-green-500",
       )}
     >
-      {storage.isOccupiedByRenter ? "Occupied By Renter" : "Available To Rent"}
+      {storage.isOccupiedByRenter ? "Occupied By Renter" : "Available"}
     </div>
   </div>
 );

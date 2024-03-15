@@ -46,8 +46,10 @@ export default function OwnerPropertiesDashboardPage() {
         </div>
       </div>
       <div className="flex flex-row flex-wrap gap-4 justify-center md:justify-start">
-        {isLoading ? (
-          <LoadingSpinner />
+        {isLoading && <LoadingSpinner />}
+
+        {!isLoading && properties.length === 0 ? (
+          <h1>No properties found</h1>
         ) : (
           properties.map((property) => {
             return <OwnerProperty property={property} />;

@@ -26,11 +26,11 @@ const ParkingInfo = ({ parking }: { parking: Parking }) => (
     </div>
     <div
       className={cn(
-        "rounded-lg p-1 text-sm font-semibold text-center",
-        parking.isOccupiedByRenter ? "bg-red-400" : "bg-green-400",
+        "rounded-lg p-1 text-sm font-semibold flex flex-1 items-center justify-center",
+        parking.isOccupiedByRenter ? "bg-red-500" : "bg-green-500",
       )}
     >
-      {parking.isOccupiedByRenter ? "Occupied By Renter" : "Available To Rent"}
+      {parking.isOccupiedByRenter ? "Occupied By Renter" : "Available"}
     </div>
   </div>
 );

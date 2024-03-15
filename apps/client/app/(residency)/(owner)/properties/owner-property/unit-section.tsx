@@ -1,14 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Unit } from "@/types";
 import { SectionHeader } from "./section-header";
-import { Button } from "@/app/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/app/components/ui/collapsible";
-import { ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
 
 type UnitSectionProps = {
   unit: Unit;
@@ -36,9 +28,11 @@ export default function UnitSection({ unit }: UnitSectionProps) {
       <PropertyInfo title="Size" value={unit.size} />
       <PropertyInfo
         title="Fees"
-        value={unit.totalMonthlyFees.toLocaleString("en-US", {
+        value={unit.fees.toLocaleString("en-US", {
           style: "currency",
           currency: "USD",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
         })}
       />
       <div
