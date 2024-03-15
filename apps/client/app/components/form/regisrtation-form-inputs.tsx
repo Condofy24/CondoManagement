@@ -8,6 +8,7 @@ import {
 import { ChangeEvent, SetStateAction, useRef } from "react";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import FormFieldError from "./form-field-error";
+import Image from "next/image";
 
 type RegistationFormInputsProps = {
   register: UseFormRegister<TResidentSignupSchema | TManagerSignupSchema>;
@@ -49,7 +50,7 @@ export default function RegistrationFormInputs({
     <>
       {showImagePreview && imageUrl && (
         <div className="w-3/5 object-fill overflow-hidden relative hidden lg:block">
-          <img src={imageUrl} alt="Profile Preview" />
+          <Image quality={95} src={imageUrl} alt="Profile Preview" />
         </div>
       )}
       <div className="relative mt-3 flex items-center">

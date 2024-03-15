@@ -3,7 +3,7 @@ import { useAssetManagement } from "@/context/asset-management-context";
 import { useAppSelector } from "@/redux/store";
 import { BuildingAssetType, Parking, Storage, Unit } from "@/types";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export type AssetTypes = Unit[] | Parking[] | Storage[];
@@ -16,7 +16,7 @@ export default function useBuildingAsset() {
   const { token } = useAppSelector((state) => state.auth.value);
   const { id: buildingId } = useParams();
 
-  const getAssetsByPage = async () => {
+  const getAssetsByPage = useCallback(async () => {
     try {
       const data = await fetchAssets(
         assetPage,
@@ -27,11 +27,11 @@ export default function useBuildingAsset() {
     } catch (error) {
       toast.error("Error fetching assets: " + error);
     }
-  };
+  }, [assetPage, buildingId, token, setCurrentAssets]);
 
   useEffect(() => {
     getAssetsByPage();
-  }, [assetPage, buildingId, token]);
+  }, [assetPage, buildingId, token, getAssetsByPage]);
 
   return { assetPage, getAssetsByPage, setAssetPage, assets: currentAssets };
 }

@@ -61,7 +61,9 @@ export default function StorageSection({ storages }: { storages: Storage[] }) {
               No associated storages found
             </div>
           ) : (
-            storages.map((storage) => <StorageInfo storage={storage} />)
+            storages.map((storage) => (
+              <StorageInfo key={storage.id} storage={storage} />
+            ))
           )}
         </CollapsibleContent>
       </Card>

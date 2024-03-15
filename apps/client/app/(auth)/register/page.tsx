@@ -1,13 +1,12 @@
 "use client";
 
-import RegistrationFormInputs from "@/app/components/form/registation-form-inputs";
+import RegistrationFormInputs from "@/app/components/form/regisrtation-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import {
   TManagerSignupSchema,
   TResidentSignupSchema,
   residentSignupSchema,
-  signupSchema,
 } from "@/lib/validation-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";

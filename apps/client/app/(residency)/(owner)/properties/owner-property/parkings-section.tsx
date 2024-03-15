@@ -61,7 +61,9 @@ export default function ParkingsSection({ parkings }: { parkings: Parking[] }) {
               No associated parkings found
             </div>
           ) : (
-            parkings.map((parking) => <ParkingInfo parking={parking} />)
+            parkings.map((parking) => (
+              <ParkingInfo key={parking.id} parking={parking} />
+            ))
           )}
         </CollapsibleContent>
       </Card>

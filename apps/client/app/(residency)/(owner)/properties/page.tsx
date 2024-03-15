@@ -52,7 +52,7 @@ export default function OwnerPropertiesDashboardPage() {
           <h1>No properties found</h1>
         ) : (
           properties.map((property) => {
-            return <OwnerProperty property={property} />;
+            return <OwnerProperty key={property.id} property={property} />;
           })
         )}
       </div>
