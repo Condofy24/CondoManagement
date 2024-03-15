@@ -6,6 +6,7 @@ import {
 } from "@/app/components/ui/sheet";
 import { Parking, Storage } from "@/types";
 import ParkingsSection from "./parkings-section";
+import StorageSection from "./storages-section";
 
 type AmenitiesSectionProps = {
   open: boolean;
@@ -22,11 +23,12 @@ export default function AmenitiesSection({
 }: AmenitiesSectionProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent className="w-[500px]">
+      <SheetContent className="w-[500px] flex flex-col ">
         <SheetHeader>
           <SheetTitle>Property Amenities</SheetTitle>
         </SheetHeader>
         <ParkingsSection parkings={parkings} />
+        <StorageSection storages={storages} />
       </SheetContent>
     </Sheet>
   );

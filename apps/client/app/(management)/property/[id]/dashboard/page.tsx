@@ -31,9 +31,7 @@ export default function AssetsDashboard() {
       <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
         <CreateUpdateAssetModal assetName={assetPage} />
       </div>
-      <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
-        <AddPaymentModal />
-      </div>
+      <AddPaymentModal />
       {getTable(assetPage, assets)}
     </div>
   );
@@ -61,9 +59,9 @@ const getTable = (
         availability: asset.ownerKey?.isClaimed || asset.renterKey?.isClaimed,
         financialStatus: (asset.overdueFees && asset.overdueFees > 0
           ? `Overdue Fees: ${asset.overdueFees}`
-          : asset.monthlyFeesBalance && asset.monthlyFeesBalance > 0
-            ? `Monthly Fees Due: ${asset.monthlyFeesBalance}`
-            : `Paid: $ ${asset.monthlyFeesBalance} balance`) as IFinancialStatus,
+          : asset.remainingMonthlyBalance && asset.remainingMonthlyBalance > 0
+            ? `Monthly Fees Due: ${asset.remainingMonthlyBalance}`
+            : `Paid: $ ${asset.remainingMonthlyBalance} balance`) as IFinancialStatus,
       }));
       console.log(mappedAssets);
       return <DataTable columns={unitColumns} data={mappedAssets} />;
