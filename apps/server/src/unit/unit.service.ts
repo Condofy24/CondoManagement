@@ -24,13 +24,13 @@ import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
 import { ParkingService } from '../parking/parking.service';
 import { UnitModel } from './models/unit.model';
 import { response } from 'express';
-import { UserRoles } from 'src/user/user.model';
-import { BuildingEntity } from 'src/building/entities/building.entity';
-import { StorageService } from 'src/storage/storage.service';
-import { ParkingEntity } from 'src/parking/entities/parking.entity';
-import { StorageEntity } from 'src/storage/entities/storage.entity';
-import { ParkingModel } from 'src/parking/models/parking.model';
-import { StorageModel } from 'src/storage/models/storage.model';
+import { UserRoles } from '../user/user.model';
+import { BuildingEntity } from '../building/entities/building.entity';
+import { StorageService } from '../storage/storage.service';
+import { ParkingEntity } from '../parking/entities/parking.entity';
+import { StorageEntity } from '../storage/entities/storage.entity';
+import { ParkingModel } from '../parking/models/parking.model';
+import { StorageModel } from '../storage/models/storage.model';
 
 @Injectable()
 /**

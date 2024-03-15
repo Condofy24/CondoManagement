@@ -134,7 +134,13 @@ describe('UnitController', () => {
   describe('findAll', () => {
     it('should forward call to unit service', async () => {
       //Arrange
-      const unitModels = [new UnitModel(unitInfoTestData as UnitEntity)];
+      const unitModels = [
+        new UnitModel({
+          entity: unitInfoTestData as UnitEntity,
+          storages: [],
+          parkings: [],
+        }),
+      ];
 
       unitServiceMock.findAllBuildingUnits.mockResolvedValue(unitModels);
 
@@ -175,9 +181,7 @@ describe('UnitController', () => {
       );
 
       //Assert
-      expect(result).toMatchObject([
-        new UnitModel(unitInfoTestData as UnitEntity),
-      ]);
+      expect(result).toMatchObject([unitInfoTestData]);
     });
   });
   describe('makeNewPayment', () => {

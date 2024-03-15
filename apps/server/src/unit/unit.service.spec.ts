@@ -17,6 +17,7 @@ import RegistationKeyModel, {
 } from './entities/registration-key.entity';
 import UnitModel, { UnitEntity } from './entities/unit.entity';
 import { UnitService } from './unit.service';
+import { StorageService } from '../storage/storage.service';
 
 const mockingoose = require('mockingoose');
 
@@ -118,7 +119,16 @@ const parkingInfoTestData = {
   buildingId: new ObjectId(),
   unitId: unitInfoTestData._id,
   parkingNumber: 7,
-  isOccupied: false,
+  isOccupiedByRenter: false,
+  fees: 10,
+};
+
+const storageInfoTestData = {
+  _id: new ObjectId(),
+  buildingId: new ObjectId(),
+  unitId: unitInfoTestData._id,
+  storageNumber: 7,
+  isOccupiedByRenter: false,
   fees: 10,
 };
 
@@ -143,6 +153,10 @@ const buildingServiceMock = {
 
 const parkingServiceMock = {
   findParkingsByUnitId: jest.fn().mockResolvedValue([parkingInfoTestData]),
+};
+
+const storageServiceMock = {
+  findStoragesByUnitId: jest.fn().mockResolvedValue([storageInfoTestData]),
 };
 
 const userServiceMock = {
@@ -170,6 +184,7 @@ describe('UnitService', () => {
           provide: getModelToken('Unit'),
           useValue: UnitModel,
         },
+        { provide: StorageService, useValue: storageServiceMock },
         { provide: ParkingService, useValue: parkingServiceMock },
         {
           provide: getModelToken('Payments'),
