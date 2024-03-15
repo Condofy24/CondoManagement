@@ -12,7 +12,7 @@ export function ResidentNav() {
         <Link
           href="/properties"
           className={cn(
-            "navItem transition-all hover:text-foreground/80 hover:scale-105",
+            "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname.includes("properties")
               ? "text-foreground"
               : "text-foreground/60",

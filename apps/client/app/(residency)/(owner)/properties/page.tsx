@@ -6,7 +6,7 @@ import { fetchAssociatedProperties } from "@/actions/resident-actions";
 import toast from "react-hot-toast";
 import { Unit } from "@/types";
 import LoadingSpinner from "@/app/components/loading-spinner";
-import OwnerProperty from "./owner-property";
+import OwnerProperty from "./owner-property/OwnerProperty";
 
 export default function OwnerPropertiesDashboardPage() {
   const { user, token } = useAppSelector((state) => state.auth.value);

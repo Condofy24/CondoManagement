@@ -33,9 +33,6 @@ export const StorageSchema = new mongoose.Schema<StorageEntity, StorageModel>(
 );
 
 export const StorageUniqueNameIndex = 'storageNumber_1_buildingId_1';
-StorageSchema.index(
-  { storageNumberNumber: 1, buildingId: 1 },
-  { unique: true },
-);
+StorageSchema.index({ storageNumber: 1, buildingId: 1 }, { unique: true });
 
 export default mongoose.model('Storage', new mongoose.Schema(StorageSchema));
