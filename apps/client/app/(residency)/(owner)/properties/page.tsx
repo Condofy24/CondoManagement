@@ -41,7 +41,7 @@ export default function OwnerPropertiesDashboardPage() {
             Here are the properties you own!
           </p>
         </div>
-        <div className="flex items-center mr-16">
+        <div className="flex items-center md:mr-16">
           <ClaimUnitForm />
         </div>
       </div>

@@ -69,5 +69,5 @@ body {
 }
 
 .navItem {
-  @apply bg-secondary transform rounded-lg h-[2.25rem] px-4 py-2 text-sm font-medium tracking-wide duration-300 focus:outline-none text-primary;
+  @apply bg-secondary transform rounded-lg h-[2.25rem] px-2 md:px-4 py-2 md:text-sm font-medium tracking-wide duration-300 focus:outline-none text-primary;
 }

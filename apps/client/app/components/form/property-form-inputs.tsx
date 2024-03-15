@@ -114,7 +114,7 @@ export default function PropertyFormInputs({
           </h2>
           <input
             type="file"
-            accept=".pdf, .doc, .txt, .png, .jpeg"
+            accept=".pdf, .doc, .txt"
             className="hidden"
             ref={propertyFileInputRef}
             onChange={handlePropertyFileChange}

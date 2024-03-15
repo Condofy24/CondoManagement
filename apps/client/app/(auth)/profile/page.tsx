@@ -1,6 +1,6 @@
 "use client";
 
-import RegistrationFormInputs from "@/app/components/form/regisrtation-form-inputs";
+import RegistrationFormInputs from "@/app/components/form/registration-form-inputs";
 import ButtonLoadingSpinner from "@/app/components/loader/ButtonLoaderSpinner";
 import { cn } from "@/lib/utils";
 import UseProfile from "./profile-hooks";

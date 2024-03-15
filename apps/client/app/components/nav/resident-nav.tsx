@@ -8,7 +8,7 @@ export function ResidentNav() {
 
   return (
     <div className="mr-2 md:mr-4 flex">
-      <nav className="flex items-center gap-6 text-sm">
+      <nav className="flex items-center gap-2 md:gap-6 text-sm">
         <Link
           href="/properties"
           className={cn(
@@ -18,12 +18,12 @@ export function ResidentNav() {
               : "text-foreground/60",
           )}
         >
-          My Properties
+          <span className="hidden md:inline">My</span> Properties
         </Link>
         <Link
           href="/"
           className={cn(
-            "navItem transition-all hover:text-foreground/80 hover:scale-105",
+            "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname?.includes("/reservation")
               ? "text-foreground"
               : "text-foreground/60",
@@ -34,7 +34,7 @@ export function ResidentNav() {
         <Link
           href="/"
           className={cn(
-            "navItem transition-all hover:text-foreground/80 hover:scale-105",
+            "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname?.includes("/requests")
               ? "text-foreground"
               : "text-foreground/60",

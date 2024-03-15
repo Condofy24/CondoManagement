@@ -23,7 +23,7 @@ export default function AmenitiesSection({
 }: AmenitiesSectionProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent className="w-[500px] flex flex-col ">
+      <SheetContent className="w-[350px] md:w-[500px] flex flex-col ">
         <SheetHeader>
           <SheetTitle>Property Amenities</SheetTitle>
         </SheetHeader>
