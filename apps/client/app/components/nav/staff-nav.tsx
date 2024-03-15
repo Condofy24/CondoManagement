@@ -26,7 +26,7 @@ export function StaffNav() {
         </Link>
         {isManager && (
           <Link
-            href="/dashboard"
+            href="/employees"
             className={cn(
               "navItem transition-all hover:text-foreground/80 hover:scale-105",
               pathname.includes("dashboard")

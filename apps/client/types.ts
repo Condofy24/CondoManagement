@@ -30,6 +30,16 @@ export type Property = {
   fileAssetId: string;
 };
 
+export type FetchedEmployee = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  role: number;
+  id: string;
+};
+
+export type Employee = Omit<FetchedEmployee, "role"> & { role: string };
+
 export type RegistrationKey = {
   key: string;
   type: string;

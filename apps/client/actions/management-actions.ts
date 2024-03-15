@@ -50,6 +50,42 @@ export async function fetchProperties(companyId: string, token: string) {
   }
 }
 
+export async function fetchEmployees(companyId: string, token: string) {
+  try {
+    const response = await axios.get(`${API_URL}/user/employees/${companyId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    let message = "An error occurred while fetching employees";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function deleteEmployee(employeeId: string, token: string) {
+  try {
+    const response = await axios.delete(`${API_URL}/user/${employeeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    let message = "An error occurred while deleting";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
 export async function createUnit(
   buildingId: string,
   data: TUnitSchema,
