@@ -28,12 +28,15 @@ const PropertyInfo = ({ title, value }: PropertyInfoProps) => (
 );
 
 export default function OwnerProperty({ property }: OwnerPropertyProps) {
-  // const monthlyBalanceProgress =
-  //   property.monthlyFeesBalance == 0
-  //     ? 0
-  //     : (property.fees - (property.monthlyFeesBalance as number)) /
-  //       property.fees;
-  const monthlyBalanceProgress = 50;
+  const monthlyBalanceProgress =
+    property.remainingMonthlyBalance == 0
+      ? 0
+      : ((property.totalMonthlyFees -
+          (property.remainingMonthlyBalance as number)) /
+          property.totalMonthlyFees) *
+        100;
+
+  console.log(monthlyBalanceProgress);
   return (
     <Card className="w-[400px]">
       <CardHeader className="flex flex-col gap-2">
@@ -45,7 +48,13 @@ export default function OwnerProperty({ property }: OwnerPropertyProps) {
         <Separator className="my-1" orientation="horizontal" />
         <PropertyInfo title="Unit Number" value={property.unitNumber} />
         <PropertyInfo title="Size" value={property.size} />
-        <PropertyInfo title="Fees" value={property.fees} />
+        <PropertyInfo
+          title="Fees"
+          value={property.totalMonthlyFees.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+          })}
+        />
         <div
           className={cn(
             "rounded-lg p-1 font-semibold text-center",
@@ -63,10 +72,13 @@ export default function OwnerProperty({ property }: OwnerPropertyProps) {
             className="h-8 bg-green-400"
             value={monthlyBalanceProgress}
           >
-            {(property.monthlyFeesBalance as number).toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })}
+            {(property.remainingMonthlyBalance as number).toLocaleString(
+              "en-US",
+              {
+                style: "currency",
+                currency: "USD",
+              },
+            )}
           </BalanceProgress>
         </div>
       </CardContent>
