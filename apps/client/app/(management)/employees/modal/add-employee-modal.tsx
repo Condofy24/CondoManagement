@@ -3,15 +3,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/app/components/ui/dialog";
-import { BuildingAssetType } from "@/types";
-import { useAssetManagement } from "@/context/asset-management-context";
 import AddEmployeeForm from "./add-employee-form";
+import { EmployeesContext } from "@/context/employees-context";
+import { useContext } from "react";
 
 export default function AddEmployeeModal() {
+  const { setShowModal } = useContext(EmployeesContext);
+
   return (
-    <Dialog open={true}>
+    <Dialog open={true} onOpenChange={setShowModal}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Employee</DialogTitle>

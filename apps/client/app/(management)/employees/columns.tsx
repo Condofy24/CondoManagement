@@ -33,9 +33,11 @@ const DeletePopover = ({
 
   const onClickHandler = async () => {
     try {
-      await deleteEmployee(employeeId, token as string);
-      toast.success(`Deleted ${employeeName}`);
-      setRefetch(true);
+      const res = await deleteEmployee(employeeId, token as string);
+      if (!res.error) {
+        toast.success(`Deleted ${employeeName}`);
+        setRefetch(true);
+      }
     } catch (error) {
       toast.error((error as Error).message);
     }

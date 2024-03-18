@@ -16,7 +16,9 @@ import {
 } from "@/app/components/ui/select";
 import { createEmployee } from "@/actions/management-actions";
 import { useAppSelector } from "@/redux/store";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
+import { EmployeesContext } from "@/context/employees-context";
+import toast from "react-hot-toast";
 
 export default function AddEmployeeForm() {
   const {
@@ -28,14 +30,24 @@ export default function AddEmployeeForm() {
     resolver: zodResolver(createEmployeeSchema),
   });
   const { admin, token } = useAppSelector((state) => state.auth.value);
+  const { setShowModal, setRefetch } = useContext(EmployeesContext);
+
+  const closeModalHandler = () => {
+    setShowModal(false);
+  };
 
   const onSubmit = useCallback(
     async (values: TCreateEmployeeSchema) => {
       if (admin?.companyId && token !== null) {
-        const result = await createEmployee(admin.companyId, values, token);
-        console.log(result);
-        // await fetchEmployees(admin.companyId,token)
+        try {
+          await createEmployee(admin.companyId, values, token);
+          toast.success(`Created ${values.name}`);
+          setRefetch(true);
+        } catch (error) {
+          toast.error((error as Error).message);
+        }
       }
+      closeModalHandler();
     },
     [admin, token]
   );
@@ -95,13 +107,7 @@ export default function AddEmployeeForm() {
         <FormFieldError fieldError={errors.role} />
       </div>
       <div className="flex flex-row justify-center gap-10">
-        <Button
-          type="button"
-          // onClick={() => {
-          //   setShowPaymentDialog(false);
-          //   setAsset(null);
-          // }}
-        >
+        <Button type="button" onClick={closeModalHandler}>
           Cancel
         </Button>
         <Button type="submit">Submit</Button>

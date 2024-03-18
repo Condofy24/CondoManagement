@@ -41,7 +41,7 @@ export async function createEmployee(
   token: string
 ) {
   try {
-    await axios.post(
+    const response = await axios.post(
       `${API_URL}/user/employee`,
       { ...employeeData, companyId },
       {
@@ -50,11 +50,11 @@ export async function createEmployee(
         },
       }
     );
+    return response;
   } catch (error: any) {
     let message = "An error occurred while creating employee";
-
-    if (error.response && error.response.data.message)
-      message = error.response.data.message;
+    if (error.response && error.response.data.error)
+      message = error.response.data.error;
 
     throw new Error(message);
   }
