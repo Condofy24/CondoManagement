@@ -4,8 +4,12 @@ import { useAppSelector } from "@/redux/store";
 import { Button } from "@/app/components/ui/button";
 import Employees from "./employees";
 import { EmployeesContextProvider } from "@/context/employees-context";
+import AddEmployeeModal from "./modal/add-employee-modal";
+import { useState } from "react";
 
 export default function EmployeesManagementDashboardPage() {
+  const [showModal, setShowModal] = useState(false);
+
   const { user } = useAppSelector((state) => state.auth.value);
 
   return (
@@ -21,13 +25,14 @@ export default function EmployeesManagementDashboardPage() {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <Button>
+            <Button onClick={() => setShowModal(true)}>
               Add <span className="hidden md:inline ml-1"> Employee</span>
             </Button>
           </div>
         </div>
         <Employees />
       </div>
+      {showModal && <AddEmployeeModal />}
     </EmployeesContextProvider>
   );
 }
