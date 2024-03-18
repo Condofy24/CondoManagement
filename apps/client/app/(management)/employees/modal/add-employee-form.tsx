@@ -54,6 +54,10 @@ export default function AddEmployeeForm() {
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
+      <p className="text-center mb-2">
+        Employee is created with a default password: name_phoneNumber. Make sure
+        they update it!
+      </p>
       <div className="mb-4">
         <label className="block text-sm font-bold mb-2" htmlFor="amount">
           Name

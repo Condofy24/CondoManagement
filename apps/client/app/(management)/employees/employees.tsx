@@ -24,7 +24,7 @@ const Employees = () => {
     try {
       const employees = await fetchEmployees(
         admin?.companyId as string,
-        token as string
+        token as string,
       );
 
       setEmployees(
@@ -33,7 +33,7 @@ const Employees = () => {
           name:
             employee.id === user.id ? `${employee.name} (You)` : employee.name,
           role: UserRoles[employee.role].toLowerCase(),
-        }))
+        })),
       );
     } catch (error) {
       toast.error((error as Error).message);
