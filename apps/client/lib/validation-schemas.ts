@@ -30,7 +30,7 @@ export const createEmployeeSchema = object({
   phoneNumber: string()
     .min(10, "Phone number must be valid")
     .max(10, { message: "Phone number must be valid" }),
-  role: number({
+  role: string({
     required_error: "Role is required",
   }),
 });

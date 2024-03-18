@@ -14,6 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select";
+import { createEmployee } from "@/actions/management-actions";
+import { useAppSelector } from "@/redux/store";
+import { useCallback } from "react";
 
 export default function AddEmployeeForm() {
   const {
@@ -24,10 +27,18 @@ export default function AddEmployeeForm() {
   } = useForm<TCreateEmployeeSchema>({
     resolver: zodResolver(createEmployeeSchema),
   });
+  const { admin, token } = useAppSelector((state) => state.auth.value);
 
-  const onSubmit = (values: TCreateEmployeeSchema) => {
-    console.log(values);
-  };
+  const onSubmit = useCallback(
+    async (values: TCreateEmployeeSchema) => {
+      if (admin?.companyId && token !== null) {
+        const result = await createEmployee(admin.companyId, values, token);
+        console.log(result);
+        // await fetchEmployees(admin.companyId,token)
+      }
+    },
+    [admin, token]
+  );
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
@@ -71,9 +82,7 @@ export default function AddEmployeeForm() {
         <label className="block text-sm font-bold mb-2" htmlFor="amount">
           Role
         </label>
-        <Select
-          onValueChange={(value: string) => setValue("role", parseInt(value))}
-        >
+        <Select onValueChange={(value: string) => setValue("role", value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a role" />
           </SelectTrigger>
@@ -83,7 +92,7 @@ export default function AddEmployeeForm() {
             <SelectItem value="2">Accountant</SelectItem>
           </SelectContent>
         </Select>
-        <FormFieldError fieldError={errors.phoneNumber} />
+        <FormFieldError fieldError={errors.role} />
       </div>
       <div className="flex flex-row justify-center gap-10">
         <Button

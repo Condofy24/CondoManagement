@@ -1,4 +1,7 @@
-import { TPropertySchema } from "../lib/validation-schemas";
+import {
+  TCreateEmployeeSchema,
+  TPropertySchema,
+} from "../lib/validation-schemas";
 import axios from "axios";
 import { API_URL } from "@/global";
 import { TAddPaymentSchema, TUnitSchema } from "../lib/unit-validation-schemas";
@@ -9,7 +12,7 @@ export async function createProperty(
   companyId: string,
   buildingData: TPropertySchema,
   file: File,
-  token: string,
+  token: string
 ) {
   try {
     await axios.post(
@@ -20,10 +23,35 @@ export async function createProperty(
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
-      },
+      }
     );
   } catch (error: any) {
     let message = "An error occured while creating property";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function createEmployee(
+  companyId: string,
+  employeeData: TCreateEmployeeSchema,
+  token: string
+) {
+  try {
+    await axios.post(
+      `${API_URL}/user/employee`,
+      { ...employeeData, companyId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (error: any) {
+    let message = "An error occurred while creating employee";
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;
@@ -89,7 +117,7 @@ export async function deleteEmployee(employeeId: string, token: string) {
 export async function createUnit(
   buildingId: string,
   data: TUnitSchema,
-  token: string,
+  token: string
 ) {
   try {
     const res = await axios.post(`${API_URL}/unit/${buildingId}`, data, {
@@ -112,7 +140,7 @@ export async function createUnit(
 export async function addNewPayment(
   unitId: string,
   data: TAddPaymentSchema,
-  token: string,
+  token: string
 ) {
   try {
     const res = await axios.post(
@@ -122,7 +150,7 @@ export async function addNewPayment(
         headers: {
           Authorization: `Bearer ${token}`, // Keep: Unused in the backend but will be used later
         },
-      },
+      }
     );
 
     return res.status;
@@ -139,7 +167,7 @@ export async function addNewPayment(
 export const fetchAssets = async (
   assetPage: BuildingAssetType,
   buildingId: string,
-  token: string,
+  token: string
 ): Promise<AssetTypes> => {
   switch (assetPage) {
     case BuildingAssetType.unit:
@@ -147,7 +175,7 @@ export const fetchAssets = async (
         `${API_URL}/unit/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
       return unitData;
 
@@ -156,7 +184,7 @@ export const fetchAssets = async (
         `${API_URL}/parking/building/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
       return parkingData;
 
@@ -165,7 +193,7 @@ export const fetchAssets = async (
         `${API_URL}/storage/building/${buildingId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        },
+        }
       );
       return storageData;
 
