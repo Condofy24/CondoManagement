@@ -24,7 +24,7 @@ export const StorageSchema = new mongoose.Schema<StorageEntity, StorageModel>(
       required: false,
     },
     storageNumber: { type: Number, required: true },
-    isOccupiedByRenter: { type: Boolean, required: true },
+    isOccupiedByRenter: { type: Boolean, required: false, default: false },
     fees: { type: Number, required: true },
   },
   {

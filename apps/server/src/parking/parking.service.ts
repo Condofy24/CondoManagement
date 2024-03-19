@@ -38,7 +38,7 @@ export class ParkingService {
     buildingId: string,
     createParkingDto: CreateParkingDto,
   ) {
-    const { parkingNumber, isOccupiedByRenter, fees } = createParkingDto;
+    const { parkingNumber, fees } = createParkingDto;
 
     const building = await this.buildingService.findBuildingById(buildingId);
 
@@ -48,7 +48,6 @@ export class ParkingService {
     const newParking = new this.parkingModel({
       buildingId: buildingId,
       parkingNumber,
-      isOccupiedByRenter,
       fees,
     });
 

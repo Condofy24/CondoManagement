@@ -1,5 +1,5 @@
 import { AssetTypes } from "@/app/(management)/property/[id]/dashboard/manage-building-assets-hook";
-import { BuildingAsset } from "@/types";
+import { Asset, BuildingAsset } from "@/types";
 import {
   Dispatch,
   SetStateAction,
@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 
-type Mode = "create" | "edit";
+export type Mode = "create" | "edit";
 
 type AssetManagementContextType = {
   showDialog: boolean;
@@ -17,10 +17,12 @@ type AssetManagementContextType = {
   setShowPaymentDialog: Dispatch<SetStateAction<boolean>>;
   mode: Mode;
   setMode: Dispatch<SetStateAction<Mode>>;
-  asset: BuildingAsset | null;
-  setAsset: Dispatch<SetStateAction<BuildingAsset | null>>;
+  asset: Asset | null;
+  setAsset: Dispatch<SetStateAction<Asset | null>>;
   currentAssets: AssetTypes;
   setCurrentAssets: Dispatch<SetStateAction<AssetTypes>>;
+  assetPage: BuildingAsset;
+  setAssetPage: Dispatch<SetStateAction<BuildingAsset>>;
 } | null;
 
 type AssetManagementContextProviderProps = {
@@ -35,9 +37,10 @@ export default function AssetManagementContextProvider({
 }: AssetManagementContextProviderProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [asset, setAsset] = useState<BuildingAsset | null>(null);
+  const [asset, setAsset] = useState<Asset | null>(null);
   const [currentAssets, setCurrentAssets] = useState<AssetTypes>([]);
   const [mode, setMode] = useState<Mode>("create");
+  const [assetPage, setAssetPage] = useState<BuildingAsset>(BuildingAsset.unit);
 
   return (
     <assetManagementContext.Provider
@@ -52,6 +55,8 @@ export default function AssetManagementContextProvider({
         showPaymentDialog,
         setShowPaymentDialog,
         setAsset,
+        assetPage,
+        setAssetPage,
       }}
     >
       {children}

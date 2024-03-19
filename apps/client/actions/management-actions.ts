@@ -4,11 +4,14 @@ import {
 } from "../lib/validation-schemas";
 import axios from "axios";
 import { API_URL } from "@/global";
-import { TAddPaymentSchema, TUnitSchema } from "../lib/unit-validation-schemas";
-import { BuildingAssetType, Parking, Unit, Storage } from "../types";
-import { AssetTypes } from "../app/(management)/property/[id]/dashboard/manage-building-assets-hook";
+import {
+  TAddPaymentSchema,
+  TAssetSchema,
+  TUnitSchema,
+} from "../lib/unit-validation-schemas";
+import { Parking, Unit, Storage } from "../types";
 
-export async function createProperty(
+export async function createBuilding(
   companyId: string,
   buildingData: TPropertySchema,
   file: File,
@@ -114,29 +117,6 @@ export async function deleteEmployee(employeeId: string, token: string) {
   }
 }
 
-export async function createUnit(
-  buildingId: string,
-  data: TUnitSchema,
-  token: string,
-) {
-  try {
-    const res = await axios.post(`${API_URL}/unit/${buildingId}`, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return res.status;
-  } catch (error: any) {
-    let message = "An error occurred while creating unit";
-
-    if (error.response && error.response.data.message)
-      message = error.response.data.message;
-
-    throw new Error(message);
-  }
-}
-
 export async function addNewPayment(
   unitId: string,
   data: TAddPaymentSchema,
@@ -164,43 +144,239 @@ export async function addNewPayment(
   }
 }
 
-export const fetchAssets = async (
-  assetPage: BuildingAssetType,
+/*********************
+ *       Units
+ ********************/
+export async function createUnit(
+  buildingId: string,
+  data: TUnitSchema,
+  token: string,
+) {
+  try {
+    const res = await axios.post(`${API_URL}/unit/${buildingId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while creating unit";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export const fetchBuildingUnits = async (
   buildingId: string,
   token: string,
-): Promise<AssetTypes> => {
-  switch (assetPage) {
-    case BuildingAssetType.unit:
-      const { data: unitData } = await axios.get<Unit[]>(
-        `${API_URL}/unit/${buildingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      return unitData;
+): Promise<Unit[]> => {
+  try {
+    const { data: unitData } = await axios.get<Unit[]>(
+      `${API_URL}/unit/${buildingId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    return unitData;
+  } catch (error: any) {
+    let message = "An error occurred while retrieving units";
 
-    case BuildingAssetType.parking:
-      const { data: parkingData } = await axios.get<Parking[]>(
-        `${API_URL}/parking/building/${buildingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      return parkingData;
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
 
-    case BuildingAssetType.storage:
-      const { data: storageData } = await axios.get<Storage[]>(
-        `${API_URL}/storage/building/${buildingId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      return storageData;
-
-    default:
-      throw new Error("Invalid asset type");
+    throw new Error(message);
   }
 };
+
+export async function updateUnit(
+  unitId: string,
+  data: TUnitSchema,
+  token: string,
+) {
+  try {
+    const res = await axios.patch(`${API_URL}/unit/${unitId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while updating unit";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+/*********************
+ *       Parkings
+ **********************/
+export const fetchBuildingParkings = async (
+  buildingId: string,
+  token: string,
+): Promise<Parking[]> => {
+  try {
+    const { data: unitData } = await axios.get<Parking[]>(
+      `${API_URL}/parking/building/${buildingId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    return unitData;
+  } catch (error: any) {
+    let message = "An error occurred while retrieving parkings";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+};
+
+export async function createParking(
+  buildingId: string,
+  data: TAssetSchema,
+  token: string,
+) {
+  try {
+    const { assetNumber: parkingNumber, ...parkingData } = data as any;
+
+    const res = await axios.post(
+      `${API_URL}/parking/${buildingId}`,
+      { ...parkingData, parkingNumber },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while creating parking";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function updateParking(
+  parkingId: string,
+  data: TAssetSchema,
+  token: string,
+) {
+  try {
+    const { assetNumber: parkingNumber, ...parkingData } = data as any;
+    const res = await axios.patch(
+      `${API_URL}/parking/${parkingId}`,
+      { ...parkingData, parkingNumber },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while updating parking";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+/*********************
+ *       Storages
+ ********************/
+export const fetchBuildingStorages = async (
+  buildingId: string,
+  token: string,
+): Promise<Storage[]> => {
+  try {
+    const { data: unitData } = await axios.get<Storage[]>(
+      `${API_URL}/storage/building/${buildingId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+    return unitData;
+  } catch (error: any) {
+    let message = "An error occurred while retrieving storages";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+};
+
+export async function createStorage(
+  buildingId: string,
+  data: TAssetSchema,
+  token: string,
+) {
+  try {
+    const { assetNumber: storageNumber, ...storageData } = data as any;
+    const res = await axios.post(
+      `${API_URL}/storage/${buildingId}`,
+      { ...storageData, storageNumber },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while creating storage";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function updateStorage(
+  storageId: string,
+  data: TAssetSchema,
+  token: string,
+) {
+  try {
+    const { assetNumber: storageNumber, ...storageData } = data as any;
+    const res = await axios.patch(
+      `${API_URL}/storage/${storageId}`,
+      { ...storageData, storageNumber },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while updating storage";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
 
 // export async function updateAsset(
 //   buildingId: string,

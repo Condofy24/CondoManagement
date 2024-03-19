@@ -24,7 +24,7 @@ export const ParkingSchema = new mongoose.Schema<ParkingEntity, ParkingModel>(
       required: false,
     },
     parkingNumber: { type: Number, required: true },
-    isOccupiedByRenter: { type: Boolean, required: true },
+    isOccupiedByRenter: { type: Boolean, required: false, default: false },
     fees: { type: Number, required: true },
   },
   {

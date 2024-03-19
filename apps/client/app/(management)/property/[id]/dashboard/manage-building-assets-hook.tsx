@@ -1,37 +1,51 @@
-import { fetchAssets } from "@/actions/management-actions";
+import {
+  fetchBuildingUnits,
+  fetchBuildingStorages,
+  fetchBuildingParkings,
+} from "@/actions/management-actions";
 import { useAssetManagement } from "@/context/asset-management-context";
 import { useAppSelector } from "@/redux/store";
-import { BuildingAssetType, Parking, Storage, Unit } from "@/types";
+import { BuildingAsset, Parking, Storage, Unit } from "@/types";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export type AssetTypes = Unit[] | Parking[] | Storage[];
 
+const assetFetchAction = (asset: BuildingAsset) => {
+  if (asset === BuildingAsset.storage) return fetchBuildingStorages;
+  if (asset === BuildingAsset.parking) return fetchBuildingParkings;
+
+  return fetchBuildingUnits;
+};
+
 export default function useBuildingAsset() {
-  const [assetPage, setAssetPage] = useState<BuildingAssetType>(
-    BuildingAssetType.unit,
-  );
-  const { setCurrentAssets, currentAssets } = useAssetManagement();
+  const { assetPage, setAssetPage, setCurrentAssets, currentAssets } =
+    useAssetManagement();
   const { token } = useAppSelector((state) => state.auth.value);
   const { id: buildingId } = useParams();
 
-  const getAssetsByPage = useCallback(async () => {
+  const fetchAssets = useCallback(async () => {
     try {
-      const data = await fetchAssets(
-        assetPage,
-        buildingId as string,
-        token as string,
+      setCurrentAssets(
+        await assetFetchAction(assetPage)(
+          buildingId as string,
+          token as string,
+        ),
       );
-      setCurrentAssets(data as AssetTypes);
     } catch (error) {
-      toast.error("Error fetching assets: " + error);
+      toast.error((error as Error).message);
     }
   }, [assetPage, buildingId, token, setCurrentAssets]);
 
   useEffect(() => {
-    getAssetsByPage();
-  }, [assetPage, buildingId, token, getAssetsByPage]);
+    fetchAssets();
+  }, [assetPage, buildingId, token, fetchAssets]);
 
-  return { assetPage, getAssetsByPage, setAssetPage, assets: currentAssets };
+  return {
+    assetPage,
+    fetchAssets,
+    setAssetPage,
+    assets: currentAssets,
+  };
 }
