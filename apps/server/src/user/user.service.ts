@@ -20,6 +20,7 @@ import { CreateManagerDto } from './dto/create-manager.dto';
 import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError } from 'mongodb';
+import { UserRoles } from './user.model';
 
 @Injectable()
 /**
@@ -153,7 +154,7 @@ export class UserService {
       email,
       password,
       name,
-      role: key.type == 'owner' ? 3 : 4,
+      role: key.type == 'owner' ? UserRoles.OWNER : UserRoles.RENTER,
       phoneNumber,
       imageUrl,
       imageId,

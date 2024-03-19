@@ -22,3 +22,25 @@ export async function claimOwnerUnit(data: TUnitKeySchema, token: string) {
     throw new Error(message);
   }
 }
+
+export async function fetchAssociatedProperties(userId: string, token: string) {
+  try {
+    const result = await axios.get(
+      `${API_URL}/unit/findAssociatedUnits/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while fetching your properties.";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}

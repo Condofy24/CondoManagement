@@ -24,6 +24,13 @@ import { IUnitPayment, PaymentsEntity } from './entities/payments.entity';
 import { ParkingService } from '../parking/parking.service';
 import { UnitModel } from './models/unit.model';
 import { response } from 'express';
+import { UserRoles } from '../user/user.model';
+import { BuildingEntity } from '../building/entities/building.entity';
+import { StorageService } from '../storage/storage.service';
+import { ParkingEntity } from '../parking/entities/parking.entity';
+import { StorageEntity } from '../storage/entities/storage.entity';
+import { ParkingModel } from '../parking/models/parking.model';
+import { StorageModel } from '../storage/models/storage.model';
 
 @Injectable()
 /**
@@ -33,6 +40,7 @@ export class UnitService {
   constructor(
     @InjectModel('Unit')
     private readonly unitModel: Model<UnitEntity>,
+    private readonly storageService: StorageService,
     private readonly parkingService: ParkingService,
     @InjectModel('Payments')
     private readonly paymentsModel: Model<PaymentsEntity>,
@@ -168,7 +176,17 @@ export class UnitService {
           type: 'renter',
         });
 
-        return new UnitModel(unit, ownerKey, renterKey);
+        const { parkings, storages } = await this.getUnitAmmunitites(
+          unit._id.toString(),
+        );
+
+        return new UnitModel({
+          entity: unit,
+          parkings: parkings.map((p) => new ParkingModel(p)),
+          storages: storages.map((s) => new StorageModel(s)),
+          ownerKey: ownerKey || undefined,
+          renterKey: renterKey || undefined,
+        });
       }),
     );
   }
@@ -208,7 +226,7 @@ export class UnitService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    if (user.role !== 4)
+    if (user.role !== UserRoles.OWNER)
       throw new BadRequestException({
         message: 'Must be an owner to claim a unit',
       });
@@ -317,14 +335,46 @@ export class UnitService {
    * @returns A promise that resolves to an array of UnitEntity objects.
    * @throws NotFoundException if the user is not found.
    */
-  public async findAssociatedUnits(userId: string): Promise<UnitEntity[]> {
+  public async findAssociatedUnits(userId: string): Promise<UnitModel[]> {
     const user = await this.userService.findUserById(userId);
 
     if (!user) throw new NotFoundException({ message: 'User not found' });
 
     const filterKey = user.role == 3 ? 'ownerId' : 'renterId';
 
-    return await this.unitModel.find({ [filterKey]: userId }).exec();
+    const units: UnitEntity[] = await this.unitModel
+      .find({ [filterKey]: userId })
+      .exec();
+
+    return Promise.all(
+      units.map(async (unit: UnitEntity) => {
+        const building: BuildingEntity | undefined =
+          (await this.buildingService.findBuildingById(
+            unit.buildingId.toString(),
+          )) || undefined;
+
+        const { parkings, storages } = await this.getUnitAmmunitites(
+          unit._id.toString(),
+        );
+
+        return new UnitModel({
+          entity: unit,
+          parkings: parkings.map((p) => new ParkingModel(p)),
+          storages: storages.map((s) => new StorageModel(s)),
+          building: building,
+        });
+      }),
+    );
+  }
+
+  private async getUnitAmmunitites(unitId: string): Promise<{
+    parkings: ParkingEntity[];
+    storages: StorageEntity[];
+  }> {
+    const parkings = await this.parkingService.findParkingsByUnitId(unitId);
+    const storages = await this.storageService.findStoragesByUnitId(unitId);
+
+    return { parkings, storages };
   }
 
   /**
@@ -389,6 +439,7 @@ export class UnitService {
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_MINUTE)
   /**
    * Handles the cron job for processing monthly fees for units.
    * This function retrieves all units, calculates the monthly fees balance,
@@ -400,15 +451,26 @@ export class UnitService {
     units.forEach(async (unit) => {
       if (unit.ownerId) {
         // Reset monthly fees balance and add balance to overdue
-        const sumOfParkingFees = (
-          await this.parkingService.findParkingsByUnitId(unit.id)
-        )?.reduce((acc, current) => {
+
+        const { parkings, storages } = await this.getUnitAmmunitites(
+          unit._id.toString(),
+        );
+
+        const totalParkingFees = parkings.reduce((acc, current) => {
           return (acc += current.fees);
         }, 0);
+
+        const totalStorageFees = storages.reduce((acc, current) => {
+          return (acc += current.fees);
+        }, 0);
+
         unit.overdueFees +=
           unit.monthlyFeesBalance +
           unit.monthlyFeesBalance * (unit.lateFeesInterestRate / 100);
-        unit.monthlyFeesBalance = unit.fees + sumOfParkingFees;
+
+        unit.monthlyFeesBalance =
+          unit.fees + totalParkingFees + totalStorageFees;
+
         await unit.save();
       }
     });

@@ -49,6 +49,8 @@ export type RegistrationKey = {
 export type Unit = {
   id: string;
   buildingId: string;
+  buildingName?: string;
+  buildingAddress?: string;
   ownerId?: string;
   renterId?: string;
   unitNumber: number;
@@ -59,7 +61,10 @@ export type Unit = {
   renterKey?: RegistrationKey;
   lateFeesInterestRate?: number;
   overdueFees?: number;
-  monthlyFeesBalance?: number;
+  remainingMonthlyBalance?: number;
+  totalMonthlyFees: number;
+  parkings: Parking[];
+  storages: Storage[];
 };
 
 export type IFinancialStatus = "Paid" | "Monthly Fees Due" | "Overdue Fees";
