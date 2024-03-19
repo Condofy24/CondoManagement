@@ -1,4 +1,7 @@
-import { TPropertySchema } from "../lib/validation-schemas";
+import {
+  TCreateEmployeeSchema,
+  TPropertySchema,
+} from "../lib/validation-schemas";
 import axios from "axios";
 import { API_URL } from "@/global";
 import { TAddPaymentSchema, TUnitSchema } from "../lib/unit-validation-schemas";
@@ -27,6 +30,31 @@ export async function createProperty(
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function createEmployee(
+  companyId: string,
+  employeeData: TCreateEmployeeSchema,
+  token: string,
+) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/employee`,
+      { ...employeeData, companyId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response;
+  } catch (error: any) {
+    let message = "An error occurred while creating employee";
+    if (error.response && error.response.data.error)
+      message = error.response.data.error;
 
     throw new Error(message);
   }

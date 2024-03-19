@@ -10,11 +10,13 @@ type EmployeesContextProviderProps = {
   children: React.ReactNode;
 };
 
-type EmployeesContextType = {
+export type EmployeesContextType = {
   employees: Employee[];
   setEmployees: Dispatch<SetStateAction<Employee[]>>;
   refetch: boolean;
   setRefetch: Dispatch<SetStateAction<boolean>>;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
+  showModal: boolean;
 };
 
 export const EmployeesContext = createContext<EmployeesContextType>({
@@ -22,6 +24,8 @@ export const EmployeesContext = createContext<EmployeesContextType>({
   setEmployees: () => {},
   refetch: false,
   setRefetch: () => {},
+  setShowModal: () => {},
+  showModal: false,
 });
 
 export function EmployeesContextProvider({
@@ -29,10 +33,18 @@ export function EmployeesContextProvider({
 }: EmployeesContextProviderProps) {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [refetch, setRefetch] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <EmployeesContext.Provider
-      value={{ employees, setEmployees, refetch, setRefetch }}
+      value={{
+        employees,
+        showModal,
+        setShowModal,
+        setEmployees,
+        refetch,
+        setRefetch,
+      }}
     >
       {children}
     </EmployeesContext.Provider>
