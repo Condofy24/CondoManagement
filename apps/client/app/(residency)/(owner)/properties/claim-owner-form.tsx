@@ -54,7 +54,7 @@ export default function ClaimUnitForm() {
           >
             <div className="flex flex-col items-start mt-2 mb-2 dark:bg-gray-800 p-4 border-1 shadow-black border-gray-700 bg-gray-200/45 rounded-lg">
               <div className="flex flex-col w-full">
-                <h2 className=" flex justify-center mb-3 px-3 text-white outline-none font-semibold text-lg text-gray-700/90 dark:text-white/80">
+                <h2 className=" flex justify-center mb-3 px-3 outline-none font-semibold text-lg text-gray-700/90 dark:text-white/80">
                   Property Key
                 </h2>
 
