@@ -16,17 +16,6 @@ describe('ParkingController E2E Test', () => {
     await app.init();
   });
 
-  //   it('should create a new User', () => {
-  //     return request(app.getHttpServer())
-  //       .post('/parking/65ee2bf8eac53efc81bbab46')
-  //       .send({
-  //         parkingNumber: 1,
-  //         isOccupiedByRenter: false,
-  //         fees: 100,
-  //       })
-  //       .expect(201);
-  //   });
-
   it('should create a new User', () => {
     return request(app.getHttpServer())
       .post('/user/manager')
