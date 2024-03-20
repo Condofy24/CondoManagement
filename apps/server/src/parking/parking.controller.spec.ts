@@ -9,7 +9,6 @@ import { ParkingEntity } from './entities/parking.entity';
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
-  isOccupiedByRenter: false,
   fees: 4,
 };
 

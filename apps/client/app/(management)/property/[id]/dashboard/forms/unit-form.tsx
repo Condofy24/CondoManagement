@@ -7,7 +7,7 @@ import { Unit } from "@/types";
 
 export default function UnitForm() {
   const { asset, mode, setShowDialog } = useAssetManagement();
-  const { register, handleSubmit, errors, onSubmit } = useUnitForm();
+  const { register, handleSubmit, errors, onSubmit, isDirty } = useUnitForm();
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
@@ -91,7 +91,9 @@ export default function UnitForm() {
         <Button type="button" onClick={() => setShowDialog(false)}>
           Cancel
         </Button>
-        <Button type="submit">{mode === "create" ? "Create" : "Edit"}</Button>
+        <Button type="submit" disabled={!isDirty}>
+          {mode === "create" ? "Create" : "Edit"}
+        </Button>
       </div>
     </form>
   );

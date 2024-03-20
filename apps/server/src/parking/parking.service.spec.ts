@@ -13,7 +13,6 @@ const mockingoose = require('mockingoose');
 
 const createParkingDto: CreateParkingDto = {
   parkingNumber: 4,
-  isOccupiedByRenter: false,
   fees: 4,
 };
 

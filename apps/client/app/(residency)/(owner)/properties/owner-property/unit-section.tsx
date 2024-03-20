@@ -25,7 +25,7 @@ export default function UnitSection({ unit }: UnitSectionProps) {
         <SectionHeader title="Unit" />
       </div>
       <PropertyInfo title="Unit Number" value={unit.unitNumber} />
-      <PropertyInfo title="Size" value={unit.size} />
+      <PropertyInfo title="Size" value={unit.size + " \u33A1"} />
       <PropertyInfo
         title="Fees"
         value={unit.fees.toLocaleString("en-US", {

@@ -198,7 +198,7 @@ export async function updateUnit(
   token: string,
 ) {
   try {
-    const res = await axios.patch(`${API_URL}/unit/${unitId}`, data, {
+    const res = await axios.patch(`${API_URL}/unit/update/${unitId}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

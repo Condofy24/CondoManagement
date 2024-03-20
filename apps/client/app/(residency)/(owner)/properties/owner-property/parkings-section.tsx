@@ -21,7 +21,14 @@ const ParkingInfo = ({ parking }: { parking: Parking }) => (
       </div>
       <div className="flex flex-row justify-between mx-1">
         <span className="text-muted-foreground">Fees</span>
-        <span className="font-bold">{parking.fees}</span>
+        <span className="font-bold">
+          {parking.fees.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}
+        </span>
       </div>
     </div>
     <div

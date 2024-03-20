@@ -14,9 +14,10 @@ import { assetsColumns } from "./table-columns/assets-columns";
 import CreateUpdateAssetModal from "./create-update-asset-modal";
 import { DataTable } from "@/app/components/table/data-table";
 import AddPaymentModal from "./make-payment-modal";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function AssetsDashboard() {
-  const { assetPage, setAssetPage, assets } = UseAssets();
+  const { assetPage, setAssetPage, assets, isFetching } = UseAssets();
 
   return (
     <div className="flex flex-1 flex-col p-4 space-y-5 md:p-16 mb-10">
@@ -30,7 +31,13 @@ export default function AssetsDashboard() {
         <CreateUpdateAssetModal assetName={assetPage} />
       </div>
       <AddPaymentModal />
-      {getTable(assetPage, assets)}
+      {isFetching ? (
+        <div className="flex justify-center items-center">
+          <LoadingSpinner />
+        </div>
+      ) : (
+        getTable(assetPage, assets)
+      )}
     </div>
   );
 }

@@ -20,12 +20,19 @@ const assetFetchAction = (asset: BuildingAsset) => {
 };
 
 export default function useBuildingAsset() {
-  const { assetPage, setAssetPage, setCurrentAssets, currentAssets } =
-    useAssetManagement();
+  const {
+    assetPage,
+    setAssetPage,
+    setCurrentAssets,
+    currentAssets,
+    isFetching,
+    setIsFetching,
+  } = useAssetManagement();
   const { token } = useAppSelector((state) => state.auth.value);
   const { id: buildingId } = useParams();
 
   const fetchAssets = useCallback(async () => {
+    setIsFetching(true);
     try {
       setCurrentAssets(
         await assetFetchAction(assetPage)(
@@ -35,6 +42,8 @@ export default function useBuildingAsset() {
       );
     } catch (error) {
       toast.error((error as Error).message);
+    } finally {
+      setIsFetching(false);
     }
   }, [assetPage, buildingId, token, setCurrentAssets]);
 
@@ -47,5 +56,6 @@ export default function useBuildingAsset() {
     fetchAssets,
     setAssetPage,
     assets: currentAssets,
+    isFetching,
   };
 }

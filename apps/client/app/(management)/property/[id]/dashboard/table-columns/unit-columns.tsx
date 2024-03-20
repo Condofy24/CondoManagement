@@ -54,21 +54,21 @@ const RegistrationKeysPopover = ({
                 <Label>Owner</Label>
                 <Input
                   readOnly
-                  defaultValue={ownerKey.key}
+                  defaultValue={ownerKey?.key}
                   className="col-span-2 h-8"
                 />
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    ownerKey.isClaimed ? "bg-red-400" : "bg-green-400",
+                    ownerKey?.isClaimed ? "bg-red-400" : "bg-green-400",
                   )}
                 >
-                  {ownerKey.isClaimed ? "Claimed" : "Available"}
+                  {ownerKey?.isClaimed ? "Claimed" : "Available"}
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => {
-                    navigator.clipboard.writeText(ownerKey.key);
+                    navigator.clipboard.writeText(ownerKey?.key);
                   }}
                 >
                   Copy
@@ -79,21 +79,21 @@ const RegistrationKeysPopover = ({
                 <Input
                   readOnly
                   className="col-span-2 h-8"
-                  defaultValue={renterKey.key}
+                  defaultValue={renterKey?.key}
                 />
 
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    renterKey.isClaimed ? "bg-red-400" : "bg-green-400",
+                    renterKey?.isClaimed ? "bg-red-400" : "bg-green-400",
                   )}
                 >
-                  {renterKey.isClaimed ? "Claimed" : "Available"}
+                  {renterKey?.isClaimed ? "Claimed" : "Available"}
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => {
-                    navigator.clipboard.writeText(renterKey.key);
+                    navigator.clipboard.writeText(renterKey?.key);
                   }}
                 >
                   Copy
@@ -161,12 +161,12 @@ export const unitColumns: ColumnDef<UnitCol>[] = [
   },
   {
     accessorKey: "size",
-    header: "Size (sqr feet)",
+    header: "Size (\u33A1)",
   },
 
   {
     accessorKey: "fees",
-    header: "Fees ($/sqr foot)",
+    header: "Fees ($/\u33A1)",
   },
   {
     accessorKey: "financialStatus",

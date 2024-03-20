@@ -14,8 +14,12 @@ import { useAppSelector } from "@/redux/store";
 import { useParams } from "next/navigation";
 import UseAssets from "../manage-building-assets-hook";
 
-const defaultValues = (type: BuildingAsset, asset: Asset | null) => {
-  if (!asset) return { assetNumber: "", fees: "" };
+const defaultValues = (
+  mode: Mode,
+  type: BuildingAsset,
+  asset: Asset | null,
+) => {
+  if (!asset || mode == "create") return { assetNumber: "", fees: "" };
 
   if (type === BuildingAsset.parking) {
     return { assetNumber: (asset as Parking).parkingNumber, fees: asset.fees };
@@ -49,7 +53,7 @@ export default function useAssetForm(type: BuildingAsset, asset: Asset | null) {
     formState: { errors, isDirty },
   } = useForm<TAssetSchema>({
     resolver: zodResolver(assetSchema),
-    defaultValues: defaultValues(type, asset) as TAssetSchema,
+    defaultValues: defaultValues(mode, type, asset) as TAssetSchema,
   });
 
   const onSubmit = async (data: TAssetSchema) => {

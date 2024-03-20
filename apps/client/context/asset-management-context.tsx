@@ -23,6 +23,9 @@ type AssetManagementContextType = {
   setCurrentAssets: Dispatch<SetStateAction<AssetTypes>>;
   assetPage: BuildingAsset;
   setAssetPage: Dispatch<SetStateAction<BuildingAsset>>;
+
+  isFetching: boolean;
+  setIsFetching: Dispatch<SetStateAction<boolean>>;
 } | null;
 
 type AssetManagementContextProviderProps = {
@@ -41,6 +44,7 @@ export default function AssetManagementContextProvider({
   const [currentAssets, setCurrentAssets] = useState<AssetTypes>([]);
   const [mode, setMode] = useState<Mode>("create");
   const [assetPage, setAssetPage] = useState<BuildingAsset>(BuildingAsset.unit);
+  const [isFetching, setIsFetching] = useState(false);
 
   return (
     <assetManagementContext.Provider
@@ -57,6 +61,8 @@ export default function AssetManagementContextProvider({
         setAsset,
         assetPage,
         setAssetPage,
+        isFetching,
+        setIsFetching,
       }}
     >
       {children}

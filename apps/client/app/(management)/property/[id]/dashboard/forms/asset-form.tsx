@@ -6,9 +6,7 @@ import { useAssetManagement } from "@/context/asset-management-context";
 import useAssetForm from "./asset-form-hook";
 
 export default function AssetForm({ type }: { type: BuildingAsset }) {
-  const { currentAssets, asset, mode, setShowDialog } = useAssetManagement();
-
-  console.log(currentAssets);
+  const { asset, mode, setShowDialog } = useAssetManagement();
 
   const { register, handleSubmit, errors, onSubmit, isDirty } = useAssetForm(
     type,
