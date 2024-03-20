@@ -18,7 +18,14 @@ export default function BalanceReport({ property }: BalanceReportProps) {
     <div className="flex gap-4 flex-col flex-nowrap">
       <div className="flex gap-2 justify-between items-center">
         <span className="w-[10rem]">Monthly Fees</span>
-        <span>{property.totalMonthlyFees}</span>
+        <span>
+          {property.totalMonthlyFees.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}
+        </span>
       </div>
       <div className="flex flex-1 gap-2 items-center">
         <span className="w-[10rem]">Remaining Balance</span>

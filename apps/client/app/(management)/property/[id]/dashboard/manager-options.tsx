@@ -4,7 +4,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/app/components/ui/popover";
-import { BuildingAssetType } from "@/types";
+import { BuildingAsset } from "@/types";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { CSSProperties } from "react";
 import { FaBox, FaParking, FaHome } from "react-icons/fa";
@@ -14,7 +14,7 @@ const IconStyle: CSSProperties = { marginRight: "5px" };
 export function ManagerOptions({
   setAssetPage,
 }: {
-  setAssetPage: React.Dispatch<React.SetStateAction<BuildingAssetType>>;
+  setAssetPage: React.Dispatch<React.SetStateAction<BuildingAsset>>;
 }) {
   return (
     <Popover>
@@ -29,7 +29,7 @@ export function ManagerOptions({
           <Button
             className="w-full"
             onClick={() => {
-              setAssetPage(BuildingAssetType.unit);
+              setAssetPage(BuildingAsset.unit);
             }}
           >
             <FaHome style={IconStyle} />
@@ -39,7 +39,7 @@ export function ManagerOptions({
           <Button
             className="w-full"
             onClick={() => {
-              setAssetPage(BuildingAssetType.parking);
+              setAssetPage(BuildingAsset.parking);
             }}
           >
             <FaParking style={IconStyle} />
@@ -49,7 +49,7 @@ export function ManagerOptions({
           <Button
             className="w-full"
             onClick={() => {
-              setAssetPage(BuildingAssetType.storage);
+              setAssetPage(BuildingAsset.storage);
             }}
           >
             <FaBox style={IconStyle} />

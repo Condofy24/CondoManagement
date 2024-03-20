@@ -38,7 +38,7 @@ export class StorageService {
     buildingId: string,
     createStorageDto: CreateStorageDto,
   ): Promise<StorageEntity> {
-    const { storageNumber, isOccupiedByRenter, fees } = createStorageDto;
+    const { storageNumber, fees } = createStorageDto;
 
     const building = await this.buildingService.findBuildingById(buildingId);
 
@@ -48,7 +48,6 @@ export class StorageService {
     const newStorage = new this.storageModel({
       buildingId: buildingId,
       storageNumber,
-      isOccupiedByRenter,
       fees,
     });
 

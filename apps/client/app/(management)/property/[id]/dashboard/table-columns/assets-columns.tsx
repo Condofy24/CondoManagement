@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { BuildingAssetType, Asset } from "@/types";
+import { BuildingAsset, BuildingResource } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -15,7 +15,7 @@ import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { useAssetManagement } from "@/context/asset-management-context";
 
 type AssetActionsMenuProps = {
-  asset: Asset;
+  asset: BuildingResource;
   assetName: string;
 };
 
@@ -35,8 +35,8 @@ const AssetActionsMenu = ({ asset, assetName }: AssetActionsMenuProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            setShowDialog(true);
             setAsset(asset);
+            setShowDialog(true);
             setMode("edit");
           }}
         >
@@ -49,9 +49,9 @@ const AssetActionsMenu = ({ asset, assetName }: AssetActionsMenuProps) => {
 
 export const assetsColumns = (
   assetIdKey: string,
-  assetName: BuildingAssetType,
-): ColumnDef<Asset>[] => {
-  const columns: ColumnDef<Asset>[] = [
+  assetName: BuildingAsset,
+): ColumnDef<BuildingResource>[] => {
+  const columns: ColumnDef<BuildingResource>[] = [
     {
       accessorKey: assetIdKey,
       header: ({ column }) => {
@@ -73,7 +73,7 @@ export const assetsColumns = (
     {
       id: "actions",
       cell: ({ row }) => {
-        const asset: Asset = row.original;
+        const asset: BuildingResource = row.original;
         return <AssetActionsMenu asset={asset} assetName={assetName} />;
       },
     },

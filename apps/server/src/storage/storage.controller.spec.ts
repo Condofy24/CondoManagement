@@ -9,7 +9,6 @@ import { StorageEntity } from './entities/storage.entity';
 
 const createStorageDto: CreateStorageDto = {
   storageNumber: 4,
-  isOccupiedByRenter: false,
   fees: 4,
 };
 

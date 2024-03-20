@@ -91,11 +91,11 @@ export type Storage = {
   fees: number;
 };
 
-export type BuildingAsset = Unit | Asset;
+export type Asset = Unit | BuildingResource;
 
-export type Asset = Parking | Storage;
+export type BuildingResource = Parking | Storage;
 
-export enum BuildingAssetType {
+export enum BuildingAsset {
   unit = "Unit",
   parking = "Parking",
   storage = "Storage",

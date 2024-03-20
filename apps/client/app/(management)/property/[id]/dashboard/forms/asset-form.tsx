@@ -1,20 +1,19 @@
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import FormFieldError from "@/app/components/form/form-field-error";
-import { BuildingAssetType, Parking } from "@/types";
+import { BuildingAsset } from "@/types";
 import { useAssetManagement } from "@/context/asset-management-context";
 import useAssetForm from "./asset-form-hook";
 
-export default function AssetForm({
-  assetType,
-}: {
-  assetType: BuildingAssetType;
-}) {
+export default function AssetForm({ type }: { type: BuildingAsset }) {
   const { asset, mode, setShowDialog } = useAssetManagement();
-  const { register, handleSubmit, errors, onSubmit } = useAssetForm();
 
-  const assetName =
-    assetType === BuildingAssetType.parking ? "Parking" : "Storage";
+  const { register, handleSubmit, errors, onSubmit, isDirty } = useAssetForm(
+    type,
+    asset,
+  );
+
+  const assetName = type === BuildingAsset.parking ? "Parking" : "Storage";
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
@@ -27,13 +26,6 @@ export default function AssetForm({
           {...register("assetNumber")}
           placeholder={`${assetName} Number`}
           className="dark:bg-white dark:text-black"
-          defaultValue={
-            mode === "edit"
-              ? assetType == BuildingAssetType.parking
-                ? (asset as unknown as Parking).parkingNumber
-                : (asset as unknown as Storage).storageNumber
-              : ""
-          }
         />
         <FormFieldError fieldError={errors.assetNumber} />
       </div>
@@ -46,7 +38,6 @@ export default function AssetForm({
           {...register("fees", { valueAsNumber: true })}
           placeholder="Fees"
           className="dark:bg-white dark:text-black"
-          defaultValue={mode === "edit" ? asset?.fees : ""}
         />
         <FormFieldError fieldError={errors.fees} />
       </div>
@@ -55,7 +46,9 @@ export default function AssetForm({
         <Button type="button" onClick={() => setShowDialog(false)}>
           Cancel
         </Button>
-        <Button type="submit">{mode === "create" ? "Create" : "Edit"}</Button>
+        <Button type="submit" disabled={!isDirty}>
+          {mode.charAt(0).toUpperCase() + mode.slice(1)}
+        </Button>
       </div>
     </form>
   );

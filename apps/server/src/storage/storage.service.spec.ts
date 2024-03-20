@@ -13,7 +13,6 @@ const mockingoose = require('mockingoose');
 
 const createStorageDto: CreateStorageDto = {
   storageNumber: 4,
-  isOccupiedByRenter: false,
   fees: 4,
 };
 

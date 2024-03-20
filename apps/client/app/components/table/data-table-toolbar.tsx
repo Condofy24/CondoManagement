@@ -8,7 +8,7 @@ import { Table } from "@tanstack/react-table";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
-  filter: string;
+  filter?: { title: string; key: string };
 }
 
 export default function PropertiesTableToolbar<TData>({
@@ -20,14 +20,18 @@ export default function PropertiesTableToolbar<TData>({
     !!table && (
       <div className="flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
-          <Input
-            placeholder={`Filter by ${filter}...`}
-            value={(table.getColumn(filter)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(filter)?.setFilterValue(event.target.value)
-            }
-            className="h-8 w-[150px] lg:w-[250px]"
-          />
+          {!!filter && (
+            <Input
+              placeholder={`Filter by ${filter.title}...`}
+              value={
+                (table.getColumn(filter.key)?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn(filter.key)?.setFilterValue(event.target.value)
+              }
+              className="h-8 w-[150px] lg:w-[250px]"
+            />
+          )}
           {isFiltered && (
             <Button
               variant="ghost"

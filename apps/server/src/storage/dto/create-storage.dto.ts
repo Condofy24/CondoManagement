@@ -6,10 +6,6 @@ export class CreateStorageDto {
   @ApiProperty()
   storageNumber: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  isOccupiedByRenter: boolean;
-
   @IsNotEmpty()
   @ApiProperty()
   fees: number;

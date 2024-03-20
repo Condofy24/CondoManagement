@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/components/ui/dialog";
-import { BuildingAssetType } from "@/types";
+import { BuildingAsset } from "@/types";
 import AssetForm from "./forms/asset-form";
 import { useAssetManagement } from "@/context/asset-management-context";
 import UnitForm from "./forms/unit-form";
@@ -13,7 +13,7 @@ import UnitForm from "./forms/unit-form";
 export default function CreateUpdateAssetModal({
   assetName,
 }: {
-  assetName: BuildingAssetType;
+  assetName: BuildingAsset;
 }) {
   const { showDialog, setShowDialog, mode, setMode, setAsset } =
     useAssetManagement();
@@ -41,13 +41,13 @@ export default function CreateUpdateAssetModal({
   );
 }
 
-const getBuildingAssetForm = (assetName: BuildingAssetType) => {
+const getBuildingAssetForm = (assetName: BuildingAsset) => {
   switch (assetName) {
-    case BuildingAssetType.unit:
+    case BuildingAsset.unit:
       return <UnitForm />;
-    case BuildingAssetType.parking:
-      return <AssetForm assetType={BuildingAssetType.parking} />;
-    case BuildingAssetType.storage:
-      return <AssetForm assetType={BuildingAssetType.storage} />;
+    case BuildingAsset.parking:
+      return <AssetForm type={BuildingAsset.parking} />;
+    case BuildingAsset.storage:
+      return <AssetForm type={BuildingAsset.storage} />;
   }
 };

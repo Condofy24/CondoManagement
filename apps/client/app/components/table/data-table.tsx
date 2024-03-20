@@ -32,12 +32,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   redirectPath?: string;
+  filter?: { title: string; key: string };
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  redirectPath = undefined,
+  redirectPath,
+  filter,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -77,7 +79,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {/* @ts-ignore */}
-      <DataTableToolbar table={table} filter={columns[0].accessorKey} />
+      <DataTableToolbar table={table} filter={filter} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

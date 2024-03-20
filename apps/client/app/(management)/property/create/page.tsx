@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { useAppSelector } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { createProperty } from "@/actions/management-actions";
+import { createBuilding } from "@/actions/management-actions";
 
 export default function PropertyCreationPage() {
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export default function PropertyCreationPage() {
     if (propertyFile) {
       setLoading(true);
       try {
-        await createProperty(
+        await createBuilding(
           admin?.companyId as string,
           data,
           propertyFile,
