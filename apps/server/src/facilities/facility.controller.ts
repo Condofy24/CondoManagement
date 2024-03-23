@@ -11,8 +11,8 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FacilityService } from './facility.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
-import { PrivilegeGuard } from 'src/auth/auth.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { PrivilegeGuard } from '../auth/auth.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 /**
  * Controller for managing building-related operations.

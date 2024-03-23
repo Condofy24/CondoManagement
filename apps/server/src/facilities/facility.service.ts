@@ -6,7 +6,7 @@ import { error } from 'console';
 import { CreateFacilityDto } from '../facilities/dto/create-facility.dto';
 import { FacilityEntity } from '../facilities/entities/facilities.entity';
 import { MongoServerError } from 'mongodb';
-import { BuildingService } from 'src/building/building.service';
+import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';
 
 /**
