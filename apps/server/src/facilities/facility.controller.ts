@@ -5,6 +5,7 @@ import { FacilityService } from './facility.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { PrivilegeGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { FacilityModel } from './models/facility.model';
 
 /**
  * Controller for managing building-related operations.
@@ -25,6 +26,8 @@ export class FacilityController {
     @Param('buildingId') buildingId: string,
     @Body() createFacilityDto: CreateFacilityDto,
   ) {
-    this.facilityService.createFacility(buildingId, createFacilityDto);
+    return new FacilityModel(
+      await this.facilityService.createFacility(buildingId, createFacilityDto),
+    );
   }
 }

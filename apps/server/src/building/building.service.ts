@@ -14,8 +14,6 @@ import { error } from 'console';
 
 import { BuildingEntity } from './entities/building.entity';
 import { UnitService } from '../unit/unit.service';
-import { CreateFacilityDto } from '../facilities/dto/create-facility.dto';
-import { FacilityEntity } from '../facilities/entities/facilities.entity';
 
 /**
  * Service class for managing buildings.
@@ -25,8 +23,6 @@ export class BuildingService {
   constructor(
     @InjectModel('Building')
     private readonly buildingModel: Model<BuildingEntity>,
-    @InjectModel('Facility')
-    private readonly facilityModel: Model<FacilityEntity>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
