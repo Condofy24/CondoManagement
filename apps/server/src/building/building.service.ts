@@ -14,6 +14,8 @@ import { error } from 'console';
 
 import { BuildingEntity } from './entities/building.entity';
 import { UnitService } from '../unit/unit.service';
+import { CreateFacilityDto } from './dto/create-facility.dto';
+import { FacilityEntity } from './entities/facilities.entity';
 
 /**
  * Service class for managing buildings.
@@ -23,6 +25,8 @@ export class BuildingService {
   constructor(
     @InjectModel('Building')
     private readonly buildingModel: Model<BuildingEntity>,
+    @InjectModel('Facility')
+    private readonly facilityModel: Model<FacilityEntity>,
     private cloudinary: CloudinaryService,
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
@@ -162,5 +166,37 @@ export class BuildingService {
       .exec();
 
     return buildings;
+  }
+
+  /**
+   * Create a new facility for a building.
+   * @param buildingId - The ID of the building
+   */
+  public async createFacility(
+    buildingId: string,
+    createFacilityDto: CreateFacilityDto,
+  ) {
+    const buildingExists = await this.buildingModel.findById(buildingId);
+
+    if (!buildingExists) {
+      throw new BadRequestException({ message: 'Invalid building Id' });
+    }
+
+    const newFacility = new this.facilityModel({
+      buildingId: buildingExists.id,
+      ...createFacilityDto,
+    });
+
+    try {
+      const entity = await newFacility.save();
+      return entity;
+    } catch (e) {
+      let errorDescription = 'Facility could not be created';
+
+      throw new BadRequestException({
+        message: errorDescription,
+        error: e?.message,
+      });
+    }
   }
 }

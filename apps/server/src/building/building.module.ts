@@ -9,13 +9,17 @@ import { StorageModule } from '../storage/storage.module';
 import { UserModule } from '../user/user.module';
 import { BuildingSchema } from './entities/building.entity';
 import { MongooseModule } from '@nestjs/mongoose';
+import { FacilitySchema } from './entities/facilities.entity';
 
 /**
  * Module for managing buildings.
  */
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Building', schema: BuildingSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Building', schema: BuildingSchema },
+      { name: 'Facility', schema: FacilitySchema },
+    ]),
     CompanyModule,
     CloudinaryModule,
     forwardRef(() => UserModule),

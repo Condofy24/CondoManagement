@@ -22,6 +22,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CreateFacilityDto } from './dto/create-facility.dto';
 
 /**
  * Controller for managing building-related operations.
@@ -100,5 +101,19 @@ export class BuildingController {
     const buildingEntities = await this.buildingService.findAll(companyId);
 
     return buildingEntities.map((entity) => new BuildingModel(entity));
+  }
+
+  /**
+   * Create facility for a building.
+   * @param buildingId - The ID of the building.
+   */
+  @Get(':buildingId')
+  @UseGuards(PrivilegeGuard)
+  @Roles(0)
+  async createFacility(
+    @Param('buildingId') buildingId: string,
+    @Body() createFacilityDto: CreateFacilityDto,
+  ) {
+    this.buildingService.createFacility(buildingId, createFacilityDto);
   }
 }
