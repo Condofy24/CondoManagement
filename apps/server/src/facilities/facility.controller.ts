@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FacilityService } from './facility.service';
@@ -15,6 +22,7 @@ import { FacilityModel } from './models/facility.model';
 @Controller('facility')
 export class FacilityController {
   constructor(private readonly facilityService: FacilityService) {}
+
   /**
    * Create facility for a building.
    * @param buildingId - The ID of the building.
@@ -29,5 +37,16 @@ export class FacilityController {
     return new FacilityModel(
       await this.facilityService.createFacility(buildingId, createFacilityDto),
     );
+  }
+
+  /**
+   * Delete a facility
+   * @param facilityId - The ID of the facility.
+   */
+  @Delete(':facilityId')
+  @UseGuards(PrivilegeGuard)
+  @Roles(0)
+  async deleteFacility(@Param('facilityId') facilityId: string) {
+    return await this.facilityService.deleteFacility(facilityId);
   }
 }

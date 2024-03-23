@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { error } from 'console';
@@ -52,6 +52,21 @@ export class FacilityService {
 
       throw new BadRequestException({
         message: errorDescription,
+        error: e?.message,
+      });
+    }
+  }
+
+  /**
+   * Delete a facility
+   * @param facilityId - The ID of the facility
+   */
+  public async deleteFacility(facilityId: string) {
+    try {
+      await this.facilityModel.findByIdAndDelete(facilityId);
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Facility could not be deleted',
         error: e?.message,
       });
     }
