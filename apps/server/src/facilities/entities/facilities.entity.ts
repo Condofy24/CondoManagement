@@ -53,3 +53,5 @@ export const FacilitySchema = new mongoose.Schema<
     timestamps: true, // This enables automatic createdAt and updatedAt fields
   },
 );
+
+export default mongoose.model('Facility', new mongoose.Schema(FacilitySchema));

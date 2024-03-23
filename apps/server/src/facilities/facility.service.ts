@@ -45,7 +45,6 @@ export class FacilityService {
       return new FacilityModel(entity as FacilityEntity);
     } catch (e) {
       let errorDescription = 'Facility could not be created';
-      console.log(e);
       if (error instanceof MongoServerError && error.code === 11000) {
         errorDescription =
           'Facility could not be created due to unique constraint violation';
