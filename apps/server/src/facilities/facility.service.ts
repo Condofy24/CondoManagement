@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { error } from 'console';
@@ -7,6 +7,7 @@ import { CreateFacilityDto } from '../facilities/dto/create-facility.dto';
 import { FacilityEntity } from '../facilities/entities/facilities.entity';
 import { MongoServerError } from 'mongodb';
 import { BuildingService } from 'src/building/building.service';
+import { FacilityModel } from './models/facility.model';
 
 /**
  * Service class for managing buildings.
@@ -41,7 +42,7 @@ export class FacilityService {
 
     try {
       const entity = await newFacility.save();
-      return entity as FacilityEntity;
+      return new FacilityModel(entity as FacilityEntity);
     } catch (e) {
       let errorDescription = 'Facility could not be created';
       console.log(e);
@@ -67,6 +68,18 @@ export class FacilityService {
     } catch (e) {
       throw new BadRequestException({
         message: 'Facility could not be deleted',
+        error: e?.message,
+      });
+    }
+  }
+
+  public async getFacilities(buildingId: string) {
+    try {
+      const facilities = await this.facilityModel.find({ buildingId });
+      return facilities?.map((facility) => new FacilityModel(facility)) || [];
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Facilities could not be fetched',
         error: e?.message,
       });
     }

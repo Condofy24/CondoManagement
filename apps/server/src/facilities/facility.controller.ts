@@ -4,6 +4,7 @@ import {
   Delete,
   Param,
   Post,
+  Get,
   UseGuards,
 } from '@nestjs/common';
 
@@ -12,7 +13,6 @@ import { FacilityService } from './facility.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { PrivilegeGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { FacilityModel } from './models/facility.model';
 
 /**
  * Controller for managing building-related operations.
@@ -34,8 +34,9 @@ export class FacilityController {
     @Param('buildingId') buildingId: string,
     @Body() createFacilityDto: CreateFacilityDto,
   ) {
-    return new FacilityModel(
-      await this.facilityService.createFacility(buildingId, createFacilityDto),
+    return await this.facilityService.createFacility(
+      buildingId,
+      createFacilityDto,
     );
   }
 
@@ -48,5 +49,16 @@ export class FacilityController {
   @Roles(0)
   async deleteFacility(@Param('facilityId') facilityId: string) {
     return await this.facilityService.deleteFacility(facilityId);
+  }
+
+  /**
+   * Get all facilities for a building
+   * @param buildingId - The ID of the building.
+   */
+  @Get(':buildingId')
+  @UseGuards(PrivilegeGuard)
+  @Roles(0)
+  async getFacilities(@Param('buildingId') buildingId: string) {
+    return await this.facilityService.getFacilities(buildingId);
   }
 }
