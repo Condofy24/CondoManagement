@@ -44,7 +44,7 @@ export const FacilitySchema = new mongoose.Schema<
       required: true,
       ref: 'Building',
     },
-    name: { type: String, required: true },
+    name: { type: String, unique: true, required: true },
     price: { type: Number, default: 0 },
     operationTimes: [],
     duration: { type: Number, required: true },

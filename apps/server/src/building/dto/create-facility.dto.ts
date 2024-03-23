@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, Validate } from 'class-validator';
 import { OperationTimes } from '../entities/facilities.entity';
+import { AreValidOperationTimes } from '../validations';
 
 /**
  * Data transfer object for creating a facility.
@@ -22,8 +23,8 @@ export class CreateFacilityDto {
   /**
    * The operation times of the facility block.
    */
-  @IsNotEmpty()
   @ApiProperty()
+  @Validate(AreValidOperationTimes)
   operationTimes: OperationTimes[];
 
   /**

@@ -193,6 +193,11 @@ export class BuildingService {
     } catch (e) {
       let errorDescription = 'Facility could not be created';
 
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'Facility could not be created due to unique constraint violation';
+      }
+
       throw new BadRequestException({
         message: errorDescription,
         error: e?.message,
