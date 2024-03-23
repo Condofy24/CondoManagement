@@ -107,7 +107,7 @@ export class BuildingController {
    * Create facility for a building.
    * @param buildingId - The ID of the building.
    */
-  @Get(':buildingId')
+  @Post('facility/:buildingId')
   @UseGuards(PrivilegeGuard)
   @Roles(0)
   async createFacility(
