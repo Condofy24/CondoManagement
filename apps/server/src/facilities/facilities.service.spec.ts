@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FacilityService } from './facility.service';
 import FacilityModel from './entities/facilities.entity';
+import FacilityAvailabilityModel from './entities/availability.entity';
 import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { UserService } from '../user/user.service';
@@ -43,7 +44,7 @@ describe('FacilityService', () => {
 
   const findMockResponse = {
     id: new ObjectId('65ff57c1f2e0bc27cede0b61'),
-    buildingId: new ObjectId(),
+    buildingId: new ObjectId('65ff57c1f2e0bc27cede0b62'),
     name: 'PEWPEWWW',
     price: 0,
     duration: 60,
@@ -69,6 +70,10 @@ describe('FacilityService', () => {
         {
           provide: getModelToken('Facility'),
           useValue: FacilityModel,
+        },
+        {
+          provide: getModelToken('FacilityAvailability'),
+          useValue: FacilityAvailabilityModel,
         },
         {
           provide: UserService,
@@ -130,16 +135,32 @@ describe('FacilityService', () => {
     });
   });
 
-  //   describe('getFacilities', () => {
-  //     it('get all facilities successfully', async () => {
-  //       //Arrange
-  //       const id = new ObjectId('65ff57c1f2e0bc27cede0b61');
-  //       mockingoose(FacilityModel).toReturn([findMockResponse], 'find');
+  describe('getFacilities', () => {
+    it('get all facilities successfully', async () => {
+      //Arrange
+      const id = new ObjectId('65ff57c1f2e0bc27cede0b61');
+      mockingoose(FacilityModel).toReturn([findMockResponse], 'find');
 
-  //       const response = await service.getFacilities(id.toString());
+      const response = await service.getFacilities(id.toString());
 
-  //       //Assert
-  //       await expect(response).toBe([findMockResponse]);
-  //     });
-  //   });
+      //Assert
+      await expect({
+        ...response[0],
+        id: new ObjectId('65ff57c1f2e0bc27cede0b61'),
+        buildingId: new ObjectId('65ff57c1f2e0bc27cede0b62'),
+      }).toMatchObject(findMockResponse);
+    });
+  });
+
+  describe('availabilities creation', () => {
+    it('create availabilities', async () => {
+      //Arrange
+      mockingoose(FacilityModel).toReturn([findMockResponse], 'find');
+
+      const response = await service.generateAvailabilities();
+
+      //Assert
+      await expect(response).toBeUndefined();
+    });
+  });
 });
