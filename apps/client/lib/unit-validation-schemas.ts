@@ -47,3 +47,30 @@ export const assetSchema = object({
 });
 
 export type TAssetSchema = TypeOf<typeof assetSchema>;
+
+export const facilitySchema = object({
+  name: z.string({ required_error: "Facility name is required" }),
+  fees: number({
+    required_error: "Facility fees is required",
+    invalid_type_error: "Facility fees must be a number",
+  }).min(0, {
+    message: "Fees must be at above 0",
+  }),
+  openingHours: z
+    .string({ required_error: "Opening hours is required" })
+    .regex(
+      new RegExp("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"),
+      "Time format invalid use HH:MM"
+    ),
+  closingHours: z
+    .string({ required_error: "Closing hours is required" })
+    .regex(
+      new RegExp("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"),
+      "Time format invalid use HH:MM"
+    ),
+  duration: z
+    .number({ required_error: "Make sure times correct" })
+    .min(0, { message: "Duration must be at above 0" }),
+});
+
+export type TFacilitySchema = TypeOf<typeof facilitySchema>;

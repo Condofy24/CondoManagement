@@ -91,12 +91,24 @@ export type Storage = {
   fees: number;
 };
 
+export type Facility = {
+  id: string;
+  buildingId: string;
+  name: string;
+  description: string;
+  fees: number;
+  openingHours: string;
+  closingHours: string;
+  duration: number;
+};
+
 export type Asset = Unit | BuildingResource;
 
-export type BuildingResource = Parking | Storage;
+export type BuildingResource = Parking | Storage | Facility;
 
 export enum BuildingAsset {
   unit = "Unit",
   parking = "Parking",
   storage = "Storage",
+  facility = "Facility",
 }

@@ -8,6 +8,7 @@ import { BuildingAsset } from "@/types";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { CSSProperties } from "react";
 import { FaBox, FaParking, FaHome } from "react-icons/fa";
+import { BsBuildingFillGear } from "react-icons/bs";
 
 const IconStyle: CSSProperties = { marginRight: "5px" };
 
@@ -54,6 +55,16 @@ export function ManagerOptions({
           >
             <FaBox style={IconStyle} />
             Manage Storage
+          </Button>
+
+          <Button
+            className="w-full"
+            onClick={() => {
+              setAssetPage(BuildingAsset.facility);
+            }}
+          >
+            <BsBuildingFillGear style={IconStyle} />
+            Manage Facilities
           </Button>
         </div>
       </PopoverContent>

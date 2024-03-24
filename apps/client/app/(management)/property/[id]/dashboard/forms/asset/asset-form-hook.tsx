@@ -12,12 +12,12 @@ import {
 } from "@/actions/management-actions";
 import { useAppSelector } from "@/redux/store";
 import { useParams } from "next/navigation";
-import UseAssets from "../manage-building-assets-hook";
+import UseAssets from "../../manage-building-assets-hook";
 
 const defaultValues = (
   mode: Mode,
   type: BuildingAsset,
-  asset: Asset | null,
+  asset: Asset | null
 ) => {
   if (!asset || mode == "create") return { assetNumber: "", fees: "" };
 
@@ -61,12 +61,12 @@ export default function useAssetForm(type: BuildingAsset, asset: Asset | null) {
       if (mode == "create") {
         await createAction(type)(buildingId as string, data, token as string);
         toast.success(
-          `${type.charAt(0).toUpperCase() + type.slice(1)} created successfully`,
+          `${type.charAt(0).toUpperCase() + type.slice(1)} created successfully`
         );
       } else {
         await updateAction(type)((asset as Asset).id, data, token as string);
         toast.success(
-          `${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully`,
+          `${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully`
         );
       }
       setShowDialog(false);
