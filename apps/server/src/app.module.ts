@@ -18,8 +18,8 @@ import { StorageModule } from './storage/storage.module';
 import { StorageController } from './storage/storage.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
-import { FacilityController } from './facilities/facility.controller';
-import { FacilityModule } from './facilities/facility.module';
+import { FacilityController } from './facility/facility.controller';
+import { FacilityModule } from './facility/facility.module';
 
 @Module({
   imports: [

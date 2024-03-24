@@ -3,11 +3,11 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { error } from 'console';
 
-import { CreateFacilityDto } from '../facilities/dto/create-facility.dto';
+import { CreateFacilityDto } from '../facility/dto/create-facility.dto';
 import {
   FacilityEntity,
   OperationTimes,
-} from '../facilities/entities/facilities.entity';
+} from '../facility/entities/facilities.entity';
 import { MongoServerError } from 'mongodb';
 import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';

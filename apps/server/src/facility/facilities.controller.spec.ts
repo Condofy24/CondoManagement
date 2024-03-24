@@ -2,8 +2,6 @@ import { FacilityController } from './facility.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FacilityService } from './facility.service';
 import { ObjectId } from 'mongodb';
-import { FacilityModel } from './models/facility.model';
-import { FacilityEntity } from './entities/facilities.entity';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';

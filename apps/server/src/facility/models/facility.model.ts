@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FacilityEntity } from '../entities/facilities.entity';
-import { ObjectId } from 'mongoose';
 
 export class FacilityModel {
   @ApiProperty()

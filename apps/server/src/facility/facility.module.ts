@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FacilitySchema } from './entities/facilities.entity';
 import { FacilityController } from './facility.controller';
 import { FacilityService } from './facility.service';
-import { BuildingModule } from 'src/building/building.module';
-import { UserModule } from 'src/user/user.module';
+import { BuildingModule } from '../building/building.module';
+import { UserModule } from '../user/user.module';
 import { FacilityAvailabilitySchema } from './entities/availability.entity';
 
 /**
