@@ -19,7 +19,7 @@ export class FacilityModel {
   duration: number;
 
   @ApiProperty()
-  operationTimes: [{ type: ObjectId }];
+  operationTimes: [];
 
   constructor(entity: FacilityEntity) {
     this.id = entity._id.toString();

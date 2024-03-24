@@ -4,10 +4,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { error } from 'console';
 
 import { CreateFacilityDto } from '../facilities/dto/create-facility.dto';
-import { FacilityEntity } from '../facilities/entities/facilities.entity';
+import {
+  FacilityEntity,
+  OperationTimes,
+} from '../facilities/entities/facilities.entity';
 import { MongoServerError } from 'mongodb';
 import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';
+import { FacilityAvailabilityEntity } from './entities/availability.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 /**
  * Service class for managing buildings.
@@ -18,6 +23,8 @@ export class FacilityService {
     private readonly buildingService: BuildingService,
     @InjectModel('Facility')
     private readonly facilityModel: Model<FacilityEntity>,
+    @InjectModel('FacilityAvailability')
+    private readonly facilityAvailabilityModel: Model<FacilityAvailabilityEntity>,
   ) {}
 
   /**
@@ -42,6 +49,7 @@ export class FacilityService {
 
     try {
       const entity = await newFacility.save();
+      this.generateAvailabilities(entity._id.toString());
       return new FacilityModel(entity as FacilityEntity);
     } catch (e) {
       let errorDescription = 'Facility could not be created';
@@ -82,5 +90,107 @@ export class FacilityService {
         error: e?.message,
       });
     }
+  }
+
+  async createAvailabilities(
+    days: number,
+    duration: number,
+    operationTimes: OperationTimes[],
+    facilityId: string,
+  ) {
+    try {
+      const currentDate = new Date();
+
+      for (let i = 0; i <= days; i++) {
+        const dailyHours = operationTimes[days % 7];
+        const startingHours = dailyHours.openingTime / 60;
+        let closingHours = dailyHours.closingTime / 60;
+
+        if (closingHours < startingHours) {
+          // Past Midnight - 12am
+          closingHours += 24;
+        }
+
+        const numberBlocks = Math.floor(
+          Math.abs(closingHours - startingHours) / (duration / 60),
+        );
+
+        for (let j = 0; j < numberBlocks; j++) {
+          const startDate = new Date();
+          startDate.setDate(currentDate.getDate() + i);
+          startDate.setHours(startingHours + j * Math.floor(duration / 60));
+          startDate.setMinutes(
+            (startingHours - Math.floor(startingHours)) * 60,
+          );
+          startDate.setSeconds(0);
+
+          const endDate = new Date();
+          endDate.setDate(currentDate.getDate() + i);
+          endDate.setHours(
+            startingHours +
+              j * Math.floor(duration / 60) +
+              Math.floor(duration / 60),
+          );
+          endDate.setMinutes(
+            (startingHours - Math.floor(startingHours)) * 60 +
+              (startingHours - Math.floor(startingHours)) * 60,
+          );
+          endDate.setSeconds(0);
+
+          const newFacilityAvail = new this.facilityAvailabilityModel({
+            facilityId,
+            endDate,
+            startDate,
+            status: 'available',
+          });
+
+          await newFacilityAvail.save();
+        }
+      }
+    } catch (e) {}
+  }
+
+  async generateAvailabilities(facilityId?: string) {
+    if (facilityId) {
+      try {
+        const facility = await this.facilityModel.findById(facilityId);
+        const operationTimes = facility?.operationTimes as OperationTimes[];
+        const duration = facility?.duration;
+
+        const date = new Date();
+        const daysRemainingInMonth =
+          new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() -
+          date.getDate();
+
+        if (duration) {
+          await this.createAvailabilities(
+            daysRemainingInMonth,
+            duration,
+            operationTimes,
+            facilityId,
+          );
+        }
+      } catch (e) {}
+    } else {
+      const facilities = await this.facilityModel.find(); // Get all facilities
+      facilities.forEach(async ({ duration, operationTimes, id }) => {
+        const date = new Date();
+        await this.createAvailabilities(
+          new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate(),
+          duration,
+          operationTimes,
+          id,
+        );
+      });
+    }
+  }
+
+  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
+  /**
+   * Handles the cron job for generating 4 week availabilities
+   * of all facilities.
+   */
+  async handleCron() {
+    await this.generateAvailabilities();
   }
 }

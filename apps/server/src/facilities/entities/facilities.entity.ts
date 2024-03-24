@@ -5,7 +5,7 @@ export interface FacilityEntity extends Document {
   buildingId: mongoose.Types.ObjectId | Record<string, unknown>;
   name: string;
   price: number;
-  operationTimes: [{ type: mongoose.Schema.Types.ObjectId }];
+  operationTimes: [];
   duration: number;
 }
 
@@ -15,7 +15,7 @@ export interface OperationTimes {
    */
   openingTime: number;
   /**
-   * // Time in minutes form start of the day, e.g. midnight = 0 * 60 = 0
+   * Time in minutes form start of the day, e.g. midnight = 0 * 60 = 0
    */
   closingTime: number;
 }
