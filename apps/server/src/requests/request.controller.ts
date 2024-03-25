@@ -6,6 +6,7 @@ import {
   Post,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,6 +19,8 @@ import { RequestService } from './request.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestModel } from './models/request.model';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { PrivilegeGuard } from '../auth/auth.guard';
 
 @ApiTags('Request')
 @ApiBearerAuth()
@@ -29,10 +32,11 @@ export class RequestController {
   @ApiCreatedResponse({ description: 'Request created', type: RequestModel })
   async create(
     @Param('ownerId') ownerId: string,
+    @Param('unitId') unitId: string,
     @Body() createRequestDto: CreateRequestDto,
   ) {
     return new RequestModel(
-      await this.requestService.create(ownerId, createRequestDto),
+      await this.requestService.create(ownerId, unitId, createRequestDto),
     );
   }
 
@@ -51,15 +55,17 @@ export class RequestController {
     return new RequestModel(await this.requestService.findOne(ownerId, id));
   }
 
-  @Patch(':ownerId/:id')
+  @Patch(':id')
+  @UseGuards(PrivilegeGuard)
+  @Roles(1)
+  @Roles(2)
   @ApiOkResponse({ description: 'Request updated', type: RequestModel })
   async update(
-    @Param('ownerId') ownerId: string,
     @Param('id') id: string,
     @Body() updateRequestDto: UpdateRequestDto,
   ) {
     return new RequestModel(
-      await this.requestService.update(ownerId, id, updateRequestDto),
+      await this.requestService.update(id, updateRequestDto),
     );
   }
 

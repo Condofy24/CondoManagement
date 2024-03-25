@@ -20,11 +20,13 @@ export class RequestService {
    */
   async create(
     ownerId: string,
+    unitId: string,
     createRequestDto: CreateRequestDto,
   ): Promise<RequestEntity> {
     const createdRequest = new this.requestModel({
       ...createRequestDto,
       owner: ownerId,
+      unit: unitId,
     });
     return createdRequest.save();
   }
@@ -65,12 +67,11 @@ export class RequestService {
    * @returns A promise resolved with the updated request entity.
    */
   async update(
-    ownerId: string,
     id: string,
     updateRequestDto: UpdateRequestDto,
   ): Promise<RequestEntity> {
     const updatedRequest = await this.requestModel
-      .findOneAndUpdate({ _id: id, owner: ownerId }, updateRequestDto, {
+      .findOneAndUpdate({ _id: id }, updateRequestDto, {
         new: true,
       })
       .exec();

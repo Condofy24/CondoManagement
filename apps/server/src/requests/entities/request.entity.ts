@@ -21,6 +21,7 @@ export interface RequestEntity extends mongoose.Document {
   resolutionContent?: string;
   resolutionTime?: Date;
   owner: mongoose.Schema.Types.ObjectId;
+  unit: mongoose.Schema.Types.ObjectId;
 }
 
 interface RequestModel extends mongoose.Model<RequestEntity> {}
@@ -44,6 +45,11 @@ export const RequestSchema = new mongoose.Schema<RequestEntity, RequestModel>(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+      required: true,
+    },
+    unit: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Unit',
       required: true,
     },
   },
