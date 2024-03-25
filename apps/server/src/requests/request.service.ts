@@ -79,4 +79,20 @@ export class RequestService {
     }
     return updatedRequest;
   }
+
+  /**
+   * Deletes a request by its ID and owner ID.
+   *
+   * @param ownerId - The ID of the owner.
+   * @param id - The ID of the request to delete.
+   * @returns A promise resolved with any result.
+   */
+  async remove(ownerId: string, id: string): Promise<void> {
+    const result = await this.requestModel
+      .findOneAndDelete({ _id: id, owner: ownerId })
+      .exec();
+    if (!result) {
+      throw new NotFoundException(`Request with ID "${id}" not found.`);
+    }
+  }
 }
