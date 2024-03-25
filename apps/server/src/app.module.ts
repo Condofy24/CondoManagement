@@ -18,6 +18,8 @@ import { StorageModule } from './storage/storage.module';
 import { StorageController } from './storage/storage.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
+import { RequestModule } from './requests/request.module';
+import { RequestController } from './requests/request.controller';
 
 @Module({
   imports: [
@@ -35,6 +37,7 @@ import { ConfigModule } from '@nestjs/config';
     UnitModule,
     ParkingModule,
     StorageModule,
+    RequestModule,
   ],
   controllers: [
     AppController,

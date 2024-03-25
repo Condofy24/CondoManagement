@@ -52,7 +52,7 @@ export const RequestSchema = new mongoose.Schema<RequestEntity, RequestModel>(
   },
 );
 
-export default mongoose.model<RequestEntity, RequestModel>(
+export const RequestModel = mongoose.model<Request>(
   'Request',
-  RequestSchema,
+  new mongoose.Schema(RequestSchema),
 );
