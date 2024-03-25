@@ -43,4 +43,11 @@ export class RequestController {
       (request) => new RequestModel(request),
     );
   }
+
+  @Get(':ownerId/:id')
+  @ApiOkResponse({ description: 'Request retrieved', type: RequestModel })
+  @ApiNotFoundResponse({ description: 'Request not found' })
+  async findOne(@Param('ownerId') ownerId: string, @Param('id') id: string) {
+    return new RequestModel(await this.requestService.findOne(ownerId, id));
+  }
 }
