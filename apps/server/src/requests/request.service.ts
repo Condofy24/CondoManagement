@@ -39,4 +39,20 @@ export class RequestService {
     return this.requestModel.find({ owner: ownerId }).exec();
   }
 
+  /**
+   * Finds a single request by its ID and owner ID.
+   *
+   * @param ownerId - The ID of the owner.
+   * @param id - The ID of the request to find.
+   * @returns A promise resolved with the found request entity.
+   */
+  async findOne(ownerId: string, id: string): Promise<RequestEntity> {
+    const request = await this.requestModel
+      .findOne({ _id: id, owner: ownerId })
+      .exec();
+    if (!request) {
+      throw new NotFoundException(`Request with ID "${id}" not found.`);
+    }
+    return request;
+  }
 }
