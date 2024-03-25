@@ -8,10 +8,10 @@ import { useAppSelector } from "@/redux/store";
 import { useTheme } from "./theme-context";
 
 import "@knocklabs/react/dist/index.css";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import toast from "react-hot-toast";
 
-const NotificationToaster = () => {
+const NotificationToaster = ({ children }: { children: ReactNode }) => {
   const { feedClient } = useKnockFeed();
 
   const onNotificationsReceived = ({ items }: { items: any }) => {
@@ -36,6 +36,8 @@ const NotificationToaster = () => {
     return () =>
       feedClient.off("items.received.realtime", onNotificationsReceived);
   }, [feedClient]);
+
+  return <>{children}</>;
 };
 
 export function NotificationProvider({
@@ -56,8 +58,7 @@ export function NotificationProvider({
         feedId={process.env.KNOCK_FEED_CHANNEL_ID as string}
       >
         <>
-          <NotificationToaster />
-          {children}
+          <NotificationToaster>{children}</NotificationToaster>
         </>
       </KnockFeedProvider>
     </KnockProvider>
