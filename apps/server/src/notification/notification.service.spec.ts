@@ -37,6 +37,7 @@ const unitInfoTestData: Partial<UnitEntity> = {
   size: 4,
   isOccupiedByRenter: false,
   fees: 4,
+  ownerId: new ObjectId(),
 };
 
 jest.mock('@knocklabs/node');

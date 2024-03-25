@@ -33,19 +33,20 @@ export class NotificationService {
       unit.buildingId.toString(),
     )) as BuildingEntity;
 
-    await this.knock.workflows.trigger('payment', {
-      data: {
-        buildingName: building.name,
-        paymentAmount: amount,
-        unitNumber: unit.unitNumber,
-      },
-      recipients: [
-        {
-          id: owner._id.toString(),
-          name: owner.name,
-          email: owner.email,
+    if (this.knock.workflows)
+      await this.knock.workflows.trigger('payment', {
+        data: {
+          buildingName: building.name,
+          paymentAmount: amount,
+          unitNumber: unit.unitNumber,
         },
-      ],
-    });
+        recipients: [
+          {
+            id: owner._id.toString(),
+            name: owner.name,
+            email: owner.email,
+          },
+        ],
+      });
   }
 }
