@@ -55,4 +55,28 @@ export class RequestService {
     }
     return request;
   }
+
+  /**
+   * Updates a request by its ID and owner ID.
+   *
+   * @param ownerId - The ID of the owner.
+   * @param id - The ID of the request to update.
+   * @param updateRequestDto - The data transfer object for request updating.
+   * @returns A promise resolved with the updated request entity.
+   */
+  async update(
+    ownerId: string,
+    id: string,
+    updateRequestDto: UpdateRequestDto,
+  ): Promise<RequestEntity> {
+    const updatedRequest = await this.requestModel
+      .findOneAndUpdate({ _id: id, owner: ownerId }, updateRequestDto, {
+        new: true,
+      })
+      .exec();
+    if (!updatedRequest) {
+      throw new NotFoundException(`Request with ID "${id}" not found.`);
+    }
+    return updatedRequest;
+  }
 }
