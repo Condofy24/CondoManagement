@@ -82,7 +82,7 @@ describe('NotificationService', () => {
     );
 
     // Assert
-    expect(userServiceMock).toHaveBeenCalled();
-    expect(buildingServiceMock).toHaveBeenCalled();
+    expect(userServiceMock.findUserById).toHaveBeenCalled();
+    expect(buildingServiceMock.findBuildingById).toHaveBeenCalled();
   });
 });
