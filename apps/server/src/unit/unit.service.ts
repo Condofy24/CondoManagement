@@ -439,7 +439,6 @@ export class UnitService {
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
-  // @Cron(CronExpression.EVERY_MINUTE)
   /**
    * Handles the cron job for processing monthly fees for units.
    * This function retrieves all units, calculates the monthly fees balance,
