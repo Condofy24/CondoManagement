@@ -35,4 +35,12 @@ export class RequestController {
       await this.requestService.create(ownerId, createRequestDto),
     );
   }
+
+  @Get(':ownerId')
+  @ApiOkResponse({ description: 'Requests retrieved', type: [RequestModel] })
+  async findAllForOwner(@Param('ownerId') ownerId: string) {
+    return (await this.requestService.findAllForOwner(ownerId)).map(
+      (request) => new RequestModel(request),
+    );
+  }
 }
