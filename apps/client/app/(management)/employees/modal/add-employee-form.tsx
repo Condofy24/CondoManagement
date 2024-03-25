@@ -49,7 +49,7 @@ export default function AddEmployeeForm() {
       }
       closeModalHandler();
     },
-    [admin, token],
+    [admin, token]
   );
 
   return (
@@ -59,7 +59,7 @@ export default function AddEmployeeForm() {
         they update it!
       </p>
       <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="amount">
+        <label className="block text-sm font-bold mb-2" htmlFor="name">
           Name
         </label>
         <Input
@@ -71,7 +71,7 @@ export default function AddEmployeeForm() {
         <FormFieldError fieldError={errors.name} />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="amount">
+        <label className="block text-sm font-bold mb-2" htmlFor="email">
           Email
         </label>
         <Input
@@ -83,7 +83,7 @@ export default function AddEmployeeForm() {
         <FormFieldError fieldError={errors.email} />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="amount">
+        <label className="block text-sm font-bold mb-2" htmlFor="phoneNumber">
           Phone Number
         </label>
         <Input
@@ -95,9 +95,7 @@ export default function AddEmployeeForm() {
         <FormFieldError fieldError={errors.phoneNumber} />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="amount">
-          Role
-        </label>
+        <label className="block text-sm font-bold mb-2">Role</label>
         <Select onValueChange={(value: string) => setValue("role", value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a role" />

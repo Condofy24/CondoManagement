@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { IoHome } from "react-icons/io5";
 
 export default function ClaimUnitForm() {
   const { token } = useAppSelector((state) => state.auth.value);
@@ -44,8 +45,10 @@ export default function ClaimUnitForm() {
   return (
     <Card>
       <Popover>
-        <PopoverTrigger>
-          <Button>Claim Property</Button>
+        <PopoverTrigger style={{ width: "100%" }}>
+          <Button style={{ width: "100%" }}>
+            <IoHome className="mr-1" /> Claim Property
+          </Button>
         </PopoverTrigger>
         <PopoverContent>
           <form
@@ -78,7 +81,7 @@ export default function ClaimUnitForm() {
                   `bg-secondary text-secondary w-full transform rounded-lg px-6 py-3 text-sm font-medium tracking-wide transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-50 ${
                     loading ? "cursor-not-allowed opacity-50" : ""
                   }`,
-                  "bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10",
+                  "bg-gray-900 text-white outline-none transition-all hover:scale-105 hover:bg-gray-950 focus:scale-110 active:scale-105 dark:bg-white dark:bg-opacity-10"
                 )}
               >
                 {loading ? (

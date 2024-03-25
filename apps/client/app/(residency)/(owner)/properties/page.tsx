@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { Unit } from "@/types";
 import LoadingSpinner from "@/app/components/loading-spinner";
 import OwnerProperty from "./owner-property/owner-property";
+import CreateRequestForm from "./create-request-form";
 
 export default function OwnerPropertiesDashboardPage() {
   const { user, token } = useAppSelector((state) => state.auth.value);
@@ -19,7 +20,7 @@ export default function OwnerPropertiesDashboardPage() {
       try {
         const properties = await fetchAssociatedProperties(
           user.id as string,
-          token as string,
+          token as string
         );
 
         setProperties(properties);
@@ -41,7 +42,8 @@ export default function OwnerPropertiesDashboardPage() {
             Here are the properties you own!
           </p>
         </div>
-        <div className="flex items-center md:mr-16">
+        <div className="flex-col items-center md:mr-16">
+          <CreateRequestForm />
           <ClaimUnitForm />
         </div>
       </div>
