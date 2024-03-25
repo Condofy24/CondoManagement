@@ -62,4 +62,12 @@ export class RequestController {
       await this.requestService.update(ownerId, id, updateRequestDto),
     );
   }
+
+  @Delete(':ownerId/:id')
+  @ApiOkResponse({ description: 'Request removed' })
+  @ApiNotFoundResponse({ description: 'Request not found' })
+  async remove(@Param('ownerId') ownerId: string, @Param('id') id: string) {
+    await this.requestService.remove(ownerId, id);
+    return { statusCode: 200, message: 'Request removed successfully.' };
+  }
 }
