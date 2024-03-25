@@ -1,10 +1,10 @@
 import { Knock } from '@knocklabs/node';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
-import { BuildingService } from 'src/building/building.service';
-import { BuildingEntity } from 'src/building/entities/building.entity';
-import { UnitEntity } from 'src/unit/entities/unit.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+import { BuildingService } from '../building/building.service';
+import { BuildingEntity } from '../building/entities/building.entity';
+import { UnitEntity } from '../unit/entities/unit.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class NotificationService {

@@ -31,7 +31,7 @@ import { ParkingEntity } from '../parking/entities/parking.entity';
 import { StorageEntity } from '../storage/entities/storage.entity';
 import { ParkingModel } from '../parking/models/parking.model';
 import { StorageModel } from '../storage/models/storage.model';
-import { NotificationService } from 'src/notification/notification.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 /**
