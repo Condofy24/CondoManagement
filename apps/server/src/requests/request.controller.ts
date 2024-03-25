@@ -50,4 +50,16 @@ export class RequestController {
   async findOne(@Param('ownerId') ownerId: string, @Param('id') id: string) {
     return new RequestModel(await this.requestService.findOne(ownerId, id));
   }
+
+  @Patch(':ownerId/:id')
+  @ApiOkResponse({ description: 'Request updated', type: RequestModel })
+  async update(
+    @Param('ownerId') ownerId: string,
+    @Param('id') id: string,
+    @Body() updateRequestDto: UpdateRequestDto,
+  ) {
+    return new RequestModel(
+      await this.requestService.update(ownerId, id, updateRequestDto),
+    );
+  }
 }
