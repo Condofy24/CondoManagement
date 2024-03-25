@@ -28,4 +28,15 @@ export class RequestService {
     });
     return createdRequest.save();
   }
+
+  /**
+   * Finds all requests for a specific owner.
+   *
+   * @param ownerId - The ID of the owner whose requests to find.
+   * @returns A promise resolved with an array of request entities.
+   */
+  async findAllForOwner(ownerId: string): Promise<RequestEntity[]> {
+    return this.requestModel.find({ owner: ownerId }).exec();
+  }
+
 }
