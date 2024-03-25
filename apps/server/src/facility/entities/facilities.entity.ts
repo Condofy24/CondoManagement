@@ -9,7 +9,21 @@ export interface FacilityEntity extends Document {
   duration: number;
 }
 
+export enum WeekDay {
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
+  Sunday = 6,
+}
+
 export interface OperationTimes {
+  /**
+   * Day of the week
+   */
+  weekDay: WeekDay;
   /**
    * Time in minutes from start of the day, e.g. 8am * 60min = 480
    */

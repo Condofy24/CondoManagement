@@ -102,49 +102,51 @@ export class FacilityService {
       const currentDate = new Date();
 
       for (let i = 0; i <= days; i++) {
-        const dailyHours = operationTimes[days % 7];
-        const startingHours = dailyHours.openingTime / 60;
-        let closingHours = dailyHours.closingTime / 60;
+        const dailyHours = operationTimes.find((day) => day.weekDay === i % 7);
+        if (dailyHours) {
+          const startingHours = dailyHours.openingTime / 60;
+          let closingHours = dailyHours.closingTime / 60;
 
-        if (closingHours < startingHours) {
-          // Past Midnight - 12am
-          closingHours += 24;
-        }
+          if (closingHours < startingHours) {
+            // Past Midnight - 12am
+            closingHours += 24;
+          }
 
-        const numberBlocks = Math.floor(
-          Math.abs(closingHours - startingHours) / (duration / 60),
-        );
-
-        for (let j = 0; j < numberBlocks; j++) {
-          const startDate = new Date();
-          startDate.setDate(currentDate.getDate() + i);
-          startDate.setHours(startingHours + j * Math.floor(duration / 60));
-          startDate.setMinutes(
-            (startingHours - Math.floor(startingHours)) * 60,
+          const numberBlocks = Math.floor(
+            Math.abs(closingHours - startingHours) / (duration / 60),
           );
-          startDate.setSeconds(0);
 
-          const endDate = new Date();
-          endDate.setDate(currentDate.getDate() + i);
-          endDate.setHours(
-            startingHours +
-              j * Math.floor(duration / 60) +
-              Math.floor(duration / 60),
-          );
-          endDate.setMinutes(
-            (startingHours - Math.floor(startingHours)) * 60 +
+          for (let j = 0; j < numberBlocks; j++) {
+            const startDate = new Date();
+            startDate.setDate(currentDate.getDate() + i);
+            startDate.setHours(startingHours + j * Math.floor(duration / 60));
+            startDate.setMinutes(
               (startingHours - Math.floor(startingHours)) * 60,
-          );
-          endDate.setSeconds(0);
+            );
+            startDate.setSeconds(0);
 
-          const newFacilityAvail = new this.facilityAvailabilityModel({
-            facilityId,
-            endDate,
-            startDate,
-            status: 'available',
-          });
+            const endDate = new Date();
+            endDate.setDate(currentDate.getDate() + i);
+            endDate.setHours(
+              startingHours +
+                j * Math.floor(duration / 60) +
+                Math.floor(duration / 60),
+            );
+            endDate.setMinutes(
+              (startingHours - Math.floor(startingHours)) * 60 +
+                (startingHours - Math.floor(startingHours)) * 60,
+            );
+            endDate.setSeconds(0);
 
-          await newFacilityAvail.save();
+            const newFacilityAvail = new this.facilityAvailabilityModel({
+              facilityId,
+              endDate,
+              startDate,
+              status: 'available',
+            });
+
+            await newFacilityAvail.save();
+          }
         }
       }
     } catch (e) {}
@@ -157,12 +159,12 @@ export class FacilityService {
         const operationTimes = facility?.operationTimes as OperationTimes[];
         const duration = facility?.duration;
 
-        const date = new Date();
-        const daysRemainingInMonth =
-          new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() -
-          date.getDate();
-
         if (duration) {
+          const date = new Date();
+          const daysRemainingInMonth =
+            new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() -
+            date.getDate();
+
           await this.createAvailabilities(
             daysRemainingInMonth,
             duration,

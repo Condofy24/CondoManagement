@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { WeekDay } from './entities/facilities.entity';
 
 describe('FacilitiesController', () => {
   let facilityController: FacilityController;
@@ -33,13 +34,13 @@ describe('FacilitiesController', () => {
     price: 0,
     duration: 60,
     operationTimes: [
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Tuesday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Wednesday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Thursday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Friday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Saturday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Sunday, openingTime: 480, closingTime: 0 },
     ],
   };
 
@@ -49,13 +50,13 @@ describe('FacilitiesController', () => {
     price: 0,
     duration: 60,
     operationTimes: [
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
-      { openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Tuesday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Wednesday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Thursday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Friday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Saturday, openingTime: 480, closingTime: 0 },
+      { weekDay: WeekDay.Sunday, openingTime: 480, closingTime: 0 },
     ],
   };
 
