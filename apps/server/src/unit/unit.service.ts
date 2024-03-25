@@ -31,6 +31,7 @@ import { ParkingEntity } from '../parking/entities/parking.entity';
 import { StorageEntity } from '../storage/entities/storage.entity';
 import { ParkingModel } from '../parking/models/parking.model';
 import { StorageModel } from '../storage/models/storage.model';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 /**
@@ -50,6 +51,7 @@ export class UnitService {
     private readonly userService: UserService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   /**
@@ -411,20 +413,27 @@ export class UnitService {
       newOverdueFees = 0;
     }
 
-    unitPayments.record.push({
+    const newPayment = {
       timeStamp: new Date(),
       amount,
       monthBalance: newMonthlyBalance,
       overdueFees: newOverdueFees,
       previousMonthBalance: unit?.monthlyFeesBalance,
       previousOverdueFees: unit?.overdueFees,
-    } as IUnitPayment);
+    } as IUnitPayment;
+
+    unitPayments.record.push(newPayment);
 
     unit.monthlyFeesBalance = newMonthlyBalance;
     unit.overdueFees = newOverdueFees;
 
     unitPayments.save();
     unit.save();
+
+    await this.notificationService.sendPaymentReceivedNotification(
+      unit,
+      amount,
+    );
 
     return response.status(HttpStatus.NO_CONTENT);
   }
