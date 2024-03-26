@@ -3,7 +3,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { RequestService } from './request.service';
 import { RequestController } from './request.controller';
 import { RequestSchema } from './entities/request.entity';
-import { UnitService } from 'src/unit/unit.service';
 import { UnitModule } from 'src/unit/unit.module';
 
 @Module({

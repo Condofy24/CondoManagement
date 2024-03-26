@@ -10,7 +10,6 @@ import { Model } from 'mongoose';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestEntity } from './entities/request.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
 import { UnitService } from '../unit/unit.service';
 
 @Injectable()

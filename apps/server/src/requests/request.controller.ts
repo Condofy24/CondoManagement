@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Request,
-  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
