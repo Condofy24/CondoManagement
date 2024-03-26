@@ -26,6 +26,7 @@ export class RequestService {
    *
    * @param ownerId - The ID of the owner submitting the request.
    * @param createRequestDto - The data transfer object for request creation.
+   * @param unitId - The id of the unit this request is open for
    * @returns A promise resolved with the created request entity.
    */
 
@@ -35,7 +36,6 @@ export class RequestService {
     createRequestDto: CreateRequestDto,
     ownerId: string,
   ): Promise<RequestEntity> {
-    //get unit based on unitId and then unitID ownerId = parameter ownerId
     const unit = await this.unitService.findUnitById(unitId);
     if (!unit)
       throw new NotFoundException({ message: 'Storage does not exist' });
