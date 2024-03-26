@@ -9,6 +9,7 @@ import { RegistrationKeySchema } from './entities/registration-key.entity';
 import { PaymentsSchema } from './entities/payments.entity';
 import { ParkingModule } from '../parking/parking.module';
 import { StorageModule } from '../storage/storage.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { StorageModule } from '../storage/storage.module';
     forwardRef(() => UserModule),
     ParkingModule,
     StorageModule,
+    NotificationModule,
   ],
   controllers: [UnitController],
   providers: [UnitService],

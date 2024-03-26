@@ -18,6 +18,7 @@ import RegistationKeyModel, {
 import UnitModel, { UnitEntity } from './entities/unit.entity';
 import { UnitService } from './unit.service';
 import { StorageService } from '../storage/storage.service';
+import { NotificationService } from '../notification/notification.service';
 
 const mockingoose = require('mockingoose');
 
@@ -163,6 +164,10 @@ const userServiceMock = {
   findUserById: jest.fn().mockResolvedValue(userInfoTestData),
 };
 
+const notificationServiceMock = {
+  sendPaymentReceivedNotification: jest.fn().mockResolvedValue(null),
+};
+
 const mongoUniqueIndexException: MongoServerError = {
   addErrorLabel: (_) => {},
   hasErrorLabel: (_) => false,
@@ -201,6 +206,10 @@ describe('UnitService', () => {
         {
           provide: UserService,
           useValue: userServiceMock,
+        },
+        {
+          provide: NotificationService,
+          useValue: notificationServiceMock,
         },
       ],
     }).compile();

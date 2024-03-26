@@ -8,12 +8,21 @@ import Image from "next/image";
 import logo from "@/public/logo.png";
 import Link from "next/link";
 import { StaffNav } from "./staff-nav";
+import {
+  NotificationIconButton,
+  NotificationFeedPopover,
+} from "@knocklabs/react";
+import { useState, useRef } from "react";
+import { NotificationProvider } from "@/context/notification-context";
 
 export function SiteHeader() {
   const { loggedIn, admin } = useAppSelector((state) => state.auth.value);
+  const [isVisible, setIsVisible] = useState(false);
+  const notifButtonRef = useRef(null);
+
   const router = useRouter();
 
-  const isStaff = !!admin?.companyId;
+  const isStaff = loggedIn && !!admin?.companyId;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,6 +55,20 @@ export function SiteHeader() {
 
         <div className="flex flex-1 items-center justify-end space-x-2 md:justify-end">
           <nav className="flex items-center gap-2">
+            {!isStaff && loggedIn && (
+              <NotificationProvider>
+                <NotificationIconButton
+                  ref={notifButtonRef}
+                  onClick={(e) => setIsVisible(!isVisible)}
+                />
+                <NotificationFeedPopover
+                  buttonRef={notifButtonRef}
+                  isVisible={isVisible}
+                  onClose={() => setIsVisible(false)}
+                />
+              </NotificationProvider>
+            )}
+
             {loggedIn && <UserNav />}
             <ModeToggle />
           </nav>
