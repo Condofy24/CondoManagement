@@ -103,7 +103,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   async getProfile(@Request() req: any): Promise<UserModel> {
     const userEntity = await this.userService.findUserById(req.user.sub);
-
+    
     if (!userEntity) throw new NotFoundException('User not found');
 
     return new UserModel(userEntity);

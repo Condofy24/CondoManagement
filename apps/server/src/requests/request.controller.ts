@@ -7,6 +7,8 @@ import {
   Patch,
   Delete,
   UseGuards,
+  Request,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -19,8 +21,7 @@ import { RequestService } from './request.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestModel } from './models/request.model';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { PrivilegeGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @ApiTags('Request')
 @ApiBearerAuth()
@@ -28,15 +29,16 @@ import { PrivilegeGuard } from '../auth/auth.guard';
 export class RequestController {
   constructor(private readonly requestService: RequestService) {}
 
-  @Post(':ownerId')
+  @Post(':unitId')
+  @UseGuards(AuthGuard)
   @ApiCreatedResponse({ description: 'Request created', type: RequestModel })
   async create(
-    @Param('ownerId') ownerId: string,
+    @Request() req: any,
     @Param('unitId') unitId: string,
     @Body() createRequestDto: CreateRequestDto,
   ) {
     return new RequestModel(
-      await this.requestService.create(ownerId, unitId, createRequestDto),
+      await this.requestService.create(unitId, createRequestDto, req.user.sub),
     );
   }
 
@@ -49,9 +51,6 @@ export class RequestController {
   }
 
   @Patch(':id')
-  @UseGuards(PrivilegeGuard)
-  @Roles(1)
-  @Roles(2)
   @ApiOkResponse({ description: 'Request updated', type: RequestModel })
   async update(
     @Param('id') id: string,
@@ -62,11 +61,11 @@ export class RequestController {
     );
   }
 
-  @Delete(':ownerId/:id')
+  @Delete(':id')
   @ApiOkResponse({ description: 'Request removed' })
   @ApiNotFoundResponse({ description: 'Request not found' })
-  async remove(@Param('ownerId') ownerId: string, @Param('id') id: string) {
-    await this.requestService.remove(ownerId, id);
+  async remove(@Param('id') id: string) {
+    await this.requestService.remove(id);
     return { statusCode: 200, message: 'Request removed successfully.' };
   }
 }

@@ -1,14 +1,24 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestEntity } from './entities/request.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UnitService } from '../unit/unit.service';
 
 @Injectable()
 export class RequestService {
   constructor(
     @InjectModel('Request') private readonly requestModel: Model<RequestEntity>,
+    @Inject(forwardRef(() => UnitService))
+    private readonly unitService: UnitService,
   ) {}
 
   /**
@@ -18,16 +28,27 @@ export class RequestService {
    * @param createRequestDto - The data transfer object for request creation.
    * @returns A promise resolved with the created request entity.
    */
+
+  //SET THE STATUS HERE
   async create(
-    ownerId: string,
     unitId: string,
     createRequestDto: CreateRequestDto,
+    ownerId: string,
   ): Promise<RequestEntity> {
+    //get unit based on unitId and then unitID ownerId = parameter ownerId
+    const unit = await this.unitService.findUnitById(unitId);
+    if (!unit)
+      throw new NotFoundException({ message: 'Storage does not exist' });
+    if (unit.ownerId.toString() !== ownerId)
+      throw new BadRequestException({
+        message: 'You are not the owner of this unit',
+      });
     const createdRequest = new this.requestModel({
       ...createRequestDto,
-      owner: ownerId,
       unit: unitId,
+      status: 'Submitted',
     });
+
     return createdRequest.save();
   }
 
@@ -71,10 +92,8 @@ export class RequestService {
    * @param id - The ID of the request to delete.
    * @returns A promise resolved with any result.
    */
-  async remove(ownerId: string, id: string): Promise<void> {
-    const result = await this.requestModel
-      .findOneAndDelete({ _id: id, owner: ownerId })
-      .exec();
+  async remove(id: string): Promise<void> {
+    const result = await this.requestModel.findOneAndDelete({ _id: id }).exec();
     if (!result) {
       throw new NotFoundException(`Request with ID "${id}" not found.`);
     }

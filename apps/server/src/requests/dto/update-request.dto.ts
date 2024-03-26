@@ -1,4 +1,6 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { CreateRequestDto } from './create-request.dto';
+import { PartialType } from '@nestjs/swagger';
 
 enum RequestStatus {
   SUBMITTED = 'Submitted',
@@ -6,12 +8,10 @@ enum RequestStatus {
   RESOLVED = 'Resolved',
 }
 
-export class UpdateRequestDto {
-  @IsOptional()
+export class UpdateRequestDto extends PartialType(CreateRequestDto) {
   @IsEnum(RequestStatus)
   status?: RequestStatus;
 
-  @IsOptional()
   @IsString()
   resolutionContent?: string;
 }
