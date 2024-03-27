@@ -53,13 +53,13 @@ const workingTimesSchema = object({
     .string({ required_error: "Opening hours is required" })
     .regex(
       new RegExp("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"),
-      "Time format invalid use HH:MM"
+      "Time format invalid use HH:MM",
     ),
   closingTime: z
     .string({ required_error: "Closing hours is required" })
     .regex(
       new RegExp("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"),
-      "Time format invalid use HH:MM"
+      "Time format invalid use HH:MM",
     ),
 }).optional();
 

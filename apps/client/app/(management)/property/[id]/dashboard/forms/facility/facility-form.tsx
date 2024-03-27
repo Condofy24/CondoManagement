@@ -48,7 +48,7 @@ export default function FacilityForm() {
         />
         <FormFieldError fieldError={errors.fees} />
       </div>
-      
+
       <CheckboxReactHookFormMultiple
         errors={errors}
         register={register}

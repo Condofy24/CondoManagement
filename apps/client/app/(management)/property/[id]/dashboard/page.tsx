@@ -52,7 +52,7 @@ const getAssetPageTitle = (assetPage: string) => {
 
 const getTable = (
   assetPage: BuildingAsset,
-  assets: Unit[] | Parking[] | Storage[] | Facility[]
+  assets: Unit[] | Parking[] | Storage[] | Facility[],
 ) => {
   switch (assetPage) {
     case BuildingAsset.unit: {
@@ -102,16 +102,16 @@ const getTable = (
         />
       );
 
-      case BuildingAsset.facility:
-        return (
-          <DataTable
-            columns={assetsColumns("name", BuildingAsset.facility)}
-            data={assets as Facility[]}
-            filter={{
-              title: "facility name",
-              key: "name",
-            }}
-          />
-        );
+    case BuildingAsset.facility:
+      return (
+        <DataTable
+          columns={assetsColumns("name", BuildingAsset.facility)}
+          data={assets as Facility[]}
+          filter={{
+            title: "facility name",
+            key: "name",
+          }}
+        />
+      );
   }
 };

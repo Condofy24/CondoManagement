@@ -16,7 +16,7 @@ export async function createBuilding(
   companyId: string,
   buildingData: TPropertySchema,
   file: File,
-  token: string
+  token: string,
 ) {
   try {
     await axios.post(
@@ -27,7 +27,7 @@ export async function createBuilding(
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
   } catch (error: any) {
     let message = "An error occured while creating property";
@@ -42,7 +42,7 @@ export async function createBuilding(
 export async function createEmployee(
   companyId: string,
   employeeData: TCreateEmployeeSchema,
-  token: string
+  token: string,
 ) {
   try {
     const response = await axios.post(
@@ -52,7 +52,7 @@ export async function createEmployee(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     return response;
   } catch (error: any) {
@@ -121,7 +121,7 @@ export async function deleteEmployee(employeeId: string, token: string) {
 export async function addNewPayment(
   unitId: string,
   data: TAddPaymentSchema,
-  token: string
+  token: string,
 ) {
   try {
     const res = await axios.post(
@@ -131,7 +131,7 @@ export async function addNewPayment(
         headers: {
           Authorization: `Bearer ${token}`, // Keep: Unused in the backend but will be used later
         },
-      }
+      },
     );
 
     return res.status;
@@ -151,7 +151,7 @@ export async function addNewPayment(
 export async function createUnit(
   buildingId: string,
   data: TUnitSchema,
-  token: string
+  token: string,
 ) {
   try {
     const res = await axios.post(`${API_URL}/unit/${buildingId}`, data, {
@@ -173,14 +173,14 @@ export async function createUnit(
 
 export const fetchBuildingUnits = async (
   buildingId: string,
-  token: string
+  token: string,
 ): Promise<Unit[]> => {
   try {
     const { data: unitData } = await axios.get<Unit[]>(
       `${API_URL}/unit/${buildingId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
-      }
+      },
     );
     return unitData;
   } catch (error: any) {
@@ -196,7 +196,7 @@ export const fetchBuildingUnits = async (
 export async function updateUnit(
   unitId: string,
   data: TUnitSchema,
-  token: string
+  token: string,
 ) {
   try {
     const res = await axios.patch(`${API_URL}/unit/update/${unitId}`, data, {
@@ -221,14 +221,14 @@ export async function updateUnit(
  **********************/
 export const fetchBuildingParkings = async (
   buildingId: string,
-  token: string
+  token: string,
 ): Promise<Parking[]> => {
   try {
     const { data: unitData } = await axios.get<Parking[]>(
       `${API_URL}/parking/building/${buildingId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
-      }
+      },
     );
     return unitData;
   } catch (error: any) {
@@ -244,7 +244,7 @@ export const fetchBuildingParkings = async (
 export async function createParking(
   buildingId: string,
   data: TAssetSchema,
-  token: string
+  token: string,
 ) {
   try {
     const { assetNumber: parkingNumber, ...parkingData } = data as any;
@@ -256,7 +256,7 @@ export async function createParking(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return res.status;
@@ -273,7 +273,7 @@ export async function createParking(
 export async function updateParking(
   parkingId: string,
   data: TAssetSchema,
-  token: string
+  token: string,
 ) {
   try {
     const { assetNumber: parkingNumber, ...parkingData } = data as any;
@@ -284,7 +284,7 @@ export async function updateParking(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return res.status;
@@ -303,14 +303,14 @@ export async function updateParking(
  ********************/
 export const fetchBuildingStorages = async (
   buildingId: string,
-  token: string
+  token: string,
 ): Promise<Storage[]> => {
   try {
     const { data: unitData } = await axios.get<Storage[]>(
       `${API_URL}/storage/building/${buildingId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
-      }
+      },
     );
     return unitData;
   } catch (error: any) {
@@ -326,7 +326,7 @@ export const fetchBuildingStorages = async (
 export async function createStorage(
   buildingId: string,
   data: TAssetSchema,
-  token: string
+  token: string,
 ) {
   try {
     const { assetNumber: storageNumber, ...storageData } = data as any;
@@ -337,7 +337,7 @@ export async function createStorage(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return res.status;
@@ -354,7 +354,7 @@ export async function createStorage(
 export async function updateStorage(
   storageId: string,
   data: TAssetSchema,
-  token: string
+  token: string,
 ) {
   try {
     const { assetNumber: storageNumber, ...storageData } = data as any;
@@ -365,7 +365,7 @@ export async function updateStorage(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return res.status;
@@ -384,7 +384,7 @@ export async function updateStorage(
  * *******************/
 export const fetchBuildingFacilities = async (
   buildingId: string,
-  token: string
+  token: string,
 ): Promise<Facility[]> => {
   try {
     const res = await axios.get<Facility[]>(
@@ -393,7 +393,7 @@ export const fetchBuildingFacilities = async (
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return res.data;
@@ -410,7 +410,7 @@ export const fetchBuildingFacilities = async (
 export async function createFacility(
   buildingId: string,
   data: TFacilitySchema,
-  token: string
+  token: string,
 ) {
   try {
     const operationTimes = data.items
@@ -440,7 +440,7 @@ export async function createFacility(
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     return res.status;
@@ -457,7 +457,7 @@ export async function createFacility(
 export async function updateFacility(
   facilityId: string,
   data: TFacilitySchema,
-  token: string
+  token: string,
 ) {
   try {
     return 200;

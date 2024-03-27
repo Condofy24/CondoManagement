@@ -10,7 +10,7 @@ export default function AssetForm({ type }: { type: BuildingAsset }) {
 
   const { register, handleSubmit, errors, onSubmit, isDirty } = useAssetForm(
     type,
-    asset
+    asset,
   );
 
   const assetName = type === BuildingAsset.parking ? "Parking" : "Storage";
