@@ -8,6 +8,7 @@ import { UserService } from '../user/user.service';
 import { BuildingService } from '../building/building.service';
 import { ObjectId } from 'mongodb';
 import { BadRequestException, HttpException } from '@nestjs/common';
+import mongoose from 'mongoose';
 
 describe('FacilityService', () => {
   let service: FacilityService;
@@ -159,6 +160,36 @@ describe('FacilityService', () => {
 
       //Assert
       await expect(response).toBeUndefined();
+    });
+  });
+  describe('viewAvailabilities', () => {
+    it('should return available facilities for a specific facilityId', async () => {
+      const facilityId = new mongoose.Types.ObjectId('62b5a2ac3e3ef320d4a7f3a1');
+      const expectedAvailabilities = [
+        {
+          _id: new mongoose.Types.ObjectId('62b5a2ac3e3ef320d4a7f3b1'),
+          facilityId: facilityId,
+          startDate: new Date('2024-03-28T09:00:00Z'),
+          endDate: new Date('2024-03-28T11:00:00Z'),
+          status: 'available',
+        },
+        {
+          _id: new mongoose.Types.ObjectId('62b5a2ac3e3ef320d4a7f3b2'),
+          facilityId: facilityId,
+          startDate: new Date('2024-03-29T12:00:00Z'),
+          endDate: new Date('2024-03-29T14:00:00Z'),
+          status: 'available',
+        },
+      ];
+
+      jest.spyOn(FacilityAvailabilityModel, 'find').mockResolvedValue(expectedAvailabilities);
+
+      const result = await service.viewAvailabilities(facilityId.toString());
+      expect(result).toEqual(expectedAvailabilities);
+      // expect(FacilityAvailabilityModel.find).toHaveBeenCalledWith({
+      //   facilityId: facilityId,
+      //   status: 'available',
+      // });
     });
   });
 });
