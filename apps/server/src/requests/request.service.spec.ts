@@ -6,6 +6,7 @@ import { UnitService } from '../unit/unit.service';
 import { RequestService } from './request.service';
 import { RequestModel, RequestStatus } from './entities/request.entity';
 import { CreateRequestDto, RequestType } from './dto/create-request.dto';
+import { UpdateRequestDto } from './dto/update-request.dto';
 
 const mockingoose = require('mockingoose');
 
@@ -49,7 +50,7 @@ const requestInfoTestData2 = {
   description: 'Building 2 description',
   type: RequestType.ADMIN,
   status: RequestStatus.IN_PROGRESS,
-  ownerId: new ObjectId(),
+  owner: new ObjectId(),
   unit: new ObjectId(),
 };
 
@@ -110,6 +111,22 @@ describe('RequestService', () => {
       // Act & Assert
       await expect(service.remove(new ObjectId().toString())).rejects.toThrow(
         NotFoundException,
+      );
+    });
+  });
+  describe('findAll', () => {
+    it('should return all the request fot a specifc ', async () => {
+      //Arrange
+      const request = [requestInfoTestData2];
+      mockingoose(RequestModel).toReturn(request, 'find');
+      const id = requestInfoTestData2.owner;
+
+      //Act
+      const result = await service.findAllForOwner(id.toString());
+      //Assert
+      expect(result.length).toBe(request.length);
+      expect(result[0]).toEqual(
+        expect.objectContaining({ ...requestInfoTestData2 }),
       );
     });
   });
