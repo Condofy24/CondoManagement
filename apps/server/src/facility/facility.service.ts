@@ -187,6 +187,14 @@ export class FacilityService {
     }
   }
 
+  async viewAvailabilities(facilityId: String){
+    const availabilities = await this.facilityAvailabilityModel.find({
+      facilityId: facilityId,
+      status: 'available'
+    });
+    return availabilities;
+  }
+
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**
    * Handles the cron job for generating 4 week availabilities

@@ -47,6 +47,19 @@ export class FacilityController {
     );
   }
 
+    /**
+   * View all availabilites under a given facility id
+   * @param facilityId - The ID of the facility.
+   * Role needs to be added
+   */
+    @Get('availability/:facilityId')
+    // @UseGuards(PrivilegeGuard)
+    // @Roles(0)
+    @ApiCreatedResponse({ description: 'All Availabilites viewed by facilityId' })
+    async viewAvailabilites(@Param('facilityId') facilityId: string) {
+      return await this.facilityService.viewAvailabilities(facilityId);
+    }
+
   /**
    * Delete a facility
    * @param facilityId - The ID of the facility.
