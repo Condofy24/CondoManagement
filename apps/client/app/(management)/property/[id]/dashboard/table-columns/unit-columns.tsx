@@ -173,7 +173,7 @@ export const unitColumns: ColumnDef<UnitCol>[] = [
     header: "Financial Status",
   },
   {
-    accessorKey: "availability",
+    accessorKey: "isOccupiedByRenter",
     header: "Availability",
     cell: StatusCell,
   },
