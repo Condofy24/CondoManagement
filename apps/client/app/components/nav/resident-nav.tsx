@@ -7,7 +7,7 @@ export function ResidentNav() {
   const pathname = usePathname();
 
   return (
-    <div className="mr-2 md:mr-4 flex">
+    <div className="mr-2 md:mr-4 flex justify-between items-center">
       <nav className="flex items-center gap-2 md:gap-6 text-sm">
         <Link
           href="/properties"

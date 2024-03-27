@@ -31,6 +31,7 @@ import { ParkingEntity } from '../parking/entities/parking.entity';
 import { StorageEntity } from '../storage/entities/storage.entity';
 import { ParkingModel } from '../parking/models/parking.model';
 import { StorageModel } from '../storage/models/storage.model';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 /**
@@ -50,6 +51,7 @@ export class UnitService {
     private readonly userService: UserService,
     @Inject(forwardRef(() => BuildingService))
     private readonly buildingService: BuildingService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   /**
@@ -411,20 +413,27 @@ export class UnitService {
       newOverdueFees = 0;
     }
 
-    unitPayments.record.push({
+    const newPayment = {
       timeStamp: new Date(),
       amount,
       monthBalance: newMonthlyBalance,
       overdueFees: newOverdueFees,
       previousMonthBalance: unit?.monthlyFeesBalance,
       previousOverdueFees: unit?.overdueFees,
-    } as IUnitPayment);
+    } as IUnitPayment;
+
+    unitPayments.record.push(newPayment);
 
     unit.monthlyFeesBalance = newMonthlyBalance;
     unit.overdueFees = newOverdueFees;
 
     unitPayments.save();
     unit.save();
+
+    await this.notificationService.sendPaymentReceivedNotification(
+      unit,
+      amount,
+    );
 
     return response.status(HttpStatus.NO_CONTENT);
   }
@@ -439,7 +448,6 @@ export class UnitService {
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
-  // @Cron(CronExpression.EVERY_MINUTE)
   /**
    * Handles the cron job for processing monthly fees for units.
    * This function retrieves all units, calculates the monthly fees balance,

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import ThemeContextProvider from "@/context/theme-context";
 import { ReduxProvider } from "@/redux/provider";
+import ThemeContextProvider from "@/context/theme-context";
 import { Toaster } from "react-hot-toast";
 import { SiteHeader } from "./components/nav/site-header";
 
@@ -30,14 +30,16 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <ThemeContextProvider>
-          <ReduxProvider>
-            <SiteHeader />
-            <Toaster position="top-right" />
+        <ReduxProvider>
+          <ThemeContextProvider>
+            <>
+              <SiteHeader />
+              <Toaster position="top-right" />
 
-            {children}
-          </ReduxProvider>
-        </ThemeContextProvider>
+              {children}
+            </>
+          </ThemeContextProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
