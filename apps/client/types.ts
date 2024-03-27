@@ -95,11 +95,13 @@ export type Facility = {
   id: string;
   buildingId: string;
   name: string;
-  description: string;
   fees: number;
-  openingHours: string;
-  closingHours: string;
   duration: number;
+  operationTimes: Array<{
+    weekDay: WeekDay;
+    openingTime: string;
+    closingTime: string;
+  }>;
 };
 
 export type Asset = Unit | BuildingResource;
@@ -111,4 +113,14 @@ export enum BuildingAsset {
   parking = "Parking",
   storage = "Storage",
   facility = "Facility",
+}
+
+export enum WeekDay {
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
+  Sunday = 6,
 }

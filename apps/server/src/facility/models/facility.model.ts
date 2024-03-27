@@ -12,7 +12,7 @@ export class FacilityModel {
   buildingId: string;
 
   @ApiProperty()
-  price: number;
+  fees: number;
 
   @ApiProperty()
   duration: number;
@@ -24,7 +24,7 @@ export class FacilityModel {
     this.id = entity._id.toString();
     this.buildingId = entity.buildingId.toString();
     this.name = entity.name;
-    this.price = entity.price;
+    this.fees = entity.fees;
     this.duration = entity.duration;
     this.operationTimes = entity.operationTimes;
   }

@@ -3,14 +3,14 @@ import {
   TPropertySchema,
 } from "../lib/validation-schemas";
 import axios from "axios";
-import { API_URL } from "@/global";
+import { API_URL, getDuration } from "@/global";
 import {
   TAddPaymentSchema,
   TAssetSchema,
   TFacilitySchema,
   TUnitSchema,
 } from "../lib/unit-validation-schemas";
-import { Parking, Unit, Storage, Facility } from "../types";
+import { Parking, Unit, Storage, Facility, WeekDay } from "../types";
 
 export async function createBuilding(
   companyId: string,
@@ -387,7 +387,16 @@ export const fetchBuildingFacilities = async (
   token: string
 ): Promise<Facility[]> => {
   try {
-    return [];
+    const res = await axios.get<Facility[]>(
+      `${API_URL}/facility/${buildingId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.data;
   } catch (error: any) {
     let message = "An error occurred while retrieving facilities";
 
@@ -404,7 +413,37 @@ export async function createFacility(
   token: string
 ) {
   try {
-    return 201;
+    const operationTimes = data.items
+      .map((item, index) => {
+        if (item) {
+          const durationData = getDuration(item.openingTime, item.closingTime);
+          return {
+            weekDay: WeekDay[index],
+            openingTime: durationData.openingTime,
+            closingTime: durationData.closingTime,
+          };
+        }
+      })
+      .filter((item) => item);
+
+    const formData = {
+      name: data.name,
+      fees: data.fees,
+      duration: data.duration,
+      operationTimes: operationTimes,
+    };
+
+    const res = await axios.post(
+      `${API_URL}/facility/${buildingId}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return res.status;
   } catch (error: any) {
     let message = "An error occurred while creating facility";
 

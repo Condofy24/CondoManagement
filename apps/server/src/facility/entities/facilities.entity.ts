@@ -4,7 +4,7 @@ export interface FacilityEntity extends Document {
   _id: mongoose.Types.ObjectId;
   buildingId: mongoose.Types.ObjectId | Record<string, unknown>;
   name: string;
-  price: number;
+  fees: number;
   operationTimes: [];
   duration: number;
 }
@@ -59,7 +59,7 @@ export const FacilitySchema = new mongoose.Schema<
       ref: 'Building',
     },
     name: { type: String, required: true },
-    price: { type: Number, default: 0 },
+    fees: { type: Number, default: 0 },
     operationTimes: [],
     duration: { type: Number, required: true },
   },

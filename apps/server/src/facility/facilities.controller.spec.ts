@@ -31,7 +31,7 @@ describe('FacilitiesController', () => {
     id: new ObjectId(),
     buildingId: new ObjectId(),
     name: 'PEWPEWWW',
-    price: 0,
+    fees: 0,
     duration: 60,
     operationTimes: [
       { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },
@@ -47,7 +47,7 @@ describe('FacilitiesController', () => {
   const createFacilityDto = {
     buildingId: new ObjectId(),
     name: 'PEWPEWWW',
-    price: 0,
+    fees: 0,
     duration: 60,
     operationTimes: [
       { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },

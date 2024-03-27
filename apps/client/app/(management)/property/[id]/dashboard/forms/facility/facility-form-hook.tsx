@@ -1,64 +1,60 @@
 import { TFacilitySchema, facilitySchema } from "@/lib/unit-validation-schemas";
-import { Asset, BuildingAsset, Parking, Storage } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Mode, useAssetManagement } from "@/context/asset-management-context";
+import { useAssetManagement } from "@/context/asset-management-context";
 import toast from "react-hot-toast";
 import { createFacility, updateFacility } from "@/actions/management-actions";
 import { useAppSelector } from "@/redux/store";
 import { useParams } from "next/navigation";
 import UseAssets from "../../manage-building-assets-hook";
-import { useEffect, useState } from "react";
+import { UseFormRegister, FieldErrors } from "react-hook-form";
+
+export type FacilityRegister = UseFormRegister<{
+  fees: number;
+  name: string;
+  items: (
+    | {
+        openingTime: string;
+        closingTime: string;
+      }
+    | undefined
+  )[];
+}>;
+
+export type FacilityErrors = FieldErrors<{
+  fees: number;
+  name: string;
+  items: {
+    openingTime: string;
+    closingTime: string;
+  }[];
+}>;
 
 export default function useFacilityForm() {
-  const [duration, setDuration] = useState<number>(0);
   const { token } = useAppSelector((state) => state.auth.value);
   const { setShowDialog, mode } = useAssetManagement();
   const { fetchAssets } = UseAssets();
 
   const buildingId = useParams().id;
 
+  const form = useForm<TFacilitySchema>({
+    resolver: zodResolver(facilitySchema),
+  });
+
   const {
     register,
     handleSubmit,
-    getValues,
-    watch,
-    setValue,
-    formState: { errors, isDirty },
-  } = useForm<TFacilitySchema>({
-    resolver: zodResolver(facilitySchema),
-  });
-  console.log(getValues());
-
-  const watchOpeningHours = watch("openingHours");
-  const watchClosingHours = watch("closingHours");
-
-  const getDuration = () => {
-    if (!watchOpeningHours || !watchClosingHours) return 0;
-
-    let date1 = new Date(`01/01/2001 ${watchOpeningHours}:00`);
-    let date2 = new Date(`01/01/2001 ${watchClosingHours}:00`);
-
-    return ((date2.getTime() - date1.getTime()) / 1000 / 60 / 60).toFixed(2);
-  };
-
-  const updateDuration = () => {
-    const newDuration = getDuration();
-    setDuration(newDuration as number);
-    setValue("duration", newDuration as number, { shouldDirty: true });
-  };
-
-  useEffect(() => {
-    updateDuration();
-  }, [watchOpeningHours, watchClosingHours]);
+    formState: { isDirty, errors },
+  } = form;
 
   const onSubmit = async (data: TFacilitySchema) => {
     try {
       if (mode == "create") {
-        await createFacility(buildingId[0], data, token as string);
+        console.log("first");
+        await createFacility(buildingId as string, data, token as string);
         toast.success(`Facility created successfully`);
       } else {
-        await updateFacility(buildingId[0], data, token as string);
+        await updateFacility(buildingId as string, data, token as string);
         toast.success(`Facility updated successfully`);
       }
       setShowDialog(false);
@@ -74,6 +70,6 @@ export default function useFacilityForm() {
     errors,
     isDirty,
     onSubmit,
-    duration,
+    form,
   };
 }

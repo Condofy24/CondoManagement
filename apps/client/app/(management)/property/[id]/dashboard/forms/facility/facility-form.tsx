@@ -3,17 +3,12 @@ import { Input } from "@/app/components/ui/input";
 import FormFieldError from "@/app/components/form/form-field-error";
 import { useAssetManagement } from "@/context/asset-management-context";
 import useFacilityForm from "./facility-form-hook";
+import { CheckboxReactHookFormMultiple } from "./days-checkbox";
 
 export default function FacilityForm() {
   const { mode, setShowDialog } = useAssetManagement();
-  const {
-    register,
-    handleSubmit,
-    errors,
-    onSubmit,
-    isDirty,
-    duration,
-  } = useFacilityForm();
+  const { register, handleSubmit, errors, onSubmit, isDirty, form } =
+    useFacilityForm();
 
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
@@ -42,42 +37,24 @@ export default function FacilityForm() {
         <FormFieldError fieldError={errors.fees} />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="openingHours">
-          Opening Hours
-        </label>
-        <Input
-          id="openingHours"
-          {...register("openingHours")}
-          placeholder="HH:MM"
-          className="dark:bg-white dark:text-black"
-        />
-        <FormFieldError fieldError={errors.openingHours} />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-bold mb-2" htmlFor="closingHours">
-          Closing Hours
-        </label>
-        <Input
-          id="closingHours"
-          {...register("closingHours")}
-          placeholder="HH:MM"
-          className="dark:bg-white dark:text-black"
-        />
-        <FormFieldError fieldError={errors.closingHours} />
-      </div>
-      <div className="mb-4">
         <label className="block text-sm font-bold mb-2" htmlFor="duration">
-          Duration
+          Duration (min)
         </label>
         <Input
           id="duration"
-          value={duration}
           {...register("duration", { valueAsNumber: true })}
+          placeholder="Duration of block in minutes"
           className="dark:bg-white dark:text-black"
-          disabled
         />
-        <FormFieldError fieldError={errors.duration} />
+        <FormFieldError fieldError={errors.fees} />
       </div>
+      
+      <CheckboxReactHookFormMultiple
+        errors={errors}
+        register={register}
+        form={form}
+      />
+
       <div className="flex flex-row justify-center gap-10">
         <Button type="button" onClick={() => setShowDialog(false)}>
           Cancel
