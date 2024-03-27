@@ -130,4 +130,32 @@ describe('RequestService', () => {
       );
     });
   });
+
+  describe('Update', () => {
+    it('should successfully update an existing request', async () => {
+      const updateData: UpdateRequestDto = { title: 'Updated Title' };
+      const requestId = new ObjectId().toString();
+
+      mockingoose(RequestModel).toReturn(
+        { _id: requestId, ...updateData },
+        'findOneAndUpdate',
+      );
+
+      const updatedRequest = await service.update(requestId, updateData);
+
+      expect(updatedRequest).toHaveProperty('_id', expect.any(ObjectId));
+      expect(updatedRequest).toHaveProperty('title', updateData.title);
+    });
+
+    it('should throw NotFoundException if the request does not exist', async () => {
+      const updateData: UpdateRequestDto = { title: 'Non-existent Title' };
+      const nonExistentId = new ObjectId().toString();
+
+      mockingoose(RequestModel).toReturn(null, 'findOneAndUpdate');
+
+      await expect(service.update(nonExistentId, updateData)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
 });
