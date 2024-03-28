@@ -16,6 +16,7 @@ import CreateUpdateAssetModal from "./create-update-asset-modal";
 import { DataTable } from "@/app/components/table/data-table";
 import AddPaymentModal from "./make-payment-modal";
 import LoadingSpinner from "@/app/components/loading-spinner";
+import { facilityColumns } from "./table-columns/facility-columns";
 
 export default function AssetsDashboard() {
   const { assetPage, setAssetPage, assets, isFetching } = UseAssets();
@@ -105,7 +106,7 @@ const getTable = (
     case BuildingAsset.facility:
       return (
         <DataTable
-          columns={assetsColumns("name", BuildingAsset.facility)}
+          columns={facilityColumns}
           data={assets as Facility[]}
           filter={{
             title: "facility name",

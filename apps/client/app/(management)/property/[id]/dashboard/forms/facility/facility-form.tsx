@@ -6,10 +6,9 @@ import useFacilityForm from "./facility-form-hook";
 import { CheckboxReactHookFormMultiple } from "./days-checkbox";
 
 export default function FacilityForm() {
-  const { mode, setShowDialog } = useAssetManagement();
+  const { mode, setShowDialog, asset, setAsset } = useAssetManagement();
   const { register, handleSubmit, errors, onSubmit, isDirty, form } =
-    useFacilityForm();
-
+    useFacilityForm(asset);
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-4">
@@ -56,7 +55,13 @@ export default function FacilityForm() {
       />
 
       <div className="flex flex-row justify-center gap-10">
-        <Button type="button" onClick={() => setShowDialog(false)}>
+        <Button
+          type="button"
+          onClick={() => {
+            setShowDialog(false);
+            setAsset(null);
+          }}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={!isDirty}>

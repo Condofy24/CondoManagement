@@ -8,6 +8,7 @@ import { useAppSelector } from "@/redux/store";
 import { useParams } from "next/navigation";
 import UseAssets from "../../manage-building-assets-hook";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { Facility } from "@/types";
 
 export type FacilityRegister = UseFormRegister<{
   fees: number;
@@ -30,7 +31,7 @@ export type FacilityErrors = FieldErrors<{
   }[];
 }>;
 
-export default function useFacilityForm() {
+export default function useFacilityForm(facility: TFacilitySchema) {
   const { token } = useAppSelector((state) => state.auth.value);
   const { setShowDialog, mode } = useAssetManagement();
   const { fetchAssets } = UseAssets();
@@ -39,6 +40,7 @@ export default function useFacilityForm() {
 
   const form = useForm<TFacilitySchema>({
     resolver: zodResolver(facilitySchema),
+    defaultValues: facility,
   });
 
   const {
@@ -50,7 +52,6 @@ export default function useFacilityForm() {
   const onSubmit = async (data: TFacilitySchema) => {
     try {
       if (mode == "create") {
-        console.log("first");
         await createFacility(buildingId as string, data, token as string);
         toast.success(`Facility created successfully`);
       } else {
