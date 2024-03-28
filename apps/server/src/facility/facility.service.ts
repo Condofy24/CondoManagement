@@ -13,6 +13,7 @@ import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityEntity } from './entities/availability.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { FacilityAvailabilityModel } from './models/availability.model';
 
 /**
  * Service class for managing buildings.
@@ -187,12 +188,23 @@ export class FacilityService {
     }
   }
 
-  async viewAvailabilities(facilityId: String){
-    const availabilities = await this.facilityAvailabilityModel.find({
-      facilityId: facilityId,
-      status: 'available'
-    });
-    return availabilities;
+  async viewAvailabilities(facilityId: String) {
+    try {
+      const availabilities = await this.facilityAvailabilityModel.find({
+        facilityId: facilityId,
+        status: 'available',
+      });
+      return (
+        availabilities?.map(
+          (availability) => new FacilityAvailabilityModel(availability),
+        ) || []
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Facility\'s availabilities could not be fetched',
+        error: e?.message,
+      });
+    }
   }
 
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)

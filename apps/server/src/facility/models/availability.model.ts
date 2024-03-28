@@ -4,7 +4,7 @@ import {
   FacilityAvailabilityStatus,
 } from '../entities/availability.entity';
 
-export class AvailabilityModel {
+export class FacilityAvailabilityModel {
   @ApiProperty()
   id: string;
 
