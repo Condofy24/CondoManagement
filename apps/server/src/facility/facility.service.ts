@@ -201,7 +201,7 @@ export class FacilityService {
       );
     } catch (e) {
       throw new BadRequestException({
-        message: 'Facility\'s availabilities could not be fetched',
+        message: "Facility's availabilities could not be fetched",
         error: e?.message,
       });
     }
