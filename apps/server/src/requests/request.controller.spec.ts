@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getModelToken } from '@nestjs/mongoose';
-import { UnitService } from '../unit/unit.service';
+
 import { MongoServerError, ObjectId } from 'mongodb';
 import { CreateRequestDto, RequestType } from './dto/create-request.dto';
-import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestService } from './request.service';
-import { RequestStatus } from './entities/request.entity';
-import { HttpException } from '@nestjs/common';
+import {
+  RequestEntity,
+  RequestModel,
+  RequestStatus,
+} from './entities/request.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { RequestController } from './request.controller';
 import { JwtService } from '@nestjs/jwt';
 
@@ -92,5 +94,20 @@ describe('RequestController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('remove', () => {
+    it('should forward call to Reqeust service', async () => {
+      //Arrange
+      requestServiceMock.remove.mockResolvedValue(HttpStatus.NO_CONTENT);
+
+      //Act
+      const result = await controller.remove(
+        requestInfoTestData2._id.toString(),
+      );
+
+      //Assert
+      expect(result.statusCode).toEqual(HttpStatus.OK);
+    });
   });
 });

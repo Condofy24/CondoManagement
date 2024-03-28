@@ -29,7 +29,7 @@ export class RequestModel {
 
   @ApiProperty()
   owner: string;
-  unitId: any;
+  unit: string;
 
   constructor(entity: RequestEntity) {
     this.id = entity._id.toString();
@@ -40,6 +40,6 @@ export class RequestModel {
     this.resolutionTime = entity.resolutionTime;
     this.resolutionContent = entity.resolutionContent;
     this.owner = entity.owner.toString();
-    this.unitId = entity.unit.toString();
+    this.unit = entity.unit.toString();
   }
 }
