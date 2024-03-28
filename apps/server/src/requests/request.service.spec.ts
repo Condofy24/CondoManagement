@@ -157,5 +157,37 @@ describe('RequestService', () => {
         NotFoundException,
       );
     });
+    describe('create', () => {
+      it('should successfully create a request', async () => {
+        // Arrange
+        const ownerId = occupiedUnitInfoTestData.ownerId.toString();
+        const unitId = occupiedUnitInfoTestData._id.toString();
+        const mockCreationResult = {
+          ...createRequestDto,
+          _id: new ObjectId('6604b83495851141dad8982c'), // Example _id
+          owner: ownerId,
+          unit: unitId,
+          status: 'Submitted',
+        };
+
+        mockingoose(RequestModel).toReturn(mockCreationResult, 'save');
+
+        // Act
+        const createdRequest = await service.create(
+          unitId,
+          createRequestDto,
+          ownerId,
+        );
+
+        // Assert
+        expect(createdRequest._id.toString()).toBe(
+          mockCreationResult._id.toString(),
+        );
+        expect(createdRequest.owner.toString()).toBe(ownerId);
+        expect(createdRequest.unit.toString()).toBe(unitId);
+        expect(createdRequest.title).toBe(createRequestDto.title);
+        expect(createdRequest.status).toBe('Submitted');
+      });
+    });
   });
 });

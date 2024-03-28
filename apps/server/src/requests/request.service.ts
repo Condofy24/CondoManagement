@@ -29,7 +29,6 @@ export class RequestService {
    * @returns A promise resolved with the created request entity.
    */
 
-  //SET THE STATUS HERE
   async create(
     unitId: string,
     createRequestDto: CreateRequestDto,
@@ -45,9 +44,9 @@ export class RequestService {
     const createdRequest = new this.requestModel({
       ...createRequestDto,
       unit: unitId,
+      owner: ownerId,
       status: 'Submitted',
     });
-
     return createdRequest.save();
   }
 

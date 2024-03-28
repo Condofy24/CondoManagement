@@ -28,7 +28,8 @@ export class RequestModel {
   resolutionContent?: string;
 
   @ApiProperty()
-  owner: string; 
+  owner: string;
+  unitId: any;
 
   constructor(entity: RequestEntity) {
     this.id = entity._id.toString();
@@ -38,6 +39,7 @@ export class RequestModel {
     this.status = entity.status;
     this.resolutionTime = entity.resolutionTime;
     this.resolutionContent = entity.resolutionContent;
-    this.owner = entity.owner.toString(); 
+    this.owner = entity.owner.toString();
+    this.unitId = entity.unit.toString();
   }
 }
