@@ -19,6 +19,7 @@ import { CreateFacilityDto } from './dto/create-facility.dto';
 import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { FacilityModel } from './models/facility.model';
+import { FacilityAvailabilityModel } from './models/availability.model';
 
 /**
  * Controller for managing building-related operations.
@@ -45,6 +46,22 @@ export class FacilityController {
       buildingId,
       createFacilityDto,
     );
+  }
+
+  /**
+   * View all availabilites under a given facility id
+   * @param facilityId - The ID of the facility.
+   * Role needs to be added
+   */
+  @Get('availability/:facilityId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  @ApiCreatedResponse({
+    description: 'All Availabilites viewed by facilityId',
+    type: [FacilityAvailabilityModel],
+  })
+  async viewAvailabilites(@Param('facilityId') facilityId: string) {
+    return await this.facilityService.viewAvailabilities(facilityId);
   }
 
   /**

@@ -8,6 +8,7 @@ import { UserService } from '../user/user.service';
 import { BuildingService } from '../building/building.service';
 import { ObjectId } from 'mongodb';
 import { BadRequestException, HttpException } from '@nestjs/common';
+import mongoose from 'mongoose';
 
 describe('FacilityService', () => {
   let service: FacilityService;
@@ -56,6 +57,22 @@ describe('FacilityService', () => {
       { weekDay: WeekDay.Sunday, openingTime: 480, closingTime: 0 },
     ],
   };
+  const availabilityFindMockResponse = [
+    {
+      _id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
+      facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
+      startDate: new Date('2024-04-01T08:00:00.000Z'),
+      endDate: new Date('2024-04-01T10:00:00.000Z'),
+      status: 'available',
+    },
+    {
+      _id: new ObjectId('65ff57c1f2e0bc27cede0b64'),
+      facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
+      startDate: new Date('2024-04-02T08:00:00.000Z'),
+      endDate: new Date('2024-04-02T10:00:00.000Z'),
+      status: 'available',
+    },
+  ];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -160,5 +177,49 @@ describe('FacilityService', () => {
       //Assert
       await expect(response).toBeUndefined();
     });
+  });
+  describe('viewAvailabilities', () => {
+    it('should return all available slots for a specific facility', async () => {
+      // Arrange
+      const facilityId = new ObjectId('65ff57c1f2e0bc27cede0b61').toString();
+
+      jest
+        .spyOn(FacilityAvailabilityModel, 'find')
+        .mockResolvedValue(availabilityFindMockResponse);
+
+      // Act
+      const response = await service.viewAvailabilities(facilityId);
+
+      // Construct the expected structure of the response
+      const expectedResponse = availabilityFindMockResponse.map((avail) => ({
+        id: avail._id.toString(),
+        facilityId: avail.facilityId.toString(),
+        startDate: avail.startDate,
+        endDate: avail.endDate,
+        status: avail.status,
+      }));
+
+      // Assert
+
+      expectedResponse.forEach((expectedAvail, index) => {
+        const actualAvail = response[index];
+        expect(actualAvail.id).toEqual(expectedAvail.id);
+        expect(actualAvail.facilityId).toEqual(expectedAvail.facilityId);
+        expect(actualAvail.startDate).toEqual(expectedAvail.startDate);
+        expect(actualAvail.endDate).toEqual(expectedAvail.endDate);
+        expect(actualAvail.status).toEqual(expectedAvail.status);
+      });
+    });
+  });
+  it('should throw BadRequestException when an error occurs', async () => {
+    const facilityId = new mongoose.Types.ObjectId().toString();
+
+    jest
+      .spyOn(FacilityAvailabilityModel, 'find')
+      .mockRejectedValue(new Error('Some error'));
+
+    await expect(service.viewAvailabilities(facilityId)).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });
