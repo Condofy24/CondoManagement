@@ -18,7 +18,7 @@ export class RequestService {
     @InjectModel('Request') private readonly requestModel: Model<RequestEntity>,
     @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
-  ) {}
+  ) { }
 
   /**
    * Creates a new request.

@@ -8,6 +8,7 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { CompanyModule } from '../company/company.module';
 import { UnitModule } from '../unit/unit.module';
 import { BuildingModule } from '../building/building.module';
+import { RequestModule } from 'src/requests/request.module';
 
 /**
  * Module for managing users in the application.
@@ -19,6 +20,7 @@ import { BuildingModule } from '../building/building.module';
     CompanyModule,
     BuildingModule,
     UnitModule,
+    RequestModule,
   ],
   controllers: [UserController],
   providers: [UserService, IsValidRole],

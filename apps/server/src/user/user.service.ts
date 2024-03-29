@@ -21,6 +21,7 @@ import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError } from 'mongodb';
 import { UserRoles } from './user.model';
+import { RequestService } from 'src/requests/request.service';
 
 @Injectable()
 /**
@@ -41,6 +42,7 @@ export class UserService {
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
+    private requestService: RequestService,
   ) {}
 
   /**
