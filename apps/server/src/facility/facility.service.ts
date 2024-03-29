@@ -214,16 +214,6 @@ export class FacilityService {
     }
   }
 
-  // /**
-  //  * Finds a availability by its ID.
-  //  * @param id - The ID of the availability.
-  //  * @returns A promise that resolves to the found availability entity, or null if not found.
-  //  */
-  // public async findAvailabilityById(
-  //   id: string,
-  // ): Promise<FacilityAvailabilityEntity | null> {
-  //   return await this.facilityAvailabilityModel.findOne({ _id: id }).exec();
-  // }
 
   /**
    * Make a reservation for an availability.
