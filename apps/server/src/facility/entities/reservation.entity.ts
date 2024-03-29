@@ -8,6 +8,7 @@ export enum ReservationStatus {
 }
 export interface ReservationEntity extends Document {
   _id: mongoose.Types.ObjectId;
+  availabilityId: mongoose.Types.ObjectId | Record<string, unknown>;
   facilityId: mongoose.Types.ObjectId | Record<string, unknown>;
   userId: mongoose.Types.ObjectId | Record<string, unknown>;
   status: ReservationStatus;
@@ -24,6 +25,11 @@ export const ReservationSchema = new mongoose.Schema<
 >(
   {
     facilityId: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      ref: 'Facility',
+    },
+    availabilityId: {
       type: mongoose.Types.ObjectId,
       required: true,
       ref: 'Facility',

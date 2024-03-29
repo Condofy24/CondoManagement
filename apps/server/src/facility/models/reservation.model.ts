@@ -12,6 +12,9 @@ export class ReservationModel {
   facilityId: string;
 
   @ApiProperty()
+  availabilityId: string;
+
+  @ApiProperty()
   userId: string;
 
   @ApiProperty()
@@ -20,6 +23,7 @@ export class ReservationModel {
   constructor(entity: ReservationEntity) {
     this.id = entity._id.toString();
     this.facilityId = entity.facilityId.toString();
+    this.availabilityId = entity.availabilityId.toString();
     this.userId = entity.userId.toString();
     this.status = entity.status;
   }
