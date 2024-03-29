@@ -20,7 +20,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
 import { FacilityController } from './facility/facility.controller';
 import { FacilityModule } from './facility/facility.module';
-import { NotificationModule } from './notification/notification.module';
+import { RequestModule } from './requests/request.module';
+import { RequestController } from './requests/request.controller';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { NotificationModule } from './notification/notification.module';
     FacilityModule,
     ParkingModule,
     StorageModule,
-    NotificationModule,
+    RequestModule,
   ],
   controllers: [
     AppController,
