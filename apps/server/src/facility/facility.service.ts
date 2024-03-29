@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { error } from 'console';
@@ -226,7 +230,6 @@ export class FacilityService {
     if (!availabilityExist) {
       throw new BadRequestException({ message: 'Invalid availability Id' });
     }
-    availabilityExist.facilityId;
     const newReservation = new this.reservationModel({
       facilityId: availabilityExist.facilityId,
       availabilityId: availabilityExist.id,
@@ -263,6 +266,64 @@ export class FacilityService {
     } catch (e) {
       throw new BadRequestException({
         message: 'Reservations could not be fetched',
+        error: e?.message,
+      });
+    }
+  }
+  // Do we need to diff methods to cancel reservation or one with two diff if according to the type of the user ?
+  /**
+   * Cancel a reservation by the user
+   * @param reservationId - The ID of the availability
+   * @param userId - The ID of the user
+   */
+  public async cancelReservation(reservationId: string, userId: string) {
+    const reservationExist =
+      await this.reservationModel.findById(reservationId); // Get reservation by Id
+
+    if (!reservationExist) {
+      throw new NotFoundException({ message: 'Reservation not found' });
+    }
+    if (reservationExist.userId.toString() != userId) {
+      throw new BadRequestException({
+        message: 'Must be the user who reserved to cancel the reservation',
+      });
+    }
+    if (reservationExist.status != ReservationStatus.ACTIVE) {
+      throw new BadRequestException({
+        message: 'Must be active to cancel',
+      });
+    }
+    const availabilityExist = await this.facilityAvailabilityModel.findById(
+      reservationExist.availabilityId,
+    );
+    if (!availabilityExist) {
+      throw new NotFoundException({ message: 'Availability not found' });
+    }
+
+    try {
+      const reservation = await this.reservationModel.findByIdAndUpdate(
+        reservationId,
+        {
+          status: ReservationStatus.CANCELED,
+        },
+        { new: true },
+      );
+      await this.facilityAvailabilityModel.findByIdAndUpdate(
+        availabilityExist.id,
+        {
+          status: 'available',
+        },
+      );
+      return new ReservationModel(reservation as ReservationEntity);
+    } catch (e) {
+      let errorDescription = 'Reservation could not be canceled';
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'Reservation could not be canceled due to unique constraint violation';
+      }
+
+      throw new BadRequestException({
+        message: errorDescription,
         error: e?.message,
       });
     }
