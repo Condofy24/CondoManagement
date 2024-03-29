@@ -6,7 +6,10 @@ import useFacilityForm from "./facility-form-hook";
 import { CheckboxReactHookFormMultiple } from "./days-checkbox";
 import { Facility } from "@/types";
 import { formatTime } from "../../table-columns/facility-columns";
-import { TFacilitySchema, TWorkingTimesSchema } from "@/lib/unit-validation-schemas";
+import {
+  TFacilitySchema,
+  TWorkingTimesSchema,
+} from "@/lib/unit-validation-schemas";
 
 export default function FacilityForm() {
   const { mode, setShowDialog, asset, setAsset } = useAssetManagement();
@@ -33,7 +36,6 @@ export default function FacilityForm() {
     ),
   };
 
-  console.log(assetSortedTimes, "FORMATTED ASSET");
   const { register, handleSubmit, errors, onSubmit, isDirty, form } =
     useFacilityForm(assetSortedTimes as TFacilitySchema);
   return (
@@ -102,29 +104,27 @@ export default function FacilityForm() {
 function sortOpeningTimes(openingTimes: TWorkingTimesSchema[]) {
   const sortedArray = new Array(7); // Create an array of size 7
   openingTimes.forEach((operationTimes) => {
-    switch (
-      (operationTimes?.weekDay as unknown as string).toLowerCase()
-    ) {
+    switch ((operationTimes?.weekDay as unknown as string).toLowerCase()) {
       case "monday":
-        sortedArray[0] = { ...operationTimes};
+        sortedArray[0] = { ...operationTimes };
         break;
       case "tuesday":
-        sortedArray[1] = { ...operationTimes};
+        sortedArray[1] = { ...operationTimes };
         break;
       case "wednesday":
-        sortedArray[2] = { ...operationTimes};
+        sortedArray[2] = { ...operationTimes };
         break;
       case "thursday":
-        sortedArray[3] = { ...operationTimes};
+        sortedArray[3] = { ...operationTimes };
         break;
       case "friday":
-        sortedArray[4] = { ...operationTimes};
+        sortedArray[4] = { ...operationTimes };
         break;
       case "saturday":
-        sortedArray[5] = { ...operationTimes};
+        sortedArray[5] = { ...operationTimes };
         break;
       case "sunday":
-        sortedArray[6] = { ...operationTimes};
+        sortedArray[6] = { ...operationTimes };
         break;
       default:
         break; // Do nothing for unknown weekdays
