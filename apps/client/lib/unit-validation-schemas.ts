@@ -1,3 +1,4 @@
+import { WeekDay } from "@/types";
 import z, { object, TypeOf, number, ZodArray } from "zod";
 
 export const unitSchema = object({
@@ -49,6 +50,7 @@ export const assetSchema = object({
 export type TAssetSchema = TypeOf<typeof assetSchema>;
 
 const workingTimesSchema = object({
+  weekDay: z.enum(Object.keys(WeekDay) as any),
   openingTime: z
     .string({ required_error: "Opening hours is required" })
     .regex(
@@ -63,6 +65,8 @@ const workingTimesSchema = object({
     ),
 }).optional();
 
+export type TWorkingTimesSchema = TypeOf<typeof workingTimesSchema>;
+
 export const facilitySchema = object({
   name: z.string({ required_error: "Facility name is required" }),
   fees: number({
@@ -74,7 +78,7 @@ export const facilitySchema = object({
   duration: number({ required_error: "Duration is required" }).min(0, {
     message: "Duration must be at least 0",
   }),
-  items: z.array(workingTimesSchema).min(1),
+  operationTimes: z.array(workingTimesSchema).min(1),
 });
 
 export type TFacilitySchema = TypeOf<typeof facilitySchema>;

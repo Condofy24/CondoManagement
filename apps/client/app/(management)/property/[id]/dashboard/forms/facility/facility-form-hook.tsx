@@ -8,15 +8,16 @@ import { useAppSelector } from "@/redux/store";
 import { useParams } from "next/navigation";
 import UseAssets from "../../manage-building-assets-hook";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
-import { Facility } from "@/types";
 
 export type FacilityRegister = UseFormRegister<{
   fees: number;
   name: string;
-  items: (
+  duration: number;
+  operationTimes: (
     | {
         openingTime: string;
         closingTime: string;
+        weekDay?: any;
       }
     | undefined
   )[];
@@ -25,10 +26,15 @@ export type FacilityRegister = UseFormRegister<{
 export type FacilityErrors = FieldErrors<{
   fees: number;
   name: string;
-  items: {
-    openingTime: string;
-    closingTime: string;
-  }[];
+  duration: number;
+  operationTimes: (
+    | {
+        openingTime: string;
+        closingTime: string;
+        weekDay?: any;
+      }
+    | undefined
+  )[];
 }>;
 
 export default function useFacilityForm(facility: TFacilitySchema) {

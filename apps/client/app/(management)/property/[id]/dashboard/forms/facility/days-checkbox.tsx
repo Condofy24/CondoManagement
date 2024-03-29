@@ -8,8 +8,9 @@ import {
 } from "@/app/components/ui/form";
 import FacilityHoursInput from "./facility-hours-input";
 import { FacilityRegister, FacilityErrors } from "./facility-form-hook";
+import { UseFormReturn } from "react-hook-form";
 
-const items = [
+const days = [
   { id: "0", label: "Monday" },
   { id: "1", label: "Tuesday" },
   { id: "2", label: "Wednesday" },
@@ -19,6 +20,24 @@ const items = [
   { id: "6", label: "Sunday" },
 ] as const;
 
+export type formType = UseFormReturn<
+  {
+    fees: number;
+    name: string;
+    duration: number;
+    operationTimes: (
+      | {
+          openingTime: string;
+          closingTime: string;
+          weekDay?: any;
+        }
+      | undefined
+    )[];
+  },
+  any,
+  undefined
+>;
+
 export function CheckboxReactHookFormMultiple({
   errors,
   register,
@@ -26,47 +45,45 @@ export function CheckboxReactHookFormMultiple({
 }: {
   errors: FacilityErrors;
   register: FacilityRegister;
-  form: any;
+  form: formType;
 }) {
   return (
     <Form {...form}>
       <div className="space-y-8">
         <FormField
           control={form.control}
-          name="items"
+          name="operationTimes"
           render={() => (
             <FormItem>
               <div className="mb-4">
                 <FormLabel className="text-base">Working Days</FormLabel>
                 <FormDescription>Select the working days.</FormDescription>
               </div>
-              {items.map((item) => (
+              {days.map((day) => (
                 <FormField
-                  key={item.id}
+                  key={day.id}
                   control={form.control}
-                  name={`items.${item.id}`}
+                  name={`operationTimes.${day.id}`}
                   render={({ field }) => (
                     <FormItem
-                      key={item.id}
+                      key={day.id}
                       className="flex flex-row space-x-3 space-y-0 items-center"
                     >
                       <Checkbox
-                        key={item.id}
-                        checked={field.value}
+                        key={day.id}
+                        checked={field.value ? true : false}
                         onCheckedChange={(checked: any) => {
                           field.onChange(checked);
                         }}
                       />
-                      <FormLabel className="font-normal">
-                        {item.label}
-                      </FormLabel>
+                      <FormLabel className="font-normal">{day.label}</FormLabel>
 
                       {field.value && (
                         <>
                           <FacilityHoursInput
                             errors={errors}
                             register={register}
-                            id={item.id}
+                            id={day.id}
                           />
                         </>
                       )}

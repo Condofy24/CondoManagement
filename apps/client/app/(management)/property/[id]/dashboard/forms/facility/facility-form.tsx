@@ -4,11 +4,38 @@ import FormFieldError from "@/app/components/form/form-field-error";
 import { useAssetManagement } from "@/context/asset-management-context";
 import useFacilityForm from "./facility-form-hook";
 import { CheckboxReactHookFormMultiple } from "./days-checkbox";
+import { Facility } from "@/types";
+import { formatTime } from "../../table-columns/facility-columns";
+import { TFacilitySchema, TWorkingTimesSchema } from "@/lib/unit-validation-schemas";
 
 export default function FacilityForm() {
   const { mode, setShowDialog, asset, setAsset } = useAssetManagement();
+  console.log(asset, "ASSET");
+  const formattedAsset = () => {
+    if (asset && (asset as Facility).operationTimes) {
+      return {
+        ...asset,
+        operationTimes: (asset as Facility).operationTimes.map((time) => ({
+          weekDay: time.weekDay,
+          openingTime: formatTime(time.openingTime as unknown as number),
+          closingTime: formatTime(time.closingTime as unknown as number),
+        })),
+      };
+    } else {
+      return asset;
+    }
+  };
+
+  const assetSortedTimes = {
+    ...formattedAsset(),
+    operationTimes: sortOpeningTimes(
+      (formattedAsset() as Facility).operationTimes as TWorkingTimesSchema[],
+    ),
+  };
+
+  console.log(assetSortedTimes, "FORMATTED ASSET");
   const { register, handleSubmit, errors, onSubmit, isDirty, form } =
-    useFacilityForm(asset);
+    useFacilityForm(assetSortedTimes as TFacilitySchema);
   return (
     <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-4">
@@ -45,7 +72,7 @@ export default function FacilityForm() {
           placeholder="Duration of block in minutes"
           className="dark:bg-white dark:text-black"
         />
-        <FormFieldError fieldError={errors.fees} />
+        <FormFieldError fieldError={errors.duration} />
       </div>
 
       <CheckboxReactHookFormMultiple
@@ -70,4 +97,38 @@ export default function FacilityForm() {
       </div>
     </form>
   );
+}
+
+function sortOpeningTimes(openingTimes: TWorkingTimesSchema[]) {
+  const sortedArray = new Array(7); // Create an array of size 7
+  openingTimes.forEach((operationTimes) => {
+    switch (
+      (operationTimes?.weekDay as unknown as string).toLowerCase()
+    ) {
+      case "monday":
+        sortedArray[0] = { ...operationTimes};
+        break;
+      case "tuesday":
+        sortedArray[1] = { ...operationTimes};
+        break;
+      case "wednesday":
+        sortedArray[2] = { ...operationTimes};
+        break;
+      case "thursday":
+        sortedArray[3] = { ...operationTimes};
+        break;
+      case "friday":
+        sortedArray[4] = { ...operationTimes};
+        break;
+      case "saturday":
+        sortedArray[5] = { ...operationTimes};
+        break;
+      case "sunday":
+        sortedArray[6] = { ...operationTimes};
+        break;
+      default:
+        break; // Do nothing for unknown weekdays
+    }
+  });
+  return sortedArray;
 }

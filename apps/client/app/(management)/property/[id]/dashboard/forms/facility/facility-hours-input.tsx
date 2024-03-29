@@ -21,13 +21,14 @@ export default function FacilityHoursInput({
         </label>
         <Input
           id="openingTime"
-          {...register(`items.${id as unknown as number}.openingTime`)}
+          {...register(`operationTimes.${id as unknown as number}.openingTime`)}
           placeholder="HH:MM"
           className="dark:bg-white dark:text-black"
         />
         <FormFieldError
           fieldError={
-            errors.items?.[id as unknown as number]?.openingTime ?? undefined
+            errors.operationTimes?.[id as unknown as number]?.openingTime ??
+            undefined
           }
         />
       </div>
@@ -37,13 +38,14 @@ export default function FacilityHoursInput({
         </label>
         <Input
           id="closingTime"
-          {...register(`items.${id as unknown as number}.closingTime`)}
+          {...register(`operationTimes.${id as unknown as number}.closingTime`)}
           placeholder="HH:MM"
           className="dark:bg-white dark:text-black"
         />
         <FormFieldError
           fieldError={
-            errors.items?.[id as unknown as number]?.closingTime ?? undefined
+            errors.operationTimes?.[id as unknown as number]?.closingTime ??
+            undefined
           }
         />
       </div>

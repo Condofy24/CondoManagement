@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { BuildingAsset, BuildingResource, Facility } from "@/types";
+import { Facility } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -114,11 +114,10 @@ export const facilityColumns: ColumnDef<Facility>[] = [
   },
 ];
 
-const formatTime = (timeInMinutes: number): string => {
+export const formatTime = (timeInMinutes: number): string => {
   const hours = Math.floor(timeInMinutes / 60);
   const minutes = timeInMinutes % 60;
   const formattedHours = hours < 10 ? `0${hours}` : hours;
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-  const ampm = hours < 12 ? "AM" : "PM";
-  return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  return `${formattedHours}:${formattedMinutes}`;
 };

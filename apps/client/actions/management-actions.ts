@@ -413,7 +413,7 @@ export async function createFacility(
   token: string,
 ) {
   try {
-    const operationTimes = data.items
+    const operationTimes = data.operationTimes
       .map((item, index) => {
         if (item) {
           const durationData = getDuration(item.openingTime, item.closingTime);
