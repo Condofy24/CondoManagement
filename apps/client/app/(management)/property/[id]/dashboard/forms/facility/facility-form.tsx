@@ -13,7 +13,6 @@ import {
 
 export default function FacilityForm() {
   const { mode, setShowDialog, asset, setAsset } = useAssetManagement();
-  console.log(asset, "ASSET");
   const formattedAsset = () => {
     if (asset && (asset as Facility).operationTimes) {
       return {

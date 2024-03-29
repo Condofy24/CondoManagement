@@ -45,8 +45,6 @@ export default function useAssetForm(type: BuildingAsset, asset: Asset | null) {
 
   const buildingId = useParams().id;
 
-  console.log(currentAssets);
-
   const {
     register,
     handleSubmit,
