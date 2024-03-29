@@ -20,6 +20,7 @@ import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityModel } from './models/availability.model';
+import { ReservationModel } from './models/reservation.model';
 
 /**
  * Controller for managing building-related operations.
@@ -89,5 +90,23 @@ export class FacilityController {
   })
   async getFacilities(@Param('buildingId') buildingId: string) {
     return await this.facilityService.getFacilities(buildingId);
+  }
+  /**
+   * Make a reservation for an availability.
+   * @param availabilityId - The ID of the availability
+   * @param userId - The ID of the user
+   */
+  @Post('reservation/:availabilityId/:userId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  @ApiCreatedResponse({
+    description: 'Reservation made',
+    type: ReservationModel,
+  })
+  async makeReservation(
+    @Param('availabilityId') availabilityId: string,
+    @Param('userId') userId: string,
+  ) {
+    return await this.facilityService.makeReservation(availabilityId, userId);
   }
 }

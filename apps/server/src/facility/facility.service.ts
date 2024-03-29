@@ -14,6 +14,11 @@ import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityEntity } from './entities/availability.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { FacilityAvailabilityModel } from './models/availability.model';
+import {
+  ReservationEntity,
+  ReservationStatus,
+} from './entities/reservation.entity';
+import { ReservationModel } from './models/reservation.model';
 
 /**
  * Service class for managing buildings.
@@ -26,6 +31,8 @@ export class FacilityService {
     private readonly facilityModel: Model<FacilityEntity>,
     @InjectModel('FacilityAvailability')
     private readonly facilityAvailabilityModel: Model<FacilityAvailabilityEntity>,
+    @InjectModel('Reservation')
+    private readonly reservationModel: Model<ReservationEntity>,
   ) {}
 
   /**
@@ -202,6 +209,57 @@ export class FacilityService {
     } catch (e) {
       throw new BadRequestException({
         message: "Facility's availabilities could not be fetched",
+        error: e?.message,
+      });
+    }
+  }
+
+  // /**
+  //  * Finds a availability by its ID.
+  //  * @param id - The ID of the availability.
+  //  * @returns A promise that resolves to the found availability entity, or null if not found.
+  //  */
+  // public async findAvailabilityById(
+  //   id: string,
+  // ): Promise<FacilityAvailabilityEntity | null> {
+  //   return await this.facilityAvailabilityModel.findOne({ _id: id }).exec();
+  // }
+
+  /**
+   * Make a reservation for an availability.
+   * @param availabilityId - The ID of the availability
+   * @param userId - The ID of the user
+   */
+  public async makeReservation(availabilityId: string, userId: string) {
+    const availabilityExist =
+      await this.facilityAvailabilityModel.findById(availabilityId); // Get Availability by Id
+
+    if (!availabilityExist) {
+      throw new BadRequestException({ message: 'Invalid availability Id' });
+    }
+    availabilityExist.facilityId;
+    const newReservation = new this.reservationModel({
+      facilityId: availabilityExist.facilityId,
+      availabilityId: availabilityExist.id,
+      userId: userId,
+      status: ReservationStatus.ACTIVE,
+    });
+
+    try {
+      const entity = await newReservation.save();
+      await this.facilityAvailabilityModel.findByIdAndUpdate(availabilityId, {
+        status: 'reserved',
+      });
+      return new ReservationModel(entity as ReservationEntity);
+    } catch (e) {
+      let errorDescription = 'Reservation could not be made';
+      if (error instanceof MongoServerError && error.code === 11000) {
+        errorDescription =
+          'Reservation could not be made due to unique constraint violation';
+      }
+
+      throw new BadRequestException({
+        message: errorDescription,
         error: e?.message,
       });
     }
