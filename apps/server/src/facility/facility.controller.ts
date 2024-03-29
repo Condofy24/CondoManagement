@@ -99,6 +99,7 @@ export class FacilityController {
   @Post('reservation/:availabilityId/:userId')
   // @UseGuards(PrivilegeGuard)
   // @Roles(0)
+  // TODO: Guards need to be added later
   @ApiCreatedResponse({
     description: 'Reservation made',
     type: ReservationModel,
@@ -108,5 +109,20 @@ export class FacilityController {
     @Param('userId') userId: string,
   ) {
     return await this.facilityService.makeReservation(availabilityId, userId);
+  }
+  /**
+   * Get all reservations for a user
+   * @param userId - The ID of the user.
+   */
+  @Get('reservations/:userId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  // TODO: Guards need to be added later
+  @ApiOkResponse({
+    description: 'All reservations for a user',
+    type: [ReservationModel],
+  })
+  async getReservations(@Param('userId') userId: string) {
+    return await this.facilityService.getReservations(userId);
   }
 }
