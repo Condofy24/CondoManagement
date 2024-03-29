@@ -236,6 +236,39 @@ describe('FacilityService', () => {
       );
     });
   });
+  describe('create reservation', () => {
+    it('should return all reservations under a given user id that is appropriate', async () => {
+      //Arrange
+      const availabilityId = new ObjectId("65ff57c1f2e0bc27cede0b63");
+      const userId = new ObjectId();
+
+      mockingoose(FacilityAvailabilityModel).toReturn(availabilityFindMockResponse[0], 'findOne');
+
+      //Act
+      const result: any = await service.makeReservation(
+        availabilityId.toString(),
+        userId.toString()
+      )
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+    it('should throw an exception if availability doesn\'t exist', async () => {
+      //Arrange
+      const availabilityId = new ObjectId("65ff57c1f2e0bc27cede0b63");
+      const userId = new ObjectId();
+
+      mockingoose(FacilityAvailabilityModel).toReturn(undefined, 'findOne');
+
+      //Act and Assert
+      await expect(service.makeReservation(
+        availabilityId.toString(),
+        userId.toString()
+      )).rejects.toThrow(
+        BadRequestException
+      )
+    });
+  })
   describe('get Reservations', () => {
     it('should return all reservations under a given user id that is appropriate', async () => {
       //Arrange
