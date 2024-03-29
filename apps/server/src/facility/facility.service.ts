@@ -230,13 +230,13 @@ export class FacilityService {
     if (!availabilityExist) {
       throw new BadRequestException({ message: 'Invalid availability Id' });
     }
+    console.log("hereeeeeeeeeee")
     const newReservation = new this.reservationModel({
       facilityId: availabilityExist.facilityId,
       availabilityId: availabilityExist.id,
       userId: userId,
       status: ReservationStatus.ACTIVE,
     });
-
     try {
       const entity = await newReservation.save();
       await this.facilityAvailabilityModel.findByIdAndUpdate(availabilityId, {
