@@ -214,7 +214,6 @@ export class FacilityService {
     }
   }
 
-
   /**
    * Make a reservation for an availability.
    * @param availabilityId - The ID of the availability
@@ -250,6 +249,20 @@ export class FacilityService {
 
       throw new BadRequestException({
         message: errorDescription,
+        error: e?.message,
+      });
+    }
+  }
+  public async getReservations(userId: string) {
+    try {
+      const reservations = await this.reservationModel.find({ userId });
+      return (
+        reservations?.map((reservation) => new ReservationModel(reservation)) ||
+        []
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Reservations could not be fetched',
         error: e?.message,
       });
     }
