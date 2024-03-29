@@ -1,11 +1,11 @@
 import mongoose, { Document } from 'mongoose';
 
-export type ReservationStatus =
-  | 'canceled'
-  | 'active'
-  | 'canceledByCompany'
-  | 'complete';
-
+export enum ReservationStatus {
+  CANCELED = 'Canceled',
+  ACTIVE = 'Active',
+  CanceledByCompany = 'canceledByCompany',
+  Compelete = 'Compelete',
+}
 export interface ReservationEntity extends Document {
   _id: mongoose.Types.ObjectId;
   facilityId: mongoose.Types.ObjectId | Record<string, unknown>;
