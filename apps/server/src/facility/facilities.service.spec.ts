@@ -9,6 +9,7 @@ import { BuildingService } from '../building/building.service';
 import { ObjectId } from 'mongodb';
 import { BadRequestException, HttpException } from '@nestjs/common';
 import mongoose from 'mongoose';
+import { ReservationModel } from './models/reservation.model';
 
 describe('FacilityService', () => {
   let service: FacilityService;
@@ -89,6 +90,10 @@ describe('FacilityService', () => {
         {
           provide: getModelToken('FacilityAvailability'),
           useValue: FacilityAvailabilityModel,
+        },
+        {
+          provide: getModelToken('Reservation'),
+          useValue: ReservationModel,
         },
         {
           provide: UserService,
@@ -210,16 +215,17 @@ describe('FacilityService', () => {
         expect(actualAvail.status).toEqual(expectedAvail.status);
       });
     });
-  });
-  it('should throw BadRequestException when an error occurs', async () => {
-    const facilityId = new mongoose.Types.ObjectId().toString();
 
-    jest
-      .spyOn(FacilityAvailabilityModel, 'find')
-      .mockRejectedValue(new Error('Some error'));
+    it('should throw BadRequestException when an error occurs', async () => {
+      const facilityId = new mongoose.Types.ObjectId().toString();
 
-    await expect(service.viewAvailabilities(facilityId)).rejects.toThrow(
-      BadRequestException,
-    );
+      jest
+        .spyOn(FacilityAvailabilityModel, 'find')
+        .mockRejectedValue(new Error('Some error'));
+
+      await expect(service.viewAvailabilities(facilityId)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 });
