@@ -6,6 +6,7 @@ import {
   Post,
   Get,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 
 import {
@@ -124,5 +125,25 @@ export class FacilityController {
   })
   async getReservations(@Param('userId') userId: string) {
     return await this.facilityService.getReservations(userId);
+  }
+
+  /**
+   * Cancel a reservation by the user
+   * @param reservationId - The ID of the availability
+   * @param userId - The ID of the user
+   */
+  @Patch('reservation/:reservationId/:userId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  // TODO: Guards need to be added later
+  @ApiCreatedResponse({
+    description: 'Cancel reservation',
+    type: ReservationModel,
+  })
+  async cancelReservation(
+    @Param('reservationId') reservationId: string,
+    @Param('userId') userId: string,
+  ) {
+    return await this.facilityService.cancelReservation(reservationId, userId);
   }
 }
