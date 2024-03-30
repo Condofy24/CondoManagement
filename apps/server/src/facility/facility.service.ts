@@ -236,25 +236,13 @@ export class FacilityService {
       userId: userId,
       status: ReservationStatus.ACTIVE,
     });
-    try {
       const entity = await newReservation.save();
       await this.facilityAvailabilityModel.findByIdAndUpdate(availabilityId, {
         status: 'reserved',
       });
       return new ReservationModel(entity as ReservationEntity);
-    } catch (e) {
-      let errorDescription = 'Reservation could not be made';
-      if (error instanceof MongoServerError && error.code === 11000) {
-        errorDescription =
-          'Reservation could not be made due to unique constraint violation';
-      }
-
-      throw new BadRequestException({
-        message: errorDescription,
-        error: e?.message,
-      });
-    }
   }
+  
   public async getReservations(userId: string) {
     try {
       const reservations = await this.reservationModel.find({ userId });
@@ -283,71 +271,6 @@ export class FacilityService {
       });
     }
   }
-  // DON'T NEED THAT IF UPDATE RESERVATION STATUS IS OK
-  //TODO: DELETE OF UPDATE RESERVATION STATUS IS OK
-  /**
-   * Cancel a reservation by the user
-   * @param reservationId - The ID of the availability
-   * @param userId - The ID of the user
-   */
-  // public async cancelReservation(reservationId: string, userId: string) {
-  //   const reservationExist =
-  //     await this.reservationModel.findById(reservationId); // Get reservation by Id
-
-  //   if (!reservationExist) {
-  //     throw new NotFoundException({ message: 'Reservation not found' });
-  //   }
-  //   if (reservationExist.status != ReservationStatus.ACTIVE) {
-  //     throw new BadRequestException({
-  //       message: 'Must be active to cancel',
-  //     });
-  //   }
-  //   const availabilityExist = await this.facilityAvailabilityModel.findById(
-  //     reservationExist.availabilityId,
-  //   );
-  //   if (!availabilityExist) {
-  //     throw new NotFoundException({ message: 'Availability not found' });
-  //   }
-  //   if (reservationExist.userId.toString() != userId) {
-  //     const user = await this.userService.findUserById(userId);
-  //     if (!user) {
-  //       throw new NotFoundException({ message: 'User not found' });
-  //     }
-  //     if ((user.role = 0)) {
-  //     } else
-  //       throw new BadRequestException({
-  //         message: 'Must be the user who reserved to cancel the reservation',
-  //       });
-  //   }
-
-  //   try {
-  //     const reservation = await this.reservationModel.findByIdAndUpdate(
-  //       reservationId,
-  //       {
-  //         status: ReservationStatus.CANCELED,
-  //       },
-  //       { new: true },
-  //     );
-  //     await this.facilityAvailabilityModel.findByIdAndUpdate(
-  //       availabilityExist.id,
-  //       {
-  //         status: 'available',
-  //       },
-  //     );
-  //     return new ReservationModel(reservation as ReservationEntity);
-  //   } catch (e) {
-  //     let errorDescription = 'Reservation could not be canceled';
-  //     if (error instanceof MongoServerError && error.code === 11000) {
-  //       errorDescription =
-  //         'Reservation could not be canceled due to unique constraint violation';
-  //     }
-
-  //     throw new BadRequestException({
-  //       message: errorDescription,
-  //       error: e?.message,
-  //     });
-  //   }
-  // }
 
   /**
    * Update reservation status
@@ -358,7 +281,6 @@ export class FacilityService {
     reservationId: string,
     updatedFields: Partial<ReservationEntity>,
   ): Promise<ReservationEntity> {
-    try {
       if (updatedFields.status === ReservationStatus.ACTIVE) {
         throw new BadRequestException({
           message: 'Cannot set a reservation to Active status.',
@@ -392,19 +314,6 @@ export class FacilityService {
       }
 
       return updatedReservation;
-    } catch (error) {
-      let errorDescription = 'Reservation could not be updated';
-
-      if (error instanceof MongoServerError && error.code === 11000) {
-        errorDescription =
-          'Reservation could not be canceled due to unique constraint violation';
-      }
-
-      throw new BadRequestException({
-        error: error?.message,
-        message: errorDescription,
-      });
-    }
   }
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**

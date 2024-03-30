@@ -253,31 +253,6 @@ describe('FacilitiesController', () => {
       expect(result).toEqual(reservationsTestData);
     });
   });
-  // describe('cancelReservation', () => {
-  //   it('should cancel a reservation and return the updated reservation details', async () => {
-  //     // Arrange
-  //     const reservationId = new ObjectId().toString();
-  //     const userId = new ObjectId().toString();
-  //     const cancelledReservationTestData = {
-  //       id: new ObjectId(reservationId),
-  //       userId: userId,
-  //       status: 'cancelled',
-  //     };
-
-  //     facilityServiceMock.cancelReservation.mockResolvedValue(
-  //       cancelledReservationTestData,
-  //     );
-
-  //     // Act
-  //     const result = await facilityController.cancelReservation(
-  //       reservationId,
-  //       userId,
-  //     );
-
-  //     // Assert
-  //     expect(result).toEqual(cancelledReservationTestData);
-  //   });
-  // });
   describe('update', () => {
     it('should update reservation status successfully', async () => {
       // Arrange

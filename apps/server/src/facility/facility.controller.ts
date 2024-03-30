@@ -147,28 +147,6 @@ export class FacilityController {
     return await this.facilityService.getFacilityReservations(facilityId);
   }
 
-  //  // DON'T NEED THAT IF UPDATE RESERVATION STATUS IS OK
-  // //TODO: DELETE OF UPDATE RESERVATION STATUS IS OK
-  // /**
-  //  * Cancel a reservation by the user
-  //  * @param reservationId - The ID of the availability
-  //  * @param userId - The ID of the user
-  //  */
-  // @Patch('reservation/:reservationId/:userId')
-  // // @UseGuards(PrivilegeGuard)
-  // // @Roles(0)
-  // // TODO: Guards need to be added later
-  // @ApiCreatedResponse({
-  //   description: 'Cancel reservation',
-  //   type: ReservationModel,
-  // })
-  // async cancelReservation(
-  //   @Param('reservationId') reservationId: string,
-  //   @Param('userId') userId: string,
-  // ) {
-  //   return await this.facilityService.cancelReservation(reservationId, userId);
-  // }
-
   @Patch('update/:reservationId')
   @ApiOkResponse({
     description: 'Reservation status update',
