@@ -236,13 +236,13 @@ export class FacilityService {
       userId: userId,
       status: ReservationStatus.ACTIVE,
     });
-      const entity = await newReservation.save();
-      await this.facilityAvailabilityModel.findByIdAndUpdate(availabilityId, {
-        status: 'reserved',
-      });
-      return new ReservationModel(entity as ReservationEntity);
+    const entity = await newReservation.save();
+    await this.facilityAvailabilityModel.findByIdAndUpdate(availabilityId, {
+      status: 'reserved',
+    });
+    return new ReservationModel(entity as ReservationEntity);
   }
-  
+
   public async getReservations(userId: string) {
     try {
       const reservations = await this.reservationModel.find({ userId });
@@ -281,39 +281,39 @@ export class FacilityService {
     reservationId: string,
     updatedFields: Partial<ReservationEntity>,
   ): Promise<ReservationEntity> {
-      if (updatedFields.status === ReservationStatus.ACTIVE) {
-        throw new BadRequestException({
-          message: 'Cannot set a reservation to Active status.',
-        });
-      }
-      const updatedReservation = await this.reservationModel.findByIdAndUpdate(
-        new ObjectId(reservationId),
-        {
-          $set: updatedFields,
-        },
-        { new: true },
+    if (updatedFields.status === ReservationStatus.ACTIVE) {
+      throw new BadRequestException({
+        message: 'Cannot set a reservation to Active status.',
+      });
+    }
+    const updatedReservation = await this.reservationModel.findByIdAndUpdate(
+      new ObjectId(reservationId),
+      {
+        $set: updatedFields,
+      },
+      { new: true },
+    );
+    if (!updatedReservation)
+      throw new NotFoundException({ message: 'Reservation not found' });
+    if (
+      updatedFields.status === ReservationStatus.CANCELED ||
+      updatedFields.status === ReservationStatus.CanceledByCompany
+    ) {
+      const availabilityExist = await this.facilityAvailabilityModel.findById(
+        updatedReservation.availabilityId,
       );
-      if (!updatedReservation)
-        throw new NotFoundException({ message: 'Reservation not found' });
-      if (
-        updatedFields.status === ReservationStatus.CANCELED ||
-        updatedFields.status === ReservationStatus.CanceledByCompany
-      ) {
-        const availabilityExist = await this.facilityAvailabilityModel.findById(
-          updatedReservation.availabilityId,
-        );
-        if (!availabilityExist) {
-          throw new NotFoundException({ message: 'Availability not found' });
-        }
-        await this.facilityAvailabilityModel.findByIdAndUpdate(
-          availabilityExist.id,
-          {
-            status: 'available',
-          },
-        );
+      if (!availabilityExist) {
+        throw new NotFoundException({ message: 'Availability not found' });
       }
+      await this.facilityAvailabilityModel.findByIdAndUpdate(
+        availabilityExist.id,
+        {
+          status: 'available',
+        },
+      );
+    }
 
-      return updatedReservation;
+    return updatedReservation;
   }
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**
