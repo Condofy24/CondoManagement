@@ -7,8 +7,14 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UserService } from '../user/user.service';
 import { BuildingService } from '../building/building.service';
 import { ObjectId } from 'mongodb';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import mongoose from 'mongoose';
+import ReservationModel from './entities/reservation.entity';
+import { ReservationStatus } from './entities/reservation.entity';
 
 describe('FacilityService', () => {
   let service: FacilityService;
@@ -73,6 +79,13 @@ describe('FacilityService', () => {
       status: 'available',
     },
   ];
+  const reservationFindMockResponse = {
+    id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
+    facilityId: new ObjectId('65ff57c1f2e0bc27cede0b91'),
+    availabilityId: new ObjectId('65ff57c1f2e0bc27cede0b92'),
+    userId: new ObjectId('65ff57c1f2e0bc27cede0b93'),
+    status: ReservationStatus.ACTIVE,
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -89,6 +102,10 @@ describe('FacilityService', () => {
         {
           provide: getModelToken('FacilityAvailability'),
           useValue: FacilityAvailabilityModel,
+        },
+        {
+          provide: getModelToken('Reservation'),
+          useValue: ReservationModel,
         },
         {
           provide: UserService,
@@ -210,16 +227,124 @@ describe('FacilityService', () => {
         expect(actualAvail.status).toEqual(expectedAvail.status);
       });
     });
+
+    it('should throw BadRequestException when an error occurs', async () => {
+      const facilityId = new mongoose.Types.ObjectId().toString();
+
+      jest
+        .spyOn(FacilityAvailabilityModel, 'find')
+        .mockRejectedValue(new Error('Some error'));
+
+      await expect(service.viewAvailabilities(facilityId)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
-  it('should throw BadRequestException when an error occurs', async () => {
-    const facilityId = new mongoose.Types.ObjectId().toString();
+  describe('create reservation', () => {
+    it('should return all reservations under a given user id that is appropriate', async () => {
+      //Arrange
+      const availabilityId = new ObjectId('65ff57c1f2e0bc27cede0b63');
+      const userId = new ObjectId();
 
-    jest
-      .spyOn(FacilityAvailabilityModel, 'find')
-      .mockRejectedValue(new Error('Some error'));
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        availabilityFindMockResponse[0],
+        'findOne',
+      );
 
-    await expect(service.viewAvailabilities(facilityId)).rejects.toThrow(
-      BadRequestException,
-    );
+      //Act
+      const result: any = await service.makeReservation(
+        availabilityId.toString(),
+        userId.toString(),
+      );
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+    it("should throw an exception if availability doesn't exist", async () => {
+      //Arrange
+      const availabilityId = new ObjectId('65ff57c1f2e0bc27cede0b63');
+      const userId = new ObjectId();
+
+      mockingoose(FacilityAvailabilityModel).toReturn(undefined, 'findOne');
+
+      //Act and Assert
+      await expect(
+        service.makeReservation(availabilityId.toString(), userId.toString()),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+  describe('get Reservations by user id', () => {
+    it('should return all reservations under a given user id that is appropriate', async () => {
+      //Arrange
+      const userid = reservationFindMockResponse.id;
+
+      mockingoose(ReservationModel).toReturn(
+        [reservationFindMockResponse],
+        'find',
+      );
+
+      //Act
+      const result: any = await service.getReservations(userid.toString());
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+  });
+  describe('get Reservations by facility id', () => {
+    it('should return all reservations under a given facility id that is appropriate', async () => {
+      //Arrange
+      const facilityId = reservationFindMockResponse.facilityId;
+
+      mockingoose(ReservationModel).toReturn(
+        [reservationFindMockResponse],
+        'find',
+      );
+
+      //Act
+      const result: any = await service.getFacilityReservations(
+        facilityId.toString(),
+      );
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+  });
+  describe('update reservation', () => {
+    it('should update the reservation to the given status given an appropriate status and reservation id', async () => {
+      //Arrange
+      const reservationId = reservationFindMockResponse.id;
+
+      mockingoose(ReservationModel).toReturn(
+        reservationFindMockResponse,
+        'findOneAndUpdate',
+      );
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        availabilityFindMockResponse[0],
+        'findOne',
+      );
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        availabilityFindMockResponse[0],
+        'findOneAndUpdate',
+      );
+      //Act
+      const result: any = await service.updateReservationStatus(
+        reservationId.toString(),
+        { status: ReservationStatus.CANCELED },
+      );
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+    it('should throw an error if the status provided is ACTIVE', async () => {
+      //Arrange
+      const reservationId = reservationFindMockResponse.id;
+
+      //Act and Assert
+      expect(
+        service.updateReservationStatus(reservationId.toString(), {
+          status: ReservationStatus.ACTIVE,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
 });

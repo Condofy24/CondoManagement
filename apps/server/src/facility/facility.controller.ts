@@ -6,6 +6,7 @@ import {
   Post,
   Get,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 
 import {
@@ -20,6 +21,12 @@ import { PrivilegeGuard } from '../auth/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityModel } from './models/availability.model';
+import { ReservationModel } from './models/reservation.model';
+import {
+  ReservationEntity,
+  ReservationStatus,
+} from './entities/reservation.entity';
+import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 /**
  * Controller for managing building-related operations.
@@ -89,5 +96,75 @@ export class FacilityController {
   })
   async getFacilities(@Param('buildingId') buildingId: string) {
     return await this.facilityService.getFacilities(buildingId);
+  }
+  /**
+   * Make a reservation for an availability.
+   * @param availabilityId - The ID of the availability
+   * @param userId - The ID of the user
+   */
+  @Post('reservation/:availabilityId/:userId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  // TODO: Guards need to be added later
+  @ApiCreatedResponse({
+    description: 'Reservation made',
+    type: ReservationModel,
+  })
+  async makeReservation(
+    @Param('availabilityId') availabilityId: string,
+    @Param('userId') userId: string,
+  ) {
+    return await this.facilityService.makeReservation(availabilityId, userId);
+  }
+  /**
+   * Get all reservations for a user
+   * @param userId - The ID of the user.
+   */
+  @Get('reservations/:userId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  // TODO: Guards need to be added later
+  @ApiOkResponse({
+    description: 'All reservations for a user',
+    type: [ReservationModel],
+  })
+  async getReservations(@Param('userId') userId: string) {
+    return await this.facilityService.getReservations(userId);
+  }
+  /**
+   * Get all reservations for a facility
+   * @param facilityId - The ID of the user.
+   */
+  @Get('facilityReservations/:facilityId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  // TODO: Guards need to be added later
+  @ApiOkResponse({
+    description: 'All reservations for a facility',
+    type: [ReservationModel],
+  })
+  async getFacilityReservations(@Param('facilityId') facilityId: string) {
+    return await this.facilityService.getFacilityReservations(facilityId);
+  }
+
+  @Patch('update/:reservationId')
+  @ApiOkResponse({
+    description: 'Reservation status update',
+    type: ReservationModel,
+  })
+  /**
+   * Updates reservation status.
+   * @param reservationId - The ID of the unit to update.
+   * @param updateReservationtDto - The data to update the unit with.
+   * @returns The updated unit.
+   */
+  async update(
+    @Param('reservationId') reservationId: string,
+    @Body() updateReservationDto: UpdateReservationDto,
+  ) {
+    return await this.facilityService.updateReservationStatus(
+      reservationId,
+      updateReservationDto,
+    );
   }
 }

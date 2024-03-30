@@ -6,6 +6,7 @@ import { FacilityService } from './facility.service';
 import { BuildingModule } from '../building/building.module';
 import { UserModule } from '../user/user.module';
 import { FacilityAvailabilitySchema } from './entities/availability.entity';
+import { ReservationSchema } from './entities/reservation.entity';
 
 /**
  * Module for managing facilities.
@@ -15,6 +16,7 @@ import { FacilityAvailabilitySchema } from './entities/availability.entity';
     MongooseModule.forFeature([
       { name: 'Facility', schema: FacilitySchema },
       { name: 'FacilityAvailability', schema: FacilityAvailabilitySchema },
+      { name: 'Reservation', schema: ReservationSchema },
     ]),
     BuildingModule,
     forwardRef(() => UserModule),

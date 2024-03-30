@@ -6,6 +6,8 @@ import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { WeekDay } from './entities/facilities.entity';
+import { ReservationStatus } from './entities/reservation.entity';
+import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 describe('FacilitiesController', () => {
   let facilityController: FacilityController;
@@ -22,6 +24,11 @@ describe('FacilitiesController', () => {
     deleteFacility: jest.fn(),
     getFacilities: jest.fn(),
     viewAvailabilities: jest.fn(),
+    makeReservation: jest.fn(),
+    getReservations: jest.fn(),
+    cancelReservation: jest.fn(),
+    updateReservationStatus: jest.fn(),
+    getFacilityReservations: jest.fn(),
   };
 
   const buildingServiceMock = {
@@ -173,6 +180,107 @@ describe('FacilitiesController', () => {
 
       // Assert
       expect(result).toEqual(availabilityInfoTestData);
+    });
+  });
+  describe('makeReservation', () => {
+    it('should make a reservation and return the reservation details', async () => {
+      // Arrange
+      const availabilityId = new ObjectId().toString();
+      const userId = new ObjectId().toString();
+      const reservationTestData = {
+        id: new ObjectId(),
+        availabilityId: availabilityId,
+        userId: userId,
+        status: 'reserved',
+      };
+
+      facilityServiceMock.makeReservation.mockResolvedValue(
+        reservationTestData,
+      );
+
+      // Act
+      const result = await facilityController.makeReservation(
+        availabilityId,
+        userId,
+      );
+
+      // Assert
+      expect(result).toEqual(reservationTestData);
+    });
+  });
+
+  describe('getReservations', () => {
+    it('should get all reservations for a user', async () => {
+      // Arrange
+      const userId = new ObjectId().toString();
+      const reservationsTestData = [
+        { id: new ObjectId(), userId: userId, status: 'reserved' },
+        { id: new ObjectId(), userId: userId, status: 'reserved' },
+      ];
+
+      facilityServiceMock.getReservations.mockResolvedValue(
+        reservationsTestData,
+      );
+
+      // Act
+      const result = await facilityController.getReservations(userId);
+
+      // Assert
+      expect(result).toEqual(reservationsTestData);
+    });
+  });
+  describe('getFacilityReservations', () => {
+    it('should return all reservations for a facility', async () => {
+      // Arrange
+      const facilityId = new ObjectId().toString();
+      const reservationsTestData = [
+        { id: new ObjectId(), facilityId: facilityId, status: 'reserved' },
+        { id: new ObjectId(), facilityId: facilityId, status: 'active' },
+      ];
+
+      facilityServiceMock.getFacilityReservations.mockResolvedValue(
+        reservationsTestData,
+      );
+
+      // Act
+      const result =
+        await facilityController.getFacilityReservations(facilityId);
+
+      // Assert
+      expect(facilityServiceMock.getFacilityReservations).toHaveBeenCalledWith(
+        facilityId,
+      );
+      expect(result).toEqual(reservationsTestData);
+    });
+  });
+  describe('update', () => {
+    it('should update reservation status successfully', async () => {
+      // Arrange
+      const reservationId = new ObjectId().toString();
+      const updateReservationDto: UpdateReservationDto = {
+        status: ReservationStatus.CANCELED,
+      };
+      const expectedReservationUpdate = {
+        id: reservationId,
+        ...updateReservationDto,
+      };
+
+      facilityServiceMock.updateReservationStatus.mockResolvedValue(
+        expectedReservationUpdate,
+      );
+
+      // Act
+      const result = await facilityController.update(
+        reservationId,
+        updateReservationDto,
+      );
+
+      // Assert
+      expect(facilityServiceMock.updateReservationStatus).toHaveBeenCalledWith(
+        reservationId,
+        updateReservationDto,
+      );
+      expect(result).toEqual(expectedReservationUpdate);
     });
   });
 });

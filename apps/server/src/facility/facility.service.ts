@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { error } from 'console';
@@ -8,12 +12,17 @@ import {
   FacilityEntity,
   OperationTimes,
 } from '../facility/entities/facilities.entity';
-import { MongoServerError } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
 import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityEntity } from './entities/availability.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { FacilityAvailabilityModel } from './models/availability.model';
+import {
+  ReservationEntity,
+  ReservationStatus,
+} from './entities/reservation.entity';
+import { ReservationModel } from './models/reservation.model';
 
 /**
  * Service class for managing buildings.
@@ -26,6 +35,8 @@ export class FacilityService {
     private readonly facilityModel: Model<FacilityEntity>,
     @InjectModel('FacilityAvailability')
     private readonly facilityAvailabilityModel: Model<FacilityAvailabilityEntity>,
+    @InjectModel('Reservation')
+    private readonly reservationModel: Model<ReservationEntity>,
   ) {}
 
   /**
@@ -207,6 +218,103 @@ export class FacilityService {
     }
   }
 
+  /**
+   * Make a reservation for an availability.
+   * @param availabilityId - The ID of the availability
+   * @param userId - The ID of the user
+   */
+  public async makeReservation(availabilityId: string, userId: string) {
+    const availabilityExist =
+      await this.facilityAvailabilityModel.findById(availabilityId); // Get Availability by Id
+
+    if (!availabilityExist) {
+      throw new BadRequestException({ message: 'Invalid availability Id' });
+    }
+    const newReservation = new this.reservationModel({
+      facilityId: availabilityExist.facilityId,
+      availabilityId: availabilityExist.id,
+      userId: userId,
+      status: ReservationStatus.ACTIVE,
+    });
+    const entity = await newReservation.save();
+    await this.facilityAvailabilityModel.findByIdAndUpdate(availabilityId, {
+      status: 'reserved',
+    });
+    return new ReservationModel(entity as ReservationEntity);
+  }
+
+  public async getReservations(userId: string) {
+    try {
+      const reservations = await this.reservationModel.find({ userId });
+      return (
+        reservations?.map((reservation) => new ReservationModel(reservation)) ||
+        []
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Reservations could not be fetched',
+        error: e?.message,
+      });
+    }
+  }
+  public async getFacilityReservations(facilityId: string) {
+    try {
+      const reservations = await this.reservationModel.find({ facilityId });
+      return (
+        reservations?.map((reservation) => new ReservationModel(reservation)) ||
+        []
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Reservations could not be fetched',
+        error: e?.message,
+      });
+    }
+  }
+
+  /**
+   * Update reservation status
+   * @param reservationId - The ID of the reservation
+   * @param updatedFields - The fields to be updated in the reservations.
+   */
+  public async updateReservationStatus(
+    reservationId: string,
+    updatedFields: Partial<ReservationEntity>,
+  ): Promise<ReservationEntity> {
+    if (updatedFields.status === ReservationStatus.ACTIVE) {
+      throw new BadRequestException({
+        message: 'Cannot set a reservation to Active status.',
+      });
+    }
+    const updatedReservation = await this.reservationModel.findByIdAndUpdate(
+      new ObjectId(reservationId),
+      {
+        $set: updatedFields,
+      },
+      { new: true },
+    );
+    if (!updatedReservation)
+      throw new NotFoundException({ message: 'Reservation not found' });
+    if (
+      updatedFields.status === ReservationStatus.CANCELED ||
+      updatedFields.status === ReservationStatus.CanceledByCompany
+    ) {
+      const availabilityExist = await this.facilityAvailabilityModel.findById(
+        updatedReservation.availabilityId,
+      );
+      if (!availabilityExist) {
+        throw new NotFoundException({ message: 'Availability not found' });
+      }
+      await this.facilityAvailabilityModel.findByIdAndUpdate(
+        availabilityExist.id,
+        {
+          status: 'available',
+        },
+      );
+    }
+
+    return updatedReservation;
+  }
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**
    * Handles the cron job for generating 4 week availabilities
