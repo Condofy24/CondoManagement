@@ -3,7 +3,7 @@ import {
   TPropertySchema,
 } from "../lib/validation-schemas";
 import axios from "axios";
-import { API_URL, getDuration } from "@/global";
+import { API_URL } from "@/global";
 import {
   TAddPaymentSchema,
   TAssetSchema,
@@ -11,6 +11,7 @@ import {
   TUnitSchema,
 } from "../lib/unit-validation-schemas";
 import { Parking, Unit, Storage, Facility, WeekDay } from "../types";
+import { getDuration } from "@/lib/date-utils";
 
 export async function createBuilding(
   companyId: string,
