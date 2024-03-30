@@ -12,7 +12,7 @@ import {
   FacilityEntity,
   OperationTimes,
 } from '../facility/entities/facilities.entity';
-import { MongoServerError } from 'mongodb';
+import { MongoServerError, ObjectId } from 'mongodb';
 import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityEntity } from './entities/availability.entity';
@@ -269,65 +269,129 @@ export class FacilityService {
       });
     }
   }
-  // Do we need to diff methods to cancel reservation or one with two diff if according to the type of the user ?
+  // DON'T NEED THAT IF UPDATE RESERVATION STATUS IS OK
+  //TODO: DELETE OF UPDATE RESERVATION STATUS IS OK
   /**
    * Cancel a reservation by the user
    * @param reservationId - The ID of the availability
    * @param userId - The ID of the user
    */
-  public async cancelReservation(reservationId: string, userId: string) {
-    const reservationExist =
-      await this.reservationModel.findById(reservationId); // Get reservation by Id
+  // public async cancelReservation(reservationId: string, userId: string) {
+  //   const reservationExist =
+  //     await this.reservationModel.findById(reservationId); // Get reservation by Id
 
-    if (!reservationExist) {
-      throw new NotFoundException({ message: 'Reservation not found' });
-    }
-    if (reservationExist.userId.toString() != userId) {
-      throw new BadRequestException({
-        message: 'Must be the user who reserved to cancel the reservation',
-      });
-    }
-    if (reservationExist.status != ReservationStatus.ACTIVE) {
-      throw new BadRequestException({
-        message: 'Must be active to cancel',
-      });
-    }
-    const availabilityExist = await this.facilityAvailabilityModel.findById(
-      reservationExist.availabilityId,
-    );
-    if (!availabilityExist) {
-      throw new NotFoundException({ message: 'Availability not found' });
-    }
+  //   if (!reservationExist) {
+  //     throw new NotFoundException({ message: 'Reservation not found' });
+  //   }
+  //   if (reservationExist.status != ReservationStatus.ACTIVE) {
+  //     throw new BadRequestException({
+  //       message: 'Must be active to cancel',
+  //     });
+  //   }
+  //   const availabilityExist = await this.facilityAvailabilityModel.findById(
+  //     reservationExist.availabilityId,
+  //   );
+  //   if (!availabilityExist) {
+  //     throw new NotFoundException({ message: 'Availability not found' });
+  //   }
+  //   if (reservationExist.userId.toString() != userId) {
+  //     const user = await this.userService.findUserById(userId);
+  //     if (!user) {
+  //       throw new NotFoundException({ message: 'User not found' });
+  //     }
+  //     if ((user.role = 0)) {
+  //     } else
+  //       throw new BadRequestException({
+  //         message: 'Must be the user who reserved to cancel the reservation',
+  //       });
+  //   }
 
+  //   try {
+  //     const reservation = await this.reservationModel.findByIdAndUpdate(
+  //       reservationId,
+  //       {
+  //         status: ReservationStatus.CANCELED,
+  //       },
+  //       { new: true },
+  //     );
+  //     await this.facilityAvailabilityModel.findByIdAndUpdate(
+  //       availabilityExist.id,
+  //       {
+  //         status: 'available',
+  //       },
+  //     );
+  //     return new ReservationModel(reservation as ReservationEntity);
+  //   } catch (e) {
+  //     let errorDescription = 'Reservation could not be canceled';
+  //     if (error instanceof MongoServerError && error.code === 11000) {
+  //       errorDescription =
+  //         'Reservation could not be canceled due to unique constraint violation';
+  //     }
+
+  //     throw new BadRequestException({
+  //       message: errorDescription,
+  //       error: e?.message,
+  //     });
+  //   }
+  // }
+
+  /**
+   * Update reservation status
+   * @param reservationId - The ID of the availability
+   * @param updatedFields - The fields to be updated in the reservations.
+   */
+  public async updateReservationStatus(
+    reservationId: string,
+    updatedFields: Partial<ReservationEntity>,
+  ): Promise<ReservationEntity> {
     try {
-      const reservation = await this.reservationModel.findByIdAndUpdate(
-        reservationId,
+      if (updatedFields.status === ReservationStatus.ACTIVE) {
+        throw new BadRequestException({
+          message: 'Cannot set a reservation to Active status.',
+        });
+      }
+      const updatedReservation = await this.reservationModel.findByIdAndUpdate(
+        new ObjectId(reservationId),
         {
-          status: ReservationStatus.CANCELED,
+          $set: updatedFields,
         },
         { new: true },
       );
-      await this.facilityAvailabilityModel.findByIdAndUpdate(
-        availabilityExist.id,
-        {
-          status: 'available',
-        },
-      );
-      return new ReservationModel(reservation as ReservationEntity);
-    } catch (e) {
-      let errorDescription = 'Reservation could not be canceled';
+      if (!updatedReservation)
+        throw new NotFoundException({ message: 'Reservation not found' });
+      if (
+        updatedFields.status === ReservationStatus.CANCELED ||
+        updatedFields.status === ReservationStatus.CanceledByCompany
+      ) {
+        const availabilityExist = await this.facilityAvailabilityModel.findById(
+          updatedReservation.availabilityId,
+        );
+        if (!availabilityExist) {
+          throw new NotFoundException({ message: 'Availability not found' });
+        }
+        await this.facilityAvailabilityModel.findByIdAndUpdate(
+          availabilityExist.id,
+          {
+            status: 'available',
+          },
+        );
+      }
+
+      return updatedReservation;
+    } catch (error) {
+      let errorDescription = 'Reservation could not be updated';
+
       if (error instanceof MongoServerError && error.code === 11000) {
         errorDescription =
           'Reservation could not be canceled due to unique constraint violation';
       }
 
       throw new BadRequestException({
+        error: error?.message,
         message: errorDescription,
-        error: e?.message,
       });
     }
   }
-
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**
    * Handles the cron job for generating 4 week availabilities
