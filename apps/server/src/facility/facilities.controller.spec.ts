@@ -6,6 +6,8 @@ import { BuildingService } from '../building/building.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { WeekDay } from './entities/facilities.entity';
+import { ReservationStatus } from './entities/reservation.entity';
+import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 describe('FacilitiesController', () => {
   let facilityController: FacilityController;
@@ -25,6 +27,7 @@ describe('FacilitiesController', () => {
     makeReservation: jest.fn(),
     getReservations: jest.fn(),
     cancelReservation: jest.fn(),
+    updateReservationStatus: jest.fn(),
   };
 
   const buildingServiceMock = {
@@ -226,29 +229,59 @@ describe('FacilitiesController', () => {
     });
   });
 
-  describe('cancelReservation', () => {
-    it('should cancel a reservation and return the updated reservation details', async () => {
+  // describe('cancelReservation', () => {
+  //   it('should cancel a reservation and return the updated reservation details', async () => {
+  //     // Arrange
+  //     const reservationId = new ObjectId().toString();
+  //     const userId = new ObjectId().toString();
+  //     const cancelledReservationTestData = {
+  //       id: new ObjectId(reservationId),
+  //       userId: userId,
+  //       status: 'cancelled',
+  //     };
+
+  //     facilityServiceMock.cancelReservation.mockResolvedValue(
+  //       cancelledReservationTestData,
+  //     );
+
+  //     // Act
+  //     const result = await facilityController.cancelReservation(
+  //       reservationId,
+  //       userId,
+  //     );
+
+  //     // Assert
+  //     expect(result).toEqual(cancelledReservationTestData);
+  //   });
+  // });
+  describe('update', () => {
+    it('should update reservation status successfully', async () => {
       // Arrange
       const reservationId = new ObjectId().toString();
-      const userId = new ObjectId().toString();
-      const cancelledReservationTestData = {
-        id: new ObjectId(reservationId),
-        userId: userId,
-        status: 'cancelled',
+      const updateReservationDto: UpdateReservationDto = {
+        status: ReservationStatus.CANCELED,
+      };
+      const expectedReservationUpdate = {
+        id: reservationId,
+        ...updateReservationDto,
       };
 
-      facilityServiceMock.cancelReservation.mockResolvedValue(
-        cancelledReservationTestData,
+      facilityServiceMock.updateReservationStatus.mockResolvedValue(
+        expectedReservationUpdate,
       );
 
       // Act
-      const result = await facilityController.cancelReservation(
+      const result = await facilityController.update(
         reservationId,
-        userId,
+        updateReservationDto,
       );
 
       // Assert
-      expect(result).toEqual(cancelledReservationTestData);
+      expect(facilityServiceMock.updateReservationStatus).toHaveBeenCalledWith(
+        reservationId,
+        updateReservationDto,
+      );
+      expect(result).toEqual(expectedReservationUpdate);
     });
   });
 });
