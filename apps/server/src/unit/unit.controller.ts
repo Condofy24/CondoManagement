@@ -24,8 +24,8 @@ import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
 import { UnitModel } from './models/unit.model';
 import { AuthGuard } from '../auth/auth.guard';
 import { PaymentModel } from './models/payment-model';
-import { UserService } from 'src/user/user.service';
-import { UserRoles } from 'src/user/user.model';
+import { UserService } from '../user/user.service';
+import { UserRoles } from '../user/user.model';
 
 @ApiTags('Unit')
 @ApiBearerAuth()
@@ -42,6 +42,8 @@ export class UnitController {
   @Post('/processUnitFees')
   /**
    * Manually trigger processing unit fees and resetting monthly balance, overdue fees
+   *
+   *  *** Only the manager can call this route ***
    */
   @UseGuards(AuthGuard)
   async processMonthlyUnitFees(
@@ -55,7 +57,7 @@ export class UnitController {
         message: 'Only company manager can trigger processing unit fees',
       });
 
-    this.unitService.processUnitFees();
+    this.unitService.processMonthlyUnitFees();
   }
 
   @Post(':buildingId')

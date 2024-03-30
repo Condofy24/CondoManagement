@@ -483,7 +483,7 @@ describe('UnitService', () => {
   describe('scheduled task', () => {
     it('scheduled fees adjustment should run', async () => {
       mockingoose(UnitModel).toReturn([inDebtedUnitInfoTestData], 'find');
-      service.handleCron();
+      service.processMonthlyUnitFees();
     });
   });
 });

@@ -472,7 +472,7 @@ export class UnitService {
    * adds any overdue fees, and updates the unit's monthly fees balance.
    * If the unit has an owner, the function saves the updated unit.
    */
-  async processUnitFees() {
+  async processMonthlyUnitFees() {
     const units = await this.unitModel.find();
     units.forEach(async (unit) => {
       if (unit.ownerId) {
