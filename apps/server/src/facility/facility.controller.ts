@@ -22,6 +22,11 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityModel } from './models/availability.model';
 import { ReservationModel } from './models/reservation.model';
+import {
+  ReservationEntity,
+  ReservationStatus,
+} from './entities/reservation.entity';
+import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 /**
  * Controller for managing building-related operations.
@@ -127,23 +132,46 @@ export class FacilityController {
     return await this.facilityService.getReservations(userId);
   }
 
-  /**
-   * Cancel a reservation by the user
-   * @param reservationId - The ID of the availability
-   * @param userId - The ID of the user
-   */
-  @Patch('reservation/:reservationId/:userId')
-  // @UseGuards(PrivilegeGuard)
-  // @Roles(0)
-  // TODO: Guards need to be added later
-  @ApiCreatedResponse({
-    description: 'Cancel reservation',
+  //  // DON'T NEED THAT IF UPDATE RESERVATION STATUS IS OK
+  // //TODO: DELETE OF UPDATE RESERVATION STATUS IS OK
+  // /**
+  //  * Cancel a reservation by the user
+  //  * @param reservationId - The ID of the availability
+  //  * @param userId - The ID of the user
+  //  */
+  // @Patch('reservation/:reservationId/:userId')
+  // // @UseGuards(PrivilegeGuard)
+  // // @Roles(0)
+  // // TODO: Guards need to be added later
+  // @ApiCreatedResponse({
+  //   description: 'Cancel reservation',
+  //   type: ReservationModel,
+  // })
+  // async cancelReservation(
+  //   @Param('reservationId') reservationId: string,
+  //   @Param('userId') userId: string,
+  // ) {
+  //   return await this.facilityService.cancelReservation(reservationId, userId);
+  // }
+
+  @Patch('update/:reservationId')
+  @ApiOkResponse({
+    description: 'Reservation status update',
     type: ReservationModel,
   })
-  async cancelReservation(
+  /**
+   * Updates reservation status.
+   * @param reservationId - The ID of the unit to update.
+   * @param updateReservationtDto - The data to update the unit with.
+   * @returns The updated unit.
+   */
+  async update(
     @Param('reservationId') reservationId: string,
-    @Param('userId') userId: string,
+    @Body() updateReservationDto: UpdateReservationDto,
   ) {
-    return await this.facilityService.cancelReservation(reservationId, userId);
+    return await this.facilityService.updateReservationStatus(
+      reservationId,
+      updateReservationDto,
+    );
   }
 }
