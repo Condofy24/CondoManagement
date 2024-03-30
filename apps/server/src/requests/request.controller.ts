@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -21,12 +23,13 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestModel } from './models/request.model';
 import { AuthGuard } from '../auth/auth.guard';
+import { RequestEntity } from './entities/request.entity';
 
 @ApiTags('Request')
 @ApiBearerAuth()
 @Controller('requests')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) {}
+  constructor(private readonly requestService: RequestService) { }
 
   @Post(':unitId')
   @UseGuards(AuthGuard)
@@ -67,4 +70,22 @@ export class RequestController {
     await this.requestService.remove(id);
     return { statusCode: 200, message: 'Request removed successfully.' };
   }
+
+  @Get('user/:userId')
+  async getAllRequestsForUser(@Param('userId') userId: string): Promise<RequestEntity[]> {
+    try {
+      return await this.requestService.findAllRequestsForUser(userId);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+    }
+  }
+  @Post('by-user')
+  public async getAllRequestsForByUser(@Body() body: { userId: string }): Promise<RequestEntity[]> {
+    try {
+      return await this.requestService.findAllRequestsForUser(body.userId);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+    }
+  }
+
 }

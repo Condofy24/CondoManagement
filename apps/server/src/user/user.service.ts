@@ -21,7 +21,6 @@ import { CompanyService } from '../company/company.service';
 import { UnitService } from '../unit/unit.service';
 import { MongoServerError } from 'mongodb';
 import { UserRoles } from './user.model';
-import { RequestService } from 'src/requests/request.service';
 
 @Injectable()
 /**
@@ -35,7 +34,6 @@ export class UserService {
    * @param userModel The User model.
    * @param cloudinary The Cloudinary service.
    * @param companyService The Company service.
-   * @param requestService The Request service.
    */
   constructor(
     @InjectModel('User') private readonly userModel: Model<UserEntity>,
@@ -43,7 +41,6 @@ export class UserService {
     private companyService: CompanyService,
     @Inject(forwardRef(() => UnitService))
     private unitService: UnitService,
-    private requestService: RequestService,
   ) {}
 
   /**
@@ -241,7 +238,7 @@ export class UserService {
    * @param image The optional image file for the user.
    * @returns The updated user.
    * @throws HttpException if there is an error updating the user.
-   */
+   */ 
   public async updateUser(
     id: string,
     updateUserDto: UpdateUserDto,

@@ -7,10 +7,12 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateRequestDto } from './dto/create-request.dto';
+import { CreateRequestDto, RequestType } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestEntity } from './entities/request.entity';
 import { UnitService } from '../unit/unit.service';
+import { UserService } from '../user/user.service';
+import { UserRoles } from '../user/user.model';
 
 @Injectable()
 export class RequestService {
@@ -18,6 +20,7 @@ export class RequestService {
     @InjectModel('Request') private readonly requestModel: Model<RequestEntity>,
     @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
+    private userService: UserService,
   ) { }
 
   /**
@@ -94,6 +97,29 @@ export class RequestService {
     const result = await this.requestModel.findOneAndDelete({ _id: id }).exec();
     if (!result) {
       throw new NotFoundException(`Request with ID "${id}" not found.`);
+    }
+  }
+  public async findAllRequestsForUser(userId: string): Promise<RequestEntity[]> {
+    // Use the existing method to retrieve the user and their role
+    const user = await this.userService.findUserById(userId);
+    if (!user) throw new Error('User not found');
+
+    const role = user.role;
+
+    // Decision based on the user's role
+    if (role === UserRoles.MANAGER) {
+      // Admins get access to all requests
+      return this.requestModel.find().exec();
+    } else if (role === UserRoles.ACCOUNTANT) {
+      // Managers get requests based on specific criteria (adjust as needed)
+      return this.requestModel.find({ type: RequestType.FINANCIAL }).exec();
+    } else if (role === UserRoles.STAFF) {
+      // Managers get requests based on specific criteria (adjust as needed)
+      return this.requestModel.find({ type: RequestType.STAFF }).exec();
+    }
+    else {
+      // Other roles or unauthorized access
+      throw new Error('Role is Owner or Renter');
     }
   }
 }
