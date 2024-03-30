@@ -6,9 +6,10 @@ import {
   DialogTrigger,
 } from "@/app/components/ui/dialog";
 import { BuildingAsset } from "@/types";
-import AssetForm from "./forms/asset-form";
+import AssetForm from "./forms/asset/asset-form";
 import { useAssetManagement } from "@/context/asset-management-context";
-import UnitForm from "./forms/unit-form";
+import UnitForm from "./forms/unit/unit-form";
+import FacilityForm from "./forms/facility/facility-form";
 
 export default function CreateUpdateAssetModal({
   assetName,
@@ -49,5 +50,7 @@ const getBuildingAssetForm = (assetName: BuildingAsset) => {
       return <AssetForm type={BuildingAsset.parking} />;
     case BuildingAsset.storage:
       return <AssetForm type={BuildingAsset.storage} />;
+    case BuildingAsset.facility:
+      return <FacilityForm />;
   }
 };

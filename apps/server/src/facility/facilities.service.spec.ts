@@ -30,7 +30,7 @@ describe('FacilityService', () => {
   const createFacilityDto = {
     buildingId: new ObjectId(),
     name: 'PEWPEWWW',
-    price: 0,
+    fees: 0,
     duration: 60,
     operationTimes: [
       { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },
@@ -45,7 +45,7 @@ describe('FacilityService', () => {
     id: new ObjectId('65ff57c1f2e0bc27cede0b61'),
     buildingId: new ObjectId('65ff57c1f2e0bc27cede0b62'),
     name: 'PEWPEWWW',
-    price: 0,
+    fees: 0,
     duration: 60,
     operationTimes: [
       { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },

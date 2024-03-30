@@ -91,12 +91,36 @@ export type Storage = {
   fees: number;
 };
 
+export type Facility = {
+  id: string;
+  buildingId: string;
+  name: string;
+  fees: number;
+  duration: number;
+  operationTimes: Array<{
+    weekDay: WeekDay;
+    openingTime: string;
+    closingTime: string;
+  }>;
+};
+
 export type Asset = Unit | BuildingResource;
 
-export type BuildingResource = Parking | Storage;
+export type BuildingResource = Parking | Storage | Facility;
 
 export enum BuildingAsset {
   unit = "Unit",
   parking = "Parking",
   storage = "Storage",
+  facility = "Facility",
+}
+
+export enum WeekDay {
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
+  Sunday = 6,
 }

@@ -8,7 +8,7 @@ import { useAppSelector } from "@/redux/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import UseAssets from "../manage-building-assets-hook";
+import UseAssets from "../../manage-building-assets-hook";
 
 export default function useAddPaymentForm() {
   const {
