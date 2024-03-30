@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
 } from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Badge, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Badge, Copy, MoreHorizontal } from "lucide-react";
 import StatusCell from "@/app/components/table/data-table-status-cell";
 import { useAssetManagement } from "@/context/asset-management-context";
 import {
@@ -65,14 +65,14 @@ const RegistrationKeysPopover = ({
                 >
                   {ownerKey?.isClaimed ? "Claimed" : "Available"}
                 </div>
-                <Button
-                  variant="outline"
+                <Copy
+                  className="h-4 w-4"
                   onClick={() => {
                     navigator.clipboard.writeText(ownerKey?.key);
                   }}
                 >
                   Copy
-                </Button>
+                </Copy>
               </div>
               <div className="flex items-center gap-4">
                 <Label>Renter</Label>
@@ -90,14 +90,14 @@ const RegistrationKeysPopover = ({
                 >
                   {renterKey?.isClaimed ? "Claimed" : "Available"}
                 </div>
-                <Button
-                  variant="outline"
+                <Copy
+                  className="h-4 w-4"
                   onClick={() => {
                     navigator.clipboard.writeText(renterKey?.key);
                   }}
                 >
                   Copy
-                </Button>
+                </Copy>
               </div>
             </div>
           </CardContent>

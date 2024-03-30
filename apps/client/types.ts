@@ -67,6 +67,11 @@ export type Unit = {
   storages: Storage[];
 };
 
+export type Payment = {
+  date: Date;
+  amount: number;
+};
+
 export type IFinancialStatus = "Paid" | "Monthly Fees Due" | "Overdue Fees";
 
 export interface UnitCol extends Unit {

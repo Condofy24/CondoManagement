@@ -1,5 +1,8 @@
 import { Unit } from "@/types";
 import { BalanceProgress } from "./balance-progress";
+import { Button } from "@/app/components/ui/button";
+import { useState } from "react";
+import PaymentHistory from "./payment-history";
 
 type BalanceReportProps = {
   property: Unit;
@@ -13,6 +16,8 @@ export default function BalanceReport({ property }: BalanceReportProps) {
           (property.remainingMonthlyBalance as number)) /
           property.totalMonthlyFees) *
         100;
+
+  const [openPayments, setOpenPayments] = useState(false);
 
   return (
     <div className="flex gap-4 flex-col flex-nowrap">
@@ -51,6 +56,15 @@ export default function BalanceReport({ property }: BalanceReportProps) {
           <span>{property.overdueFees}</span>
         </div>
       )}
+
+      <Button variant="outline" onClick={() => setOpenPayments(true)}>
+        Payment History
+      </Button>
+      <PaymentHistory
+        open={openPayments}
+        setOpen={setOpenPayments}
+        propertyId={property.id}
+      />
     </div>
   );
 }
