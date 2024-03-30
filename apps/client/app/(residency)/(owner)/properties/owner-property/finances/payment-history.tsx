@@ -10,11 +10,13 @@ import {
   SheetFooter,
 } from "@/app/components/ui/sheet";
 import { useAppSelector } from "@/redux/store";
-import { Payment } from "@/types";
+import { Payment, Unit } from "@/types";
 import { useEffect, useState } from "react";
 import { MonthInput, MonthPicker } from "react-lite-month-picker";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/app/components/table/data-table";
+import { FinanceReportPDFDocument } from "./finance-report-pdf-generator";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 
 export const paymentColumns: ColumnDef<Payment>[] = [
   {
@@ -33,6 +35,8 @@ export const paymentColumns: ColumnDef<Payment>[] = [
           {row.original.amount.toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
           })}
         </span>
       );
@@ -43,13 +47,13 @@ export const paymentColumns: ColumnDef<Payment>[] = [
 type PaymentHistoryProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  propertyId: string;
+  property: Unit;
 };
 
 export default function PaymentHistory({
   open,
   setOpen,
-  propertyId,
+  property,
 }: PaymentHistoryProps) {
   const { token } = useAppSelector((state) => state.auth.value);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -62,13 +66,13 @@ export default function PaymentHistory({
 
   useEffect(() => {
     async function fetchPayments() {
-      const payments = await fetchUnitPayments(propertyId, token as string);
+      const payments = await fetchUnitPayments(property.id, token as string);
 
       if (payments) setPayments(payments);
     }
 
     fetchPayments();
-  }, [propertyId]);
+  }, [property]);
 
   useEffect(() => {
     const filteredPayments = payments.filter((p: Payment) => {
@@ -115,14 +119,30 @@ export default function PaymentHistory({
 
           {monthlyPayments.length !== 0 && (
             <div className="flex flex-col gap-3 ">
-              <DataTable columns={paymentColumns} data={monthlyPayments} />
+              <DataTable
+                columns={paymentColumns}
+                data={monthlyPayments}
+                showRowsPerPage={false}
+              />
             </div>
           )}
         </div>
         <SheetFooter>
           {monthlyPayments.length !== 0 && (
             <Button size="sm" className="px-3">
-              <span>Export PDF</span>
+              <PDFDownloadLink
+                document={
+                  <FinanceReportPDFDocument
+                    property={property}
+                    payments={payments}
+                  />
+                }
+                fileName="payments-report.pdf"
+              >
+                {({ loading }) =>
+                  loading ? "Generating report..." : "Generate PDF Report"
+                }
+              </PDFDownloadLink>
             </Button>
           )}
         </SheetFooter>

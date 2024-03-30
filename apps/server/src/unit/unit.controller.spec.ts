@@ -207,7 +207,7 @@ describe('UnitController', () => {
       const result = await controller.getPayments('test-id');
 
       //Assert
-      expect(result?.record?.[0]?.amount).toBe(100);
+      expect(result[0]?.amount).toBe(100);
     });
   });
 });

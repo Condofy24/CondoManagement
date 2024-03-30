@@ -32,6 +32,8 @@ import { StorageEntity } from '../storage/entities/storage.entity';
 import { ParkingModel } from '../parking/models/parking.model';
 import { StorageModel } from '../storage/models/storage.model';
 import { NotificationService } from '../notification/notification.service';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { Triggers } from 'src/notification/notification-triggers';
 
 @Injectable()
 /**
@@ -404,20 +406,22 @@ export class UnitService {
       unitPayments = await this.paymentsModel.create({ unitId });
     }
 
-    let newOverdueFees = unit.overdueFees - amount;
+    let updatedOverdueFees = unit.overdueFees - amount;
     let newMonthlyBalance = unit.monthlyFeesBalance;
 
-    if (newOverdueFees < 0) {
+    if (updatedOverdueFees < 0) {
       // Remove from monthly balance and reset overdue to 0
-      newMonthlyBalance += newOverdueFees; // overdue fees is negative -> add
-      newOverdueFees = 0;
+      newMonthlyBalance += updatedOverdueFees; // overdue fees is negative -> add
+      updatedOverdueFees = 0;
+
+      if (newMonthlyBalance < 0) newMonthlyBalance = 0;
     }
 
     const newPayment = {
       timeStamp: new Date(),
       amount,
       monthBalance: newMonthlyBalance,
-      overdueFees: newOverdueFees,
+      overdueFees: updatedOverdueFees,
       previousMonthBalance: unit?.monthlyFeesBalance,
       previousOverdueFees: unit?.overdueFees,
     } as IUnitPayment;
@@ -425,14 +429,28 @@ export class UnitService {
     unitPayments.record.push(newPayment);
 
     unit.monthlyFeesBalance = newMonthlyBalance;
-    unit.overdueFees = newOverdueFees;
+    unit.overdueFees = updatedOverdueFees;
 
     unitPayments.save();
     unit.save();
 
-    await this.notificationService.sendPaymentReceivedNotification(
-      unit,
-      amount,
+    // Sending notification to owner
+    const owner = (await this.userService.findUserById(
+      unit.ownerId.toString(),
+    )) as UserEntity;
+
+    const building = (await this.buildingService.findBuildingById(
+      unit.buildingId.toString(),
+    )) as BuildingEntity;
+
+    await this.notificationService.dispatchNotification(
+      Triggers.PAYMENT_PROCESSED,
+      {
+        buildingName: building.name,
+        paymentAmount: amount,
+        unitNumber: unit.unitNumber,
+      },
+      [owner],
     );
 
     return response.status(HttpStatus.NO_CONTENT);
@@ -454,7 +472,7 @@ export class UnitService {
    * adds any overdue fees, and updates the unit's monthly fees balance.
    * If the unit has an owner, the function saves the updated unit.
    */
-  async handleCron() {
+  async processUnitFees() {
     const units = await this.unitModel.find();
     units.forEach(async (unit) => {
       if (unit.ownerId) {

@@ -11,7 +11,7 @@ type BalanceReportProps = {
 export default function BalanceReport({ property }: BalanceReportProps) {
   const monthlyBalanceProgress =
     property.remainingMonthlyBalance == 0
-      ? 0
+      ? 100
       : ((property.totalMonthlyFees -
           (property.remainingMonthlyBalance as number)) /
           property.totalMonthlyFees) *
@@ -34,10 +34,7 @@ export default function BalanceReport({ property }: BalanceReportProps) {
       </div>
       <div className="flex flex-1 gap-2 items-center">
         <span className="w-[10rem]">Remaining Balance</span>
-        <BalanceProgress
-          className="h-10 bg-green-400"
-          value={monthlyBalanceProgress}
-        >
+        <BalanceProgress className="h-10" value={monthlyBalanceProgress}>
           {(property.remainingMonthlyBalance as number).toLocaleString(
             "en-US",
             {
@@ -63,7 +60,7 @@ export default function BalanceReport({ property }: BalanceReportProps) {
       <PaymentHistory
         open={openPayments}
         setOpen={setOpenPayments}
-        propertyId={property.id}
+        property={property}
       />
     </div>
   );

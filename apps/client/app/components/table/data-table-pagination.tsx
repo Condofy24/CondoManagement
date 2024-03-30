@@ -18,37 +18,43 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  showRowsPerPage: boolean;
 }
 
 export function DataTablePagination<TData>({
   table,
+  showRowsPerPage = true,
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex items-center justify-between px-2 pb-8">
-      <div className="flex-1">
-        <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">
-            Rows <span className="hidden md:inline-block">per page</span>
-          </p>
-          <Select
-            value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
-            }}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[5, 10, 15, 20].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {showRowsPerPage && (
+        <div className="flex-1">
+          <div className="flex items-center space-x-2">
+            <p className="text-sm font-medium">
+              Rows <span className="hidden md:inline-block">per page</span>
+            </p>
+            <Select
+              value={`${table.getState().pagination.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[5, 10, 15, 20].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </div>
+      )}
       <div className="flex items-center space-x-2 lg:space-x-8">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Page {table.getState().pagination.pageIndex + 1} of{" "}

@@ -21,7 +21,7 @@ const BalanceProgress = React.forwardRef<
       {children}
     </div>
     <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-green-500 transition-all "
+      className="h-full w-full flex-1 bg-green-300 dark:bg-green-500 transition-all "
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>

@@ -165,7 +165,7 @@ const userServiceMock = {
 };
 
 const notificationServiceMock = {
-  sendPaymentReceivedNotification: jest.fn().mockResolvedValue(null),
+  dispatchNotification: jest.fn().mockResolvedValue(null),
 };
 
 const mongoUniqueIndexException: MongoServerError = {
@@ -433,6 +433,11 @@ describe('UnitService', () => {
       ).rejects.toThrow(HttpException);
     });
     it('should make new payment successfully (no overdue)', async () => {
+      buildingServiceMock.findBuildingById.mockResolvedValue(
+        buildingInfoTestData,
+      );
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
+
       mockingoose(UnitModel)
         .toReturn(unitInfoTestData3, 'findOne')
         .toReturn((_: any) => {}, 'save');
@@ -448,6 +453,7 @@ describe('UnitService', () => {
       );
 
       expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
+      expect(notificationServiceMock.dispatchNotification).toHaveBeenCalled();
     });
     it('should make new payment successfully (with overdue)', async () => {
       mockingoose(UnitModel)
