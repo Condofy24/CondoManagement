@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 export enum ReservationStatus {
   CANCELED = 'Canceled',
   ACTIVE = 'Active',
-  CanceledByCompany = 'canceledByCompany',
+  CanceledByCompany = 'Canceled by company',
   Compelete = 'Compelete',
 }
 export interface ReservationEntity extends Document {
