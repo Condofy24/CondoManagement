@@ -5,3 +5,5 @@ build
 .Ds_Store
 .turbo
 documentation
+.vscode/
+.vscode/launch.json

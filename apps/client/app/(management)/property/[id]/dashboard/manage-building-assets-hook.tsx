@@ -2,19 +2,21 @@ import {
   fetchBuildingUnits,
   fetchBuildingStorages,
   fetchBuildingParkings,
+  fetchBuildingFacilities,
 } from "@/actions/management-actions";
 import { useAssetManagement } from "@/context/asset-management-context";
 import { useAppSelector } from "@/redux/store";
-import { BuildingAsset, Parking, Storage, Unit } from "@/types";
+import { BuildingAsset, Facility, Parking, Storage, Unit } from "@/types";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export type AssetTypes = Unit[] | Parking[] | Storage[];
+export type AssetTypes = Unit[] | Parking[] | Storage[] | Facility[];
 
 const assetFetchAction = (asset: BuildingAsset) => {
   if (asset === BuildingAsset.storage) return fetchBuildingStorages;
   if (asset === BuildingAsset.parking) return fetchBuildingParkings;
+  if (asset === BuildingAsset.facility) return fetchBuildingFacilities;
 
   return fetchBuildingUnits;
 };

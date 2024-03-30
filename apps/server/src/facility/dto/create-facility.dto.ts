@@ -15,10 +15,10 @@ export class CreateFacilityDto {
   name: string;
 
   /**
-   * The price of the facility block.
+   * The fees of the facility block.
    */
   @ApiProperty()
-  price: number;
+  fees: number;
 
   /**
    * The operation times of the facility block.

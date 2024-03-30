@@ -18,11 +18,14 @@ importers:
     dependencies:
       "@hookform/resolvers":
         specifier: ^3.3.4
-        version: 3.3.4(react-hook-form@7.49.3)
+        version: 3.3.4(react-hook-form@7.51.2)
       "@knocklabs/react":
         specifier: ^0.2.3
         version: 0.2.3(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
       "@radix-ui/react-avatar":
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      "@radix-ui/react-checkbox":
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
       "@radix-ui/react-collapsible":
@@ -90,7 +93,7 @@ importers:
         version: 0.316.0(react@18.2.0)
       next:
         specifier: 14.1.0
-        version: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.1.0(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
       next-redux-wrapper:
         specifier: ^8.1.0
         version: 8.1.0(next@14.1.0)(react-redux@9.1.0)(react@18.2.0)
@@ -104,8 +107,8 @@ importers:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
       react-hook-form:
-        specifier: ^7.49.3
-        version: 7.49.3(react@18.2.0)
+        specifier: ^7.51.1
+        version: 7.51.2(react@18.2.0)
       react-hot-toast:
         specifier: ^2.4.1
         version: 2.4.1(csstype@3.1.3)(react-dom@18.2.0)(react@18.2.0)
@@ -329,7 +332,7 @@ importers:
         version: 6.3.4
       ts-jest:
         specifier: ^29.1.0
-        version: 29.1.2(@babel/core@7.23.7)(jest@29.7.0)(typescript@5.3.3)
+        version: 29.1.2(@babel/core@7.23.9)(jest@29.7.0)(typescript@5.3.3)
       ts-loader:
         specifier: ^9.4.3
         version: 9.5.1(typescript@5.3.3)(webpack@5.90.0)
@@ -1206,7 +1209,6 @@ packages:
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@babel/core@7.23.9:
     resolution:
@@ -1232,6 +1234,7 @@ packages:
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/generator@7.23.6:
     resolution:
@@ -1392,7 +1395,6 @@ packages:
       "@babel/helper-simple-access": 7.22.5
       "@babel/helper-split-export-declaration": 7.22.6
       "@babel/helper-validator-identifier": 7.22.20
-    dev: true
 
   /@babel/helper-module-transforms@7.23.3(@babel/core@7.23.9):
     resolution:
@@ -1409,6 +1411,7 @@ packages:
       "@babel/helper-simple-access": 7.22.5
       "@babel/helper-split-export-declaration": 7.22.6
       "@babel/helper-validator-identifier": 7.22.20
+    dev: true
 
   /@babel/helper-optimise-call-expression@7.22.5:
     resolution:
@@ -1531,7 +1534,6 @@ packages:
       "@babel/types": 7.23.6
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@babel/helpers@7.23.9:
     resolution:
@@ -1545,6 +1547,7 @@ packages:
       "@babel/types": 7.23.9
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/highlight@7.23.4:
     resolution:
@@ -1576,6 +1579,7 @@ packages:
     hasBin: true
     dependencies:
       "@babel/types": 7.23.9
+    dev: true
 
   /@babel/plugin-bugfix-safari-id-destructuring-collision-in-function-expression@7.23.3(@babel/core@7.23.9):
     resolution:
@@ -2871,6 +2875,7 @@ packages:
       "@babel/code-frame": 7.23.5
       "@babel/parser": 7.23.9
       "@babel/types": 7.23.9
+    dev: true
 
   /@babel/traverse@7.23.7:
     resolution:
@@ -2891,7 +2896,6 @@ packages:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /@babel/traverse@7.23.9:
     resolution:
@@ -2912,6 +2916,7 @@ packages:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
 
   /@babel/types@7.23.6:
     resolution:
@@ -2934,6 +2939,7 @@ packages:
       "@babel/helper-string-parser": 7.23.4
       "@babel/helper-validator-identifier": 7.22.20
       to-fast-properties: 2.0.0
+    dev: true
 
   /@bcoe/v8-coverage@0.2.3:
     resolution:
@@ -3029,7 +3035,7 @@ packages:
       object-assign: 4.1.1
       open: 8.4.0
       proxy-middleware: 0.15.0
-      send: 1.0.0-beta.2
+      send: 0.18.0
       serve-index: 1.9.1
     transitivePeerDependencies:
       - supports-color
@@ -3294,7 +3300,7 @@ packages:
       }
     dev: true
 
-  /@hookform/resolvers@3.3.4(react-hook-form@7.49.3):
+  /@hookform/resolvers@3.3.4(react-hook-form@7.51.2):
     resolution:
       {
         integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==,
@@ -3302,7 +3308,7 @@ packages:
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: 7.49.3(react@18.2.0)
+      react-hook-form: 7.51.2(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -4729,6 +4735,37 @@ packages:
       "@radix-ui/react-primitive": 1.0.3(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
       "@radix-ui/react-use-callback-ref": 1.0.1(@types/react@18.2.48)(react@18.2.0)
       "@radix-ui/react-use-layout-effect": 1.0.1(@types/react@18.2.48)(react@18.2.0)
+      "@types/react": 18.2.48
+      "@types/react-dom": 18.2.18
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@radix-ui/react-checkbox@1.0.4(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0):
+    resolution:
+      {
+        integrity: sha512-CBuGQa52aAYnADZVt/KBQzXrwx6TqnlwtcIPGtVt5JkkzQwMOLJjPukimhfKEr4GQNd43C+djUh5Ikopj8pSLg==,
+      }
+    peerDependencies:
+      "@types/react": "*"
+      "@types/react-dom": "*"
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      "@types/react-dom":
+        optional: true
+    dependencies:
+      "@babel/runtime": 7.23.8
+      "@radix-ui/primitive": 1.0.1
+      "@radix-ui/react-compose-refs": 1.0.1(@types/react@18.2.48)(react@18.2.0)
+      "@radix-ui/react-context": 1.0.1(@types/react@18.2.48)(react@18.2.0)
+      "@radix-ui/react-presence": 1.0.1(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      "@radix-ui/react-primitive": 1.0.3(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      "@radix-ui/react-use-controllable-state": 1.0.1(@types/react@18.2.48)(react@18.2.0)
+      "@radix-ui/react-use-previous": 1.0.1(@types/react@18.2.48)(react@18.2.0)
+      "@radix-ui/react-use-size": 1.0.1(@types/react@18.2.48)(react@18.2.0)
       "@types/react": 18.2.48
       "@types/react-dom": 18.2.18
       react: 18.2.0
@@ -9966,7 +10003,6 @@ packages:
       {
         integrity: sha512-vNQWS6kI+q6sBlHbh71IIeC+sRwK2N3EDySc/updIGhIee2x5z00J4c1242/5/d6EpEMdOnk/m+6tuk4/tcsqg==,
       }
-    dev: true
 
   /chalk@2.4.2:
     resolution:
@@ -10709,20 +10745,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.0.0
-
-  /debug@3.1.0:
-    resolution:
-      {
-        integrity: sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==,
-      }
-    peerDependencies:
-      supports-color: "*"
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.0.0
-    dev: true
 
   /debug@3.2.7:
     resolution:
@@ -15371,7 +15393,7 @@ packages:
       react: "*"
       react-redux: "*"
     dependencies:
-      next: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.1.0(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-redux: 9.1.0(@types/react@18.2.48)(react@18.2.0)(redux@5.0.1)
     dev: false
@@ -15386,7 +15408,7 @@ packages:
       react: "*"
       react-dom: "*"
     dependencies:
-      next: 14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.1.0(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -15398,7 +15420,7 @@ packages:
       }
     dev: true
 
-  /next@14.1.0(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0):
+  /next@14.1.0(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0):
     resolution:
       {
         integrity: sha512-wlzrsbfeSU48YQBjZhDzOwhWhGsy+uQycR8bHAOt1LY1bn3zZEcDyHQOEoN3aWzQ8LHCAJ1nqrWCc9XF2+O45Q==,
@@ -15419,12 +15441,12 @@ packages:
       "@next/env": 14.1.0
       "@swc/helpers": 0.5.2
       busboy: 1.6.0
-      caniuse-lite: 1.0.30001579
+      caniuse-lite: 1.0.30001589
       graceful-fs: 4.2.11
       postcss: 8.4.31
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      styled-jsx: 5.1.1(@babel/core@7.23.9)(react@18.2.0)
+      styled-jsx: 5.1.1(@babel/core@7.23.7)(react@18.2.0)
     optionalDependencies:
       "@next/swc-darwin-arm64": 14.1.0
       "@next/swc-darwin-x64": 14.1.0
@@ -16483,12 +16505,12 @@ packages:
       }
     dev: false
 
-  /react-hook-form@7.49.3(react@18.2.0):
+  /react-hook-form@7.51.2(react@18.2.0):
     resolution:
       {
-        integrity: sha512-foD6r3juidAT1cOZzpmD/gOKt7fRsDhXXZ0y28+Al1CHgX+AY1qIN9VSIIItXRq1dN68QrRwl1ORFlwjBaAqeQ==,
+        integrity: sha512-y++lwaWjtzDt/XNnyGDQy6goHskFualmDlf+jzEZvjvz6KWDf7EboL7pUvRCzPTJd0EOPpdekYaQLEvvG6m6HA==,
       }
-    engines: { node: ">=18", pnpm: "8" }
+    engines: { node: ">=12.22.0" }
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
     dependencies:
@@ -17260,29 +17282,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /send@1.0.0-beta.2:
-    resolution:
-      {
-        integrity: sha512-k1yHu/FNK745PULKdsGpQ+bVSXYNwSk+bWnYzbxGZbt5obZc0JKDVANsCRuJD1X/EG15JtP9eZpwxkhUxIYEcg==,
-      }
-    engines: { node: ">= 0.10" }
-    dependencies:
-      debug: 3.1.0
-      destroy: 1.2.0
-      encodeurl: 1.0.2
-      escape-html: 1.0.3
-      etag: 1.8.1
-      fresh: 0.5.2
-      http-errors: 2.0.0
-      mime-types: 2.1.35
-      ms: 2.1.3
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      statuses: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
-    dev: true
-
   /serialize-javascript@6.0.2:
     resolution:
       {
@@ -17864,7 +17863,7 @@ packages:
     requiresBuild: true
     optional: true
 
-  /styled-jsx@5.1.1(@babel/core@7.23.9)(react@18.2.0):
+  /styled-jsx@5.1.1(@babel/core@7.23.7)(react@18.2.0):
     resolution:
       {
         integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==,
@@ -17880,7 +17879,7 @@ packages:
       babel-plugin-macros:
         optional: true
     dependencies:
-      "@babel/core": 7.23.9
+      "@babel/core": 7.23.7
       client-only: 0.0.1
       react: 18.2.0
     dev: false
@@ -18323,7 +18322,7 @@ packages:
         integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==,
       }
 
-  /ts-jest@29.1.2(@babel/core@7.23.7)(jest@29.7.0)(typescript@5.3.3):
+  /ts-jest@29.1.2(@babel/core@7.23.9)(jest@29.7.0)(typescript@5.3.3):
     resolution:
       {
         integrity: sha512-br6GJoH/WUX4pu7FbZXuWGKGNDuU7b8Uj77g/Sp7puZV6EXzuByl6JrECvm0MzVzSTkSHWTihsXt+5XYER5b+g==,
@@ -18347,7 +18346,7 @@ packages:
       esbuild:
         optional: true
     dependencies:
-      "@babel/core": 7.23.7
+      "@babel/core": 7.23.9
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       jest: 29.7.0(@types/node@20.11.6)(ts-node@10.9.2)
