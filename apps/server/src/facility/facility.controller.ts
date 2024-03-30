@@ -131,6 +131,21 @@ export class FacilityController {
   async getReservations(@Param('userId') userId: string) {
     return await this.facilityService.getReservations(userId);
   }
+  /**
+   * Get all reservations for a facility
+   * @param facilityId - The ID of the user.
+   */
+  @Get('facilityReservations/:facilityId')
+  // @UseGuards(PrivilegeGuard)
+  // @Roles(0)
+  // TODO: Guards need to be added later
+  @ApiOkResponse({
+    description: 'All reservations for a facility',
+    type: [ReservationModel],
+  })
+  async getFacilityReservations(@Param('facilityId') facilityId: string) {
+    return await this.facilityService.getFacilityReservations(facilityId);
+  }
 
   //  // DON'T NEED THAT IF UPDATE RESERVATION STATUS IS OK
   // //TODO: DELETE OF UPDATE RESERVATION STATUS IS OK
