@@ -28,6 +28,7 @@ describe('FacilitiesController', () => {
     getReservations: jest.fn(),
     cancelReservation: jest.fn(),
     updateReservationStatus: jest.fn(),
+    getFacilityReservations: jest.fn(),
   };
 
   const buildingServiceMock = {
@@ -228,7 +229,30 @@ describe('FacilitiesController', () => {
       expect(result).toEqual(reservationsTestData);
     });
   });
+  describe('getFacilityReservations', () => {
+    it('should return all reservations for a facility', async () => {
+      // Arrange
+      const facilityId = new ObjectId().toString();
+      const reservationsTestData = [
+        { id: new ObjectId(), facilityId: facilityId, status: 'reserved' },
+        { id: new ObjectId(), facilityId: facilityId, status: 'active' },
+      ];
 
+      facilityServiceMock.getFacilityReservations.mockResolvedValue(
+        reservationsTestData,
+      );
+
+      // Act
+      const result =
+        await facilityController.getFacilityReservations(facilityId);
+
+      // Assert
+      expect(facilityServiceMock.getFacilityReservations).toHaveBeenCalledWith(
+        facilityId,
+      );
+      expect(result).toEqual(reservationsTestData);
+    });
+  });
   // describe('cancelReservation', () => {
   //   it('should cancel a reservation and return the updated reservation details', async () => {
   //     // Arrange
