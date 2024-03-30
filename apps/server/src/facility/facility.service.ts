@@ -351,7 +351,7 @@ export class FacilityService {
 
   /**
    * Update reservation status
-   * @param reservationId - The ID of the availability
+   * @param reservationId - The ID of the reservation
    * @param updatedFields - The fields to be updated in the reservations.
    */
   public async updateReservationStatus(
