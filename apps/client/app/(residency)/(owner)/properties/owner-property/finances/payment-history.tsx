@@ -12,11 +12,11 @@ import {
 import { useAppSelector } from "@/redux/store";
 import { Payment, Unit } from "@/types";
 import { useEffect, useState } from "react";
-import { MonthInput, MonthPicker } from "react-lite-month-picker";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/app/components/table/data-table";
 import { FinanceReportPDFDocument } from "./finance-report-pdf-generator";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+const { MonthInput, MonthPicker } = require("react-lite-month-picker");
 
 export const paymentColumns: ColumnDef<Payment>[] = [
   {
