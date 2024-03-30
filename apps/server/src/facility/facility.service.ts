@@ -269,6 +269,20 @@ export class FacilityService {
       });
     }
   }
+  public async getFacilityReservations(facilityId: string) {
+    try {
+      const reservations = await this.reservationModel.find({ facilityId });
+      return (
+        reservations?.map((reservation) => new ReservationModel(reservation)) ||
+        []
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: 'Reservations could not be fetched',
+        error: e?.message,
+      });
+    }
+  }
   // DON'T NEED THAT IF UPDATE RESERVATION STATUS IS OK
   //TODO: DELETE OF UPDATE RESERVATION STATUS IS OK
   /**
