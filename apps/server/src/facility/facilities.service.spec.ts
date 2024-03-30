@@ -301,4 +301,34 @@ describe('FacilityService', () => {
       expect(result).toBeDefined();
     });
   })
+  describe('update reservation', () => {
+    it('should update the reservation to the given status given an appropriate status and reservation id', async () => {
+      //Arrange
+      const reservationId = reservationFindMockResponse.id;
+
+      mockingoose(ReservationModel).toReturn(reservationFindMockResponse, 'findOneAndUpdate');
+      mockingoose(FacilityAvailabilityModel).toReturn(availabilityFindMockResponse[0], 'findOne');
+      mockingoose(FacilityAvailabilityModel).toReturn(availabilityFindMockResponse[0], 'findOneAndUpdate');
+      //Act
+      const result: any = await service.updateReservationStatus(
+        reservationId.toString(),
+        {status: ReservationStatus.CANCELED}
+      )
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+    it('should throw an error if the status provided is ACTIVE', async () => {
+      //Arrange
+      const reservationId = reservationFindMockResponse.id;
+
+      //Act and Assert
+      expect(service.updateReservationStatus(
+        reservationId.toString(),
+        {status: ReservationStatus.ACTIVE}
+      )).rejects.toThrow(
+        BadRequestException
+      );
+    });
+  })
 });
