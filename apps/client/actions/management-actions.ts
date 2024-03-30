@@ -7,9 +7,11 @@ import { API_URL } from "@/global";
 import {
   TAddPaymentSchema,
   TAssetSchema,
+  TFacilitySchema,
   TUnitSchema,
 } from "../lib/unit-validation-schemas";
-import { Parking, Unit, Storage } from "../types";
+import { Parking, Unit, Storage, Facility, WeekDay } from "../types";
+import { getDuration } from "@/lib/date-utils";
 
 export async function createBuilding(
   companyId: string,
@@ -378,6 +380,97 @@ export async function updateStorage(
   }
 }
 
+/*********************
+ *      Facilities
+ * *******************/
+export const fetchBuildingFacilities = async (
+  buildingId: string,
+  token: string,
+): Promise<Facility[]> => {
+  try {
+    const res = await axios.get<Facility[]>(
+      `${API_URL}/facility/${buildingId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.data;
+  } catch (error: any) {
+    let message = "An error occurred while retrieving facilities";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+};
+
+export async function createFacility(
+  buildingId: string,
+  data: TFacilitySchema,
+  token: string,
+) {
+  try {
+    const operationTimes = data.operationTimes
+      .map((item, index) => {
+        if (item) {
+          const durationData = getDuration(item.openingTime, item.closingTime);
+          return {
+            weekDay: WeekDay[index],
+            openingTime: durationData.openingTime,
+            closingTime: durationData.closingTime,
+          };
+        }
+      })
+      .filter((item) => item);
+
+    const formData = {
+      name: data.name,
+      fees: data.fees,
+      duration: data.duration,
+      operationTimes: operationTimes,
+    };
+
+    const res = await axios.post(
+      `${API_URL}/facility/${buildingId}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while creating facility";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function updateFacility(
+  facilityId: string,
+  data: TFacilitySchema,
+  token: string,
+) {
+  try {
+    return 200;
+  } catch (error: any) {
+    let message = "An error occurred while updating facility";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
 // export async function updateAsset(
 //   buildingId: string,
 //   data: TUnitSchema,

@@ -21,6 +21,7 @@ describe('FacilitiesController', () => {
     createFacility: jest.fn(),
     deleteFacility: jest.fn(),
     getFacilities: jest.fn(),
+    viewAvailabilities: jest.fn(),
   };
 
   const buildingServiceMock = {
@@ -31,7 +32,7 @@ describe('FacilitiesController', () => {
     id: new ObjectId(),
     buildingId: new ObjectId(),
     name: 'PEWPEWWW',
-    price: 0,
+    fees: 0,
     duration: 60,
     operationTimes: [
       { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },
@@ -47,7 +48,7 @@ describe('FacilitiesController', () => {
   const createFacilityDto = {
     buildingId: new ObjectId(),
     name: 'PEWPEWWW',
-    price: 0,
+    fees: 0,
     duration: 60,
     operationTimes: [
       { weekDay: WeekDay.Monday, openingTime: 480, closingTime: 0 },
@@ -59,6 +60,22 @@ describe('FacilitiesController', () => {
       { weekDay: WeekDay.Sunday, openingTime: 480, closingTime: 0 },
     ],
   };
+  const availabilityInfoTestData = [
+    {
+      id: new ObjectId(),
+      facilityId: new ObjectId(),
+      startDate: new Date(),
+      endDate: new Date(),
+      status: 'available',
+    },
+    {
+      id: new ObjectId(),
+      facilityId: new ObjectId(),
+      startDate: new Date(),
+      endDate: new Date(),
+      status: 'available',
+    },
+  ];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -139,6 +156,23 @@ describe('FacilitiesController', () => {
 
       //Assert
       expect(result).toEqual([facilityInfoTestData]);
+    });
+  });
+  describe('viewAvailabilities', () => {
+    it('should return all availabilities for a given facility', async () => {
+      // Arrange
+
+      facilityServiceMock.viewAvailabilities.mockResolvedValue(
+        availabilityInfoTestData,
+      );
+
+      // Act
+      const result = await facilityController.viewAvailabilites(
+        new ObjectId().toString(),
+      );
+
+      // Assert
+      expect(result).toEqual(availabilityInfoTestData);
     });
   });
 });

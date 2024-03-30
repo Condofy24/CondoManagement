@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import { useAssetManagement } from "@/context/asset-management-context";
-import AddPaymentForm from "./forms/add-payment-form";
+import AddPaymentForm from "./forms/payement/add-payment-form";
 import { Unit } from "@/types";
 
 export default function AddPaymentModal() {

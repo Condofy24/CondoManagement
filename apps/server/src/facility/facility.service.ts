@@ -13,6 +13,7 @@ import { BuildingService } from '../building/building.service';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityEntity } from './entities/availability.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { FacilityAvailabilityModel } from './models/availability.model';
 
 /**
  * Service class for managing buildings.
@@ -183,6 +184,25 @@ export class FacilityService {
           operationTimes,
           id,
         );
+      });
+    }
+  }
+
+  async viewAvailabilities(facilityId: String) {
+    try {
+      const availabilities = await this.facilityAvailabilityModel.find({
+        facilityId: facilityId,
+        status: 'available',
+      });
+      return (
+        availabilities?.map(
+          (availability) => new FacilityAvailabilityModel(availability),
+        ) || []
+      );
+    } catch (e) {
+      throw new BadRequestException({
+        message: "Facility's availabilities could not be fetched",
+        error: e?.message,
       });
     }
   }

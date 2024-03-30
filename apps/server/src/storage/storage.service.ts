@@ -39,7 +39,6 @@ export class StorageService {
     createStorageDto: CreateStorageDto,
   ): Promise<StorageEntity> {
     const { storageNumber, fees } = createStorageDto;
-
     const building = await this.buildingService.findBuildingById(buildingId);
 
     if (!building)
