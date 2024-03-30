@@ -13,6 +13,8 @@ import { RequestEntity } from './entities/request.entity';
 import { UnitService } from '../unit/unit.service';
 import { UserService } from '../user/user.service';
 import { UserRoles } from '../user/user.model';
+import { BuildingService } from '../building/building.service';
+import { log } from 'console';
 
 @Injectable()
 export class RequestService {
@@ -21,6 +23,7 @@ export class RequestService {
     @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
     private userService: UserService,
+    private buildingService: BuildingService,
   ) { }
 
   /**
@@ -100,26 +103,38 @@ export class RequestService {
     }
   }
   public async findAllRequestsForUser(userId: string): Promise<RequestEntity[]> {
-    // Use the existing method to retrieve the user and their role
     const user = await this.userService.findUserById(userId);
     if (!user) throw new Error('User not found');
 
     const role = user.role;
+    const userCompanyId = user.companyId;
+    let requests = [];
 
-    // Decision based on the user's role
+    // Initial fetch based on role
     if (role === UserRoles.MANAGER) {
-      // Admins get access to all requests
-      return this.requestModel.find().exec();
+      requests = await this.requestModel.find().exec();
     } else if (role === UserRoles.ACCOUNTANT) {
-      // Managers get requests based on specific criteria (adjust as needed)
-      return this.requestModel.find({ type: RequestType.FINANCIAL }).exec();
+      requests = await this.requestModel.find({ type: RequestType.FINANCIAL }).exec();
     } else if (role === UserRoles.STAFF) {
-      // Managers get requests based on specific criteria (adjust as needed)
-      return this.requestModel.find({ type: RequestType.STAFF }).exec();
+      requests = await this.requestModel.find({ type: RequestType.STAFF }).exec();
+    } else {
+      throw new Error('Unauthorized access or invalid role');
     }
-    else {
-      // Other roles or unauthorized access
-      throw new Error('Role is Owner or Renter');
+    // Filter requests based on companyId
+    const filteredRequests = [];
+    for (const request of requests) {
+      if (!request.unit) continue;
+      const unit = await this.unitService.findUnitById(request.unit.toString());
+      if (!unit) continue;
+
+      const building = await this.buildingService.findBuildingById(unit.buildingId.toString());
+      if (!building) continue;
+
+      if (building.companyId.toString() === userCompanyId) {
+        filteredRequests.push(request);
+      }
     }
+
+    return filteredRequests;
   }
 }
