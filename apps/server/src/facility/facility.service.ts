@@ -91,7 +91,7 @@ export class FacilityService {
         connectedReservations.forEach(async (reservation) => {
           if (reservation.status === ReservationStatus.ACTIVE) {
             await this.updateReservationStatus(reservation.id, {
-              status: ReservationStatus.CanceledByCompany,
+              status: ReservationStatus.CANCELED_BY_COMPANY,
             });
           }
         });
@@ -308,7 +308,7 @@ export class FacilityService {
       throw new NotFoundException({ message: 'Reservation not found' });
     if (
       updatedFields.status === ReservationStatus.CANCELED ||
-      updatedFields.status === ReservationStatus.CanceledByCompany
+      updatedFields.status === ReservationStatus.CANCELED_BY_COMPANY
     ) {
       const availabilityExist = await this.facilityAvailabilityModel.findById(
         updatedReservation.availabilityId,
