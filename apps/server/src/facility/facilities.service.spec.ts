@@ -7,7 +7,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UserService } from '../user/user.service';
 import { BuildingService } from '../building/building.service';
 import { ObjectId } from 'mongodb';
-import { BadRequestException, HttpException } from '@nestjs/common';
+import { BadRequestException, HttpException, NotFoundException } from '@nestjs/common';
 import mongoose from 'mongoose';
 import ReservationModel from './entities/reservation.entity';
 import { ReservationStatus } from './entities/reservation.entity';
@@ -76,7 +76,7 @@ describe('FacilityService', () => {
     },
   ];
   const reservationFindMockResponse = {
-      id: new ObjectId('65ff57c1f2e0bc27cede0b90'),
+      id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
       facilityId: new ObjectId('65ff57c1f2e0bc27cede0b91'),
       availabilityId: new ObjectId('65ff57c1f2e0bc27cede0b92'),
       userId: new ObjectId('65ff57c1f2e0bc27cede0b93'),
@@ -269,7 +269,7 @@ describe('FacilityService', () => {
       )
     });
   })
-  describe('get Reservations', () => {
+  describe('get Reservations by user id', () => {
     it('should return all reservations under a given user id that is appropriate', async () => {
       //Arrange
       const userid = reservationFindMockResponse.id;
@@ -279,6 +279,22 @@ describe('FacilityService', () => {
       //Act
       const result: any = await service.getReservations(
         userid.toString()
+      )
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+  })
+  describe('get Reservations by facility id', () => {
+    it('should return all reservations under a given facility id that is appropriate', async () => {
+      //Arrange
+      const facilityId = reservationFindMockResponse.facilityId;
+
+      mockingoose(ReservationModel).toReturn([reservationFindMockResponse], 'find');
+
+      //Act
+      const result: any = await service.getFacilityReservations(
+        facilityId.toString()
       )
 
       //Assert
