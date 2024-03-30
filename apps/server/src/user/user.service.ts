@@ -29,12 +29,13 @@ import { RequestService } from 'src/requests/request.service';
  * @remarks
  * This service handles user creation, retrieval, update, and deletion.
  */
-export class UserService {
+export class UserService { 
   /**
    * Constructs a new instance of the UserService class.
    * @param userModel The User model.
    * @param cloudinary The Cloudinary service.
    * @param companyService The Company service.
+   * @param requestService The Request service.
    */
   constructor(
     @InjectModel('User') private readonly userModel: Model<UserEntity>,

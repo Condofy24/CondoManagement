@@ -12,5 +12,6 @@ import { UnitModule } from 'src/unit/unit.module';
   ],
   controllers: [RequestController],
   providers: [RequestService],
+  exports: [RequestService, RequestModule],
 })
 export class RequestModule {}
