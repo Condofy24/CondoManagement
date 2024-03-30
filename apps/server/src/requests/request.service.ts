@@ -74,7 +74,7 @@ export class RequestService {
    * @param updateRequestDto - The data transfer object for request updating.
    * @returns A promise resolved with the updated request entity.
    */
-  async update(
+  public async update(
     id: string,
     updateRequestDto: UpdateRequestDto,
   ): Promise<RequestEntity> {
@@ -102,6 +102,7 @@ export class RequestService {
       throw new NotFoundException(`Request with ID "${id}" not found.`);
     }
   }
+
   public async findAllRequestsForUser(userId: string): Promise<RequestEntity[]> {
     const user = await this.userService.findUserById(userId);
     if (!user) throw new Error('User not found');
@@ -137,4 +138,5 @@ export class RequestService {
 
     return filteredRequests;
   }
+
 }
