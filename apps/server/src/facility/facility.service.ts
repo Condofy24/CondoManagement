@@ -84,6 +84,17 @@ export class FacilityService {
   public async deleteFacility(facilityId: string) {
     try {
       await this.facilityModel.findByIdAndDelete(facilityId);
+      const connectedReservations = await this.reservationModel.find({
+        facilityId,
+      });
+      connectedReservations?.length &&
+        connectedReservations.forEach(async (reservation) => {
+          if (reservation.status === ReservationStatus.ACTIVE) {
+            await this.updateReservationStatus(reservation.id, {
+              status: ReservationStatus.CanceledByCompany,
+            });
+          }
+        });
     } catch (e) {
       throw new BadRequestException({
         message: 'Facility could not be deleted',
