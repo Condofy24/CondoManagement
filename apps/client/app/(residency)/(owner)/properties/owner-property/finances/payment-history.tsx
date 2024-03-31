@@ -87,7 +87,7 @@ export default function PaymentHistory({
     }
 
     fetchPayments();
-  }, [property]);
+  }, [property, token]);
 
   useEffect(() => {
     const filteredPayments = payments.filter(
@@ -115,6 +115,7 @@ export default function PaymentHistory({
               <SelectContent className="bg-white dark:bg-white/90">
                 {years.map((year: number) => (
                   <SelectItem
+                    key={year}
                     value={String(year)}
                     className="text-black font-medium"
                   >
