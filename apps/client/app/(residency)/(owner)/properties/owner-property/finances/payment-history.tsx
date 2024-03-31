@@ -16,7 +16,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/app/components/table/data-table";
 import { FinanceReportPDFDocument } from "./finance-report-pdf-generator";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-const { MonthInput, MonthPicker } = require("react-lite-month-picker");
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 
 export const paymentColumns: ColumnDef<Payment>[] = [
   {
@@ -58,32 +65,36 @@ export default function PaymentHistory({
   const { token } = useAppSelector((state) => state.auth.value);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [monthlyPayments, setMonthlyPayments] = useState<Payment[]>([]);
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState({
-    month: 2,
-    year: 2024,
-  });
+  const [selectedYear, setSelectedYear] = useState(2024);
+  const [years, setYears] = useState([]);
 
   useEffect(() => {
     async function fetchPayments() {
       const payments = await fetchUnitPayments(property.id, token as string);
 
-      if (payments) setPayments(payments);
+      if (payments) {
+        setPayments(payments);
+        setYears(
+          payments
+            .map((p: Payment) => new Date(p.date).getFullYear())
+            .filter(
+              (year: number, index: number, array: number[]) =>
+                array.indexOf(year) === index,
+            )
+            .sort(),
+        );
+      }
     }
 
     fetchPayments();
   }, [property]);
 
   useEffect(() => {
-    const filteredPayments = payments.filter((p: Payment) => {
-      const date: Date = new Date(p.date);
-      return (
-        date.getMonth() == selectedMonth.month &&
-        date.getFullYear() == selectedMonth.year
-      );
-    });
+    const filteredPayments = payments.filter(
+      (p: Payment) => new Date(p.date).getFullYear() == selectedYear,
+    );
     setMonthlyPayments(filteredPayments);
-  }, [selectedMonth, payments]);
+  }, [selectedYear, payments]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -94,20 +105,24 @@ export default function PaymentHistory({
         </SheetHeader>
         <div className="flex items-center mt-4 z-10">
           <div>
-            <MonthInput
-              selected={selectedMonth}
-              setShowMonthPicker={setIsPickerOpen}
-              showMonthPicker={isPickerOpen}
-              size="small"
-            />
-            {isPickerOpen ? (
-              <MonthPicker
-                setIsOpen={setIsPickerOpen}
-                selected={selectedMonth}
-                onChange={setSelectedMonth}
-                size="small"
-              />
-            ) : null}
+            <Select
+              onValueChange={(value) => setSelectedYear(Number(value))}
+              defaultValue={String(selectedYear)}
+            >
+              <SelectTrigger className="w-[180px] bg-white dark:bg-white/90 text-black font-semibold">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-white/90">
+                {years.map((year: number) => (
+                  <SelectItem
+                    value={String(year)}
+                    className="text-black font-medium"
+                  >
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div>

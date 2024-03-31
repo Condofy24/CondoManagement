@@ -47,12 +47,19 @@ export default function BalanceReport({ property }: BalanceReportProps) {
         </BalanceProgress>
       </div>
 
-      {property.overdueFees != 0 && (
+      {
         <div className="flex gap-2 justify-between items-center">
-          <span className="w-[10rem]">Overdue</span>
-          <span>{property.overdueFees}</span>
+          <span className="w-[10rem]">Overdue Fees</span>
+          <span>
+            {property.overdueFees?.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
+          </span>
         </div>
-      )}
+      }
 
       <Button variant="outline" onClick={() => setOpenPayments(true)}>
         Payment History
