@@ -41,17 +41,23 @@ export class RequestService {
     ownerId: string,
   ): Promise<RequestEntity> {
     const unit = await this.unitService.findUnitById(unitId);
+    console.log("Here")
     if (!unit)
       throw new NotFoundException({ message: 'Storage does not exist' });
     if (unit.ownerId.toString() !== ownerId)
       throw new BadRequestException({
         message: 'You are not the owner of this unit',
       });
+
+    const building = await this.buildingService.findBuildingById(unit.buildingId.toString());
+    if (!building)
+      throw new NotFoundException({ message: 'Building does not exist' });
     const createdRequest = new this.requestModel({
       ...createRequestDto,
       unit: unitId,
       owner: ownerId,
       status: 'Submitted',
+      companyId: building?.companyId,
     });
     return createdRequest.save();
   }
@@ -113,30 +119,16 @@ export class RequestService {
 
     // Initial fetch based on role
     if (role === UserRoles.MANAGER) {
-      requests = await this.requestModel.find().exec();
+      requests = await this.requestModel.find({ companyId: userCompanyId }).exec();
     } else if (role === UserRoles.ACCOUNTANT) {
-      requests = await this.requestModel.find({ type: RequestType.FINANCIAL }).exec();
+      requests = await this.requestModel.find({ type: RequestType.FINANCIAL, companyId: userCompanyId }).exec();
     } else if (role === UserRoles.STAFF) {
-      requests = await this.requestModel.find({ type: RequestType.STAFF }).exec();
+      requests = await this.requestModel.find({ type: RequestType.STAFF, companyId: userCompanyId }).exec();
     } else {
       throw new Error('Unauthorized access or invalid role');
     }
-    // Filter requests based on companyId
-    const filteredRequests = [];
-    for (const request of requests) {
-      if (!request.unit) continue;
-      const unit = await this.unitService.findUnitById(request.unit.toString());
-      if (!unit) continue;
 
-      const building = await this.buildingService.findBuildingById(unit.buildingId.toString());
-      if (!building) continue;
-
-      if (building.companyId.toString() === userCompanyId) {
-        filteredRequests.push(request);
-      }
-    }
-
-    return filteredRequests;
+    return requests;
   }
 
 }
