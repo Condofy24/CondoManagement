@@ -4,7 +4,7 @@ export enum ReservationStatus {
   CANCELED = 'Canceled',
   ACTIVE = 'Active',
   CANCELED_BY_COMPANY = 'Canceled by company',
-  COMPLETE = 'COMPLETE',
+  COMPLETE = 'Complete',
 }
 export interface ReservationEntity extends Document {
   _id: mongoose.Types.ObjectId;
