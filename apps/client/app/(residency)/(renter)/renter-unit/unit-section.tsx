@@ -17,7 +17,7 @@ const PropertyInfo = ({ title, value }: UnitInfoProps) => (
   </div>
 );
 
-export default function UnitSection({ unit }: UnitSectionProps) {
+export default function RenterUnitSection({ unit }: UnitSectionProps) {
   return (
     <>
       <div className="flex justify-center items-center">
