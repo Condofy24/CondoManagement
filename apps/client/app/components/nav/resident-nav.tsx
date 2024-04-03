@@ -7,35 +7,37 @@ import { UserRoles } from "@/types";
 
 export function ResidentNav() {
   const pathname = usePathname();
-    const { user } = useAppSelector((state) => state.auth.value);
-    const isOwner = user.role == UserRoles.OWNER;
+  const { user } = useAppSelector((state) => state.auth.value);
+  const isOwner = user.role == UserRoles.OWNER;
 
   return (
     <div className="mr-2 md:mr-4 flex justify-between items-center">
       <nav className="flex items-center gap-2 md:gap-6 text-sm">
-        {
-          isOwner ? <Link
-          href="/properties"
-          className={cn(
-            "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
-            pathname.includes("properties")
-              ? "text-foreground"
-              : "text-foreground/60",
-          )}
-        >
-          <span className="hidden md:inline">My</span> Properties
-        </Link> : <Link
-          href="/renter-unit"
-          className={cn(
-            "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
-            pathname.includes("properties")
-              ? "text-foreground"
-              : "text-foreground/60",
-          )}
-        >
-          <span className="hidden md:inline">My</span> Unit
-        </Link>
-        }
+        {isOwner ? (
+          <Link
+            href="/properties"
+            className={cn(
+              "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
+              pathname.includes("properties")
+                ? "text-foreground"
+                : "text-foreground/60",
+            )}
+          >
+            <span className="hidden md:inline">My</span> Properties
+          </Link>
+        ) : (
+          <Link
+            href="/renter-unit"
+            className={cn(
+              "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
+              pathname.includes("properties")
+                ? "text-foreground"
+                : "text-foreground/60",
+            )}
+          >
+            <span className="hidden md:inline">My</span> Unit
+          </Link>
+        )}
         <Link
           href="/"
           className={cn(

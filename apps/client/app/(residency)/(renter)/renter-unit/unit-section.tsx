@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Unit } from "@/types";
 import { SectionHeader } from "../../(owner)/properties/owner-property/section-header";
 
