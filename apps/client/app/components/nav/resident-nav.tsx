@@ -27,15 +27,15 @@ export function ResidentNav() {
           </Link>
         ) : (
           <Link
-            href="/renter-unit"
+            href="/tenant-property"
             className={cn(
               "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
-              pathname.includes("properties")
+              pathname.includes("resident-property")
                 ? "text-foreground"
                 : "text-foreground/60",
             )}
           >
-            <span className="hidden md:inline">My</span> Unit
+            <span className="hidden md:inline">My</span> Property
           </Link>
         )}
         <Link
