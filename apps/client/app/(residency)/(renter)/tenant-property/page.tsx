@@ -66,7 +66,7 @@ export default function RenterUnitPage() {
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Hi {user?.name}</h2>
-          <p className="text-muted-foreground">Here is your rented unit!</p>
+          <p className="text-muted-foreground">Here is your rental property!</p>
         </div>
       </div>
       <div>
