@@ -169,7 +169,7 @@ export class UnitController {
     return paymentsEntity.record.map((payment) => new PaymentModel(payment));
   }
 
-  @Post('/owner/:unitId')
+  @Get('/owner/:unitId')
   /**
    * Gets the owner information of the unit
    * @param unitId - The ID of the unit.

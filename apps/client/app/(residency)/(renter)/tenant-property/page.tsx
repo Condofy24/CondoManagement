@@ -1,9 +1,12 @@
 "use client";
 import { useAppSelector } from "@/redux/store";
 import { useEffect, useState } from "react";
-import { fetchAssociatedProperties } from "@/actions/resident-actions";
+import {
+  fetchAssociatedProperties,
+  fetchOwnerInfo,
+} from "@/actions/resident-actions";
 import toast from "react-hot-toast";
-import { Unit } from "@/types";
+import { OwnerInformation, Unit } from "@/types";
 import LoadingSpinner from "@/app/components/loading-spinner";
 import {
   Card,
@@ -22,6 +25,7 @@ export default function RenterUnitPage() {
   const { user, token } = useAppSelector((state) => state.auth.value);
   const [property, setProperty] = useState<Unit>();
   const [isLoading, setIsLoading] = useState(true);
+  const [owner, setOwner] = useState<OwnerInformation | null>(null);
 
   useEffect(() => {
     async function fetchProperties() {
@@ -42,6 +46,21 @@ export default function RenterUnitPage() {
     fetchProperties();
   }, [token, user?.id]);
 
+  useEffect(() => {
+    async function fetchOwnerInformation() {
+      try {
+        const owner = await fetchOwnerInfo(
+          property?.id as string,
+          token as string,
+        );
+        console.log(owner);
+
+        setOwner(owner);
+      } catch (_) {}
+    }
+    if (property) fetchOwnerInformation();
+  }, [property, token]);
+
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-10">
       <div className="flex items-center justify-between space-y-2">
@@ -56,25 +75,42 @@ export default function RenterUnitPage() {
           <h1>Could not load your property</h1>
         ) : (
           !!property && (
-            <div className="flex items-center gap-8 justify-between">
-              <Card className="min-h-[500px] flex-1 mt-8">
+            <div className="flex items-center flex-col md:flex-row gap-2 md:gap-8 justify-between">
+              <Card className="min-h-[400px] flex-1 mt-8">
                 <CardHeader className="flex flex-col gap-2">
                   <CardTitle>{property.buildingName}</CardTitle>
                   <CardDescription>{property.buildingAddress}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-8">
+                <CardContent className="flex flex-col gap-3">
                   <Separator className="my-1" orientation="horizontal" />
                   <div className="flex justify-center items-center">
                     <SectionHeader title="Unit" />
                   </div>
                   <PropertyInfo
-                    title="property Number"
+                    title="Unit Number"
                     value={property.unitNumber}
                   />
                   <PropertyInfo
                     title="Size"
                     value={property.size + " \u33A1"}
                   />
+
+                  <Separator className="my-1" orientation="horizontal" />
+                  <div className="flex justify-center items-center my-3">
+                    <SectionHeader title="Owner Information" />
+                  </div>
+                  {!owner ? (
+                    <h1 className="flex justify-center">Not Available</h1>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <PropertyInfo title="Name" value={owner.name} />
+                      <PropertyInfo title="Email" value={owner.email} />
+                      <PropertyInfo
+                        title="Phone Number"
+                        value={owner.phoneNumber}
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
