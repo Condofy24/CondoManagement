@@ -63,3 +63,22 @@ export async function fetchUnitPayments(unitId: string, token: string) {
     throw new Error(message);
   }
 }
+
+export async function fetchOwnerInfo(unitId: string, token: string) {
+  try {
+    const result = await axios.get(`${API_URL}/unit/owner/${unitId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while fetching owner information";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}

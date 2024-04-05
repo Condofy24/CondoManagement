@@ -465,6 +465,28 @@ export class UnitService {
     return this.paymentsModel.findOne({ unitId });
   }
 
+  /**
+   * Retrieves the owner information associated to the unit
+   * @param unitId - ID of the unit
+   * @returns A promise that resovles to the user entity corresponding to unit owner
+   */
+  public async getOwnerInformation(unitId: string): Promise<UserEntity> {
+    const unit = await this.unitModel.findOne({ _id: unitId });
+    if (!unit?.ownerId)
+      throw new NotFoundException({
+        message: 'Unit has not owner associated to it.',
+      });
+
+    const owner = await this.userService.findUserById(unit?.ownerId.toString());
+
+    if (!owner)
+      throw new NotFoundException({
+        message: 'Owner information could not be retrieved',
+      });
+
+    return owner;
+  }
+
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**
    * Handles the cron job for processing monthly fees for units.

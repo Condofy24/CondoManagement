@@ -27,6 +27,7 @@ const unitServiceMock = {
   getUnitPayments: jest.fn(),
   claimOwnerUnit: jest.fn().mockResolvedValue(null),
   processMonthlyUnitFees: jest.fn(),
+  getOwnerInformation: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -232,6 +233,19 @@ describe('UnitController', () => {
 
       //Assert
       expect(unitServiceMock.processMonthlyUnitFees).toHaveBeenCalled();
+    });
+  });
+
+  describe('retrieveOwnerInformation', () => {
+    it('should forward call to unit service', async () => {
+      // Arrange
+      unitServiceMock.getOwnerInformation.mockResolvedValue(userInfoTestData);
+
+      // Act
+      await controller.retrieveOwnerInformation('test');
+
+      // Assert
+      expect(unitServiceMock.getOwnerInformation).toHaveBeenCalled();
     });
   });
 });

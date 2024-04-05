@@ -64,6 +64,7 @@ const unitInfoTestData: Partial<UnitEntity> = {
   size: 4,
   isOccupiedByRenter: false,
   fees: 4,
+  ownerId: new ObjectId(),
 };
 
 const unitInfoTestData2 = {
@@ -480,6 +481,44 @@ describe('UnitService', () => {
       expect(result?.record?.[0]?.amount).toBe(100);
     });
   });
+
+  describe('getOwnerInformation', () => {
+    it('should return owner information', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn(unitInfoTestData, 'findOne');
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
+
+      //Act
+      const result = await service.getOwnerInformation(
+        new ObjectId().toString(),
+      );
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+
+    it('should throw an exception if owner not found', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn(unitInfoTestData, 'findOne');
+      userServiceMock.findUserById.mockResolvedValue(null);
+
+      //Act
+      expect(
+        service.getOwnerInformation(new ObjectId().toString()),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw an exception if unit not found', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn(null, 'findOne');
+
+      //Act
+      expect(
+        service.getOwnerInformation(new ObjectId().toString()),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
   describe('scheduled task', () => {
     it('scheduled fees adjustment should run', async () => {
       mockingoose(UnitModel).toReturn([inDebtedUnitInfoTestData], 'find');
