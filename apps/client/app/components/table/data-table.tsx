@@ -33,6 +33,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   redirectPath?: string;
   filter?: { title: string; key: string };
+
+  showRowsPerPage?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -40,6 +42,7 @@ export function DataTable<TData, TValue>({
   data,
   redirectPath,
   filter,
+  showRowsPerPage = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -149,7 +152,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} showRowsPerPage={showRowsPerPage} />
     </div>
   );
 }

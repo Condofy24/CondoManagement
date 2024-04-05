@@ -57,20 +57,10 @@ const getTable = (
 ) => {
   switch (assetPage) {
     case BuildingAsset.unit: {
-      const mappedAssets = (assets as Unit[]).map((asset: Unit) => ({
-        ...asset,
-        availability: asset.ownerKey?.isClaimed || asset.renterKey?.isClaimed,
-        financialStatus: (asset.overdueFees && asset.overdueFees > 0
-          ? `Overdue Fees: ${asset.overdueFees}`
-          : asset.remainingMonthlyBalance && asset.remainingMonthlyBalance > 0
-            ? `Monthly Fees Due: ${asset.remainingMonthlyBalance}`
-            : `Paid: $ ${asset.remainingMonthlyBalance} balance`) as IFinancialStatus,
-      }));
-
       return (
         <DataTable
           columns={unitColumns}
-          data={mappedAssets}
+          data={assets as Unit[]}
           filter={{
             title: "unit number",
             key: "unitNumber",

@@ -61,6 +61,9 @@ importers:
       "@radix-ui/react-toast":
         specifier: ^1.1.5
         version: 1.1.5(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      "@react-pdf/renderer":
+        specifier: ^3.4.2
+        version: 3.4.2(react@18.2.0)
       "@reduxjs/toolkit":
         specifier: ^2.1.0
         version: 2.1.0(react-redux@9.1.0)(react@18.2.0)
@@ -79,12 +82,12 @@ importers:
       cmdk:
         specifier: ^0.2.1
         version: 0.2.1(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      date-fns:
+        specifier: ^3.6.0
+        version: 3.6.0
       embla-carousel-react:
         specifier: ^8.0.0-rc22
         version: 8.0.0-rc22(react@18.2.0)
-      framer-motion:
-        specifier: ^11.0.3
-        version: 11.0.3(react-dom@18.2.0)(react@18.2.0)
       jsondiffpatch:
         specifier: ^0.6.0
         version: 0.6.0
@@ -103,6 +106,9 @@ importers:
       react:
         specifier: ^18
         version: 18.2.0
+      react-day-picker:
+        specifier: ^8.10.0
+        version: 8.10.0(date-fns@3.6.0)(react@18.2.0)
       react-dom:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
@@ -3084,26 +3090,6 @@ packages:
     requiresBuild: true
     dependencies:
       tslib: 2.6.2
-    dev: false
-    optional: true
-
-  /@emotion/is-prop-valid@0.8.8:
-    resolution:
-      {
-        integrity: sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==,
-      }
-    requiresBuild: true
-    dependencies:
-      "@emotion/memoize": 0.7.4
-    dev: false
-    optional: true
-
-  /@emotion/memoize@0.7.4:
-    resolution:
-      {
-        integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==,
-      }
-    requiresBuild: true
     dev: false
     optional: true
 
@@ -6606,6 +6592,175 @@ packages:
       react: 18.2.0
     dev: false
 
+  /@react-pdf/fns@2.2.1:
+    resolution:
+      {
+        integrity: sha512-s78aDg0vDYaijU5lLOCsUD+qinQbfOvcNeaoX9AiE7+kZzzCo6B/nX+l48cmt9OosJmvZvE9DWR9cLhrhOi2pA==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+    dev: false
+
+  /@react-pdf/font@2.4.4:
+    resolution:
+      {
+        integrity: sha512-yjK5eSY+LcbxS0m+sOYln8GdgIbUgti4xjwf14kx8OSsOMJQJyHFALHMh2cLcKJR9yZeqVDo1FwCsY6gw1yCkg==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/types": 2.4.1
+      cross-fetch: 3.1.8
+      fontkit: 2.0.2
+      is-url: 1.2.4
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@react-pdf/image@2.3.6:
+    resolution:
+      {
+        integrity: sha512-7iZDYZrZlJqNzS6huNl2XdMcLFUo68e6mOdzQeJ63d5eApdthhSHBnkGzHfLhH5t8DCpZNtClmklzuLL63ADfw==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/png-js": 2.3.1
+      cross-fetch: 3.1.8
+      jay-peg: 1.0.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@react-pdf/layout@3.11.5:
+    resolution:
+      {
+        integrity: sha512-VLOzWIODUKw0ZTrS9XDkwl3q1OHKG8qd6OyCZZ7Q8/SijAh9ho70HEc/f1ffBFmM0nGrKMG0M3L0/7z1XKmOGw==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/fns": 2.2.1
+      "@react-pdf/image": 2.3.6
+      "@react-pdf/pdfkit": 3.1.9
+      "@react-pdf/primitives": 3.1.1
+      "@react-pdf/stylesheet": 4.2.4
+      "@react-pdf/textkit": 4.4.1
+      "@react-pdf/types": 2.4.1
+      cross-fetch: 3.1.8
+      emoji-regex: 10.3.0
+      queue: 6.0.2
+      yoga-layout: 2.0.1
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@react-pdf/pdfkit@3.1.9:
+    resolution:
+      {
+        integrity: sha512-9ZPF9gGkBWLcEc+HMkbJ5bHsxenej5Kz9YWWs10EeS8d5v6UF027Ffl+75HXZmgiO5iLVONTYj06LnyYZ95XMQ==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/png-js": 2.3.1
+      browserify-zlib: 0.2.0
+      crypto-js: 4.2.0
+      fontkit: 2.0.2
+      jay-peg: 1.0.2
+      vite-compatible-readable-stream: 3.6.1
+    dev: false
+
+  /@react-pdf/png-js@2.3.1:
+    resolution:
+      {
+        integrity: sha512-pEZ18I4t1vAUS4lmhvXPmXYP4PHeblpWP/pAlMMRkEyP7tdAeHUN7taQl9sf9OPq7YITMY3lWpYpJU6t4CZgZg==,
+      }
+    dependencies:
+      browserify-zlib: 0.2.0
+    dev: false
+
+  /@react-pdf/primitives@3.1.1:
+    resolution:
+      {
+        integrity: sha512-miwjxLwTnO3IjoqkTVeTI+9CdyDggwekmSLhVCw+a/7FoQc+gF3J2dSKwsHvAcVFM0gvU8mzCeTofgw0zPDq0w==,
+      }
+    dev: false
+
+  /@react-pdf/render@3.4.3:
+    resolution:
+      {
+        integrity: sha512-9LL059vfwrK1gA0uIA4utpQ/pUH9EW/yia4bb7pCoARs8IlupY5UP265jgax15ua0p+MdUwShZzQ9rilu7kGsw==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/fns": 2.2.1
+      "@react-pdf/primitives": 3.1.1
+      "@react-pdf/textkit": 4.4.1
+      "@react-pdf/types": 2.4.1
+      abs-svg-path: 0.1.1
+      color-string: 1.9.1
+      normalize-svg-path: 1.1.0
+      parse-svg-path: 0.1.2
+      svg-arc-to-cubic-bezier: 3.2.0
+    dev: false
+
+  /@react-pdf/renderer@3.4.2(react@18.2.0):
+    resolution:
+      {
+        integrity: sha512-YNwioiN97SOqEdCskfixsru+Y7hHbUjyayYFALKwWiAnoTOckfpacfGyIgXZXtZiwPYwnSGYTaJRxpjC7seCkA==,
+      }
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/font": 2.4.4
+      "@react-pdf/layout": 3.11.5
+      "@react-pdf/pdfkit": 3.1.9
+      "@react-pdf/primitives": 3.1.1
+      "@react-pdf/render": 3.4.3
+      "@react-pdf/types": 2.4.1
+      events: 3.3.0
+      object-assign: 4.1.1
+      prop-types: 15.8.1
+      queue: 6.0.2
+      react: 18.2.0
+      scheduler: 0.17.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /@react-pdf/stylesheet@4.2.4:
+    resolution:
+      {
+        integrity: sha512-CgRfDzeMtnV0GL7zSn381NubmgwqKhFKcK1YrWX3azl/KWVh52jjFd3HWi6dvcETNT862mjWz5MnExe4WOBJXA==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/fns": 2.2.1
+      "@react-pdf/types": 2.4.1
+      color-string: 1.9.1
+      hsl-to-hex: 1.0.0
+      media-engine: 1.0.3
+      postcss-value-parser: 4.2.0
+    dev: false
+
+  /@react-pdf/textkit@4.4.1:
+    resolution:
+      {
+        integrity: sha512-Jl9wdTqIvJ5pX+vAGz0EOhP7ut5Two9H6CzTKo/YYPeD79cM2yTXF3JzTERBC28y7LR0Waq9D2LHQjI+b/EYUQ==,
+      }
+    dependencies:
+      "@babel/runtime": 7.24.1
+      "@react-pdf/fns": 2.2.1
+      bidi-js: 1.0.3
+      hyphen: 1.10.4
+      unicode-properties: 1.4.1
+    dev: false
+
+  /@react-pdf/types@2.4.1:
+    resolution:
+      {
+        integrity: sha512-w8pk7svhjVj5f7d7kjEGXSk26ffCqRSQcgWR4DwcFltNpSM18ZJmzmM6WrNeeP437y48LlykLnmGDA3oATakgw==,
+      }
+    dev: false
+
   /@react-stately/calendar@3.4.4(react@18.2.0):
     resolution:
       {
@@ -8892,6 +9047,13 @@ packages:
       }
     dev: false
 
+  /abs-svg-path@0.1.1:
+    resolution:
+      {
+        integrity: sha512-d8XPSGjfyzlXC3Xx891DJRyZfqk5JU0BJrDQcsWomFIV1/BIzPW5HDH5iDdWpqWaav0YVIEzT1RHTwWr0FFshA==,
+      }
+    dev: false
+
   /accepts@1.3.8:
     resolution:
       {
@@ -9679,6 +9841,15 @@ packages:
         integrity: sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==,
       }
 
+  /bidi-js@1.0.3:
+    resolution:
+      {
+        integrity: sha512-RKshQI1R3YQ+n9YJz2QQ147P66ELpa1FQEg20Dk8oW9t2KgLbpDLLp9aGZ7y8WHSshDknG0bknqGw5/tyCs5tw==,
+      }
+    dependencies:
+      require-from-string: 2.0.2
+    dev: false
+
   /binary-extensions@2.2.0:
     resolution:
       {
@@ -9813,7 +9984,6 @@ packages:
       }
     dependencies:
       base64-js: 1.5.1
-    dev: true
 
   /browser-resolve@1.11.3:
     resolution:
@@ -9834,6 +10004,15 @@ packages:
       ast-types: 0.7.8
       browser-resolve: 1.11.3
     dev: true
+
+  /browserify-zlib@0.2.0:
+    resolution:
+      {
+        integrity: sha512-Z942RysHXmJrhqk88FmKBVq/v5tqmSkDz7p54G/MGyjMnCFFnC79XWNbg+Vta8W6Wb2qtSZTSxIGkJrRpCFEiA==,
+      }
+    dependencies:
+      pako: 1.0.11
+    dev: false
 
   /browserslist@4.22.2:
     resolution:
@@ -10234,6 +10413,14 @@ packages:
     engines: { node: ">=0.8" }
     dev: true
 
+  /clone@2.1.2:
+    resolution:
+      {
+        integrity: sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==,
+      }
+    engines: { node: ">=0.8" }
+    dev: false
+
   /cloudinary-core@2.13.0(lodash@4.17.21):
     resolution:
       {
@@ -10606,6 +10793,17 @@ packages:
       luxon: 3.4.4
     dev: false
 
+  /cross-fetch@3.1.8:
+    resolution:
+      {
+        integrity: sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==,
+      }
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /cross-spawn@7.0.3:
     resolution:
       {
@@ -10622,7 +10820,6 @@ packages:
       {
         integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==,
       }
-    dev: true
 
   /css-select@5.1.0:
     resolution:
@@ -10981,7 +11178,6 @@ packages:
       {
         integrity: sha512-ED3jP8saaweFTjeGX8HQPjeC1YYyZs98jGNZx6IiBvxW7JG5v492kamAQB3m2wop07CvU/RQmzcKr6bgcC5D/Q==,
       }
-    dev: true
 
   /didyoumean@1.2.2:
     resolution:
@@ -11230,6 +11426,13 @@ packages:
       }
     engines: { node: ">=12" }
     dev: true
+
+  /emoji-regex@10.3.0:
+    resolution:
+      {
+        integrity: sha512-QpLs9D9v9kArv4lfDEgg1X/gN5XLnf/A6l9cs8SPZLRZR3ZkY9+kwIQTxm+fsSej5UMYGE8fdoaZVIBlqG0XTw==,
+      }
+    dev: false
 
   /emoji-regex@8.0.0:
     resolution:
@@ -12062,7 +12265,6 @@ packages:
         integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==,
       }
     engines: { node: ">=0.8.x" }
-    dev: true
 
   /execa@4.1.0:
     resolution:
@@ -12199,7 +12401,6 @@ packages:
       {
         integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==,
       }
-    dev: true
 
   /fast-diff@1.3.0:
     resolution:
@@ -12408,6 +12609,23 @@ packages:
         optional: true
     dev: false
 
+  /fontkit@2.0.2:
+    resolution:
+      {
+        integrity: sha512-jc4k5Yr8iov8QfS6u8w2CnHWVmbOGtdBtOXMze5Y+QD966Rx6PEVWXSEGwXlsDlKtu1G12cJjcsybnqhSk/+LA==,
+      }
+    dependencies:
+      "@swc/helpers": 0.4.36
+      brotli: 1.3.3
+      clone: 2.1.2
+      dfa: 1.2.0
+      fast-deep-equal: 3.1.3
+      restructure: 3.0.1
+      tiny-inflate: 1.0.3
+      unicode-properties: 1.4.1
+      unicode-trie: 2.0.0
+    dev: false
+
   /for-each@0.3.3:
     resolution:
       {
@@ -12489,27 +12707,6 @@ packages:
         integrity: sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==,
       }
     dev: true
-
-  /framer-motion@11.0.3(react-dom@18.2.0)(react@18.2.0):
-    resolution:
-      {
-        integrity: sha512-6x2poQpIWBdbZwLd73w6cKZ1I9IEPIU94C6/Swp1Zt3LJ+sB5bPe1E2wC6EH5hSISXNkMJ4afH7AdwS7MrtkWw==,
-      }
-    peerDependencies:
-      react: ^18.0.0
-      react-dom: ^18.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      tslib: 2.6.2
-    optionalDependencies:
-      "@emotion/is-prop-valid": 0.8.8
-    dev: false
 
   /fresh@0.5.2:
     resolution:
@@ -12969,6 +13166,22 @@ packages:
     engines: { node: ">=8" }
     dev: true
 
+  /hsl-to-hex@1.0.0:
+    resolution:
+      {
+        integrity: sha512-K6GVpucS5wFf44X0h2bLVRDsycgJmf9FF2elg+CrqD8GcFU8c6vYhgXn8NjUkFCwj+xDFb70qgLbTUm6sxwPmA==,
+      }
+    dependencies:
+      hsl-to-rgb-for-reals: 1.1.1
+    dev: false
+
+  /hsl-to-rgb-for-reals@1.1.1:
+    resolution:
+      {
+        integrity: sha512-LgOWAkrN0rFaQpfdWBQlv/VhkOxb5AsBjk6NQVx4yEzWS923T07X0M1Y0VNko2H52HeSpZrZNNMJ0aFqsdVzQg==,
+      }
+    dev: false
+
   /html-encoding-sniffer@3.0.0:
     resolution:
       {
@@ -13100,6 +13313,13 @@ packages:
       }
     engines: { node: ">=10.17.0" }
     dev: true
+
+  /hyphen@1.10.4:
+    resolution:
+      {
+        integrity: sha512-SejXzIpv9gOVdDWXd4suM1fdF1k2dxZGvuTdkOVLoazYfK7O4DykIQbdrvuyG+EaTNlXAGhMndtKrhykgbt0gg==,
+      }
+    dev: false
 
   /i18next@23.10.0:
     resolution:
@@ -13617,6 +13837,13 @@ packages:
     engines: { node: ">=12" }
     dev: true
 
+  /is-url@1.2.4:
+    resolution:
+      {
+        integrity: sha512-ITvGim8FhRiYe4IQ5uHSkj7pVaPDrCTkNd3yq3cV7iZAcJdHTUMPMEHcqSOy9xZ9qFenQCvi+2wjH9a1nXqHww==,
+      }
+    dev: false
+
   /is-weakmap@2.0.1:
     resolution:
       {
@@ -13779,6 +14006,15 @@ packages:
       "@isaacs/cliui": 8.0.2
     optionalDependencies:
       "@pkgjs/parseargs": 0.11.0
+
+  /jay-peg@1.0.2:
+    resolution:
+      {
+        integrity: sha512-fyV3NVvv6pTys/3BTapBUGAWAuU9rM2gRcgijZHzptd5KKL+s+S7hESFN+wOsbDH1MzFwdlRAXi0aGxS6uiMKg==,
+      }
+    dependencies:
+      restructure: 3.0.1
+    dev: false
 
   /jest-changed-files@29.7.0:
     resolution:
@@ -14955,6 +15191,13 @@ packages:
     hasBin: true
     dev: true
 
+  /media-engine@1.0.3:
+    resolution:
+      {
+        integrity: sha512-aa5tG6sDoK+k70B9iEX1NeyfT8ObCKhNDs6lJVpwF6r8vhUfuKMslIcirq6HIUYuuUYLefcEQOn9bSBOvawtwg==,
+      }
+    dev: false
+
   /media-typer@0.3.0:
     resolution:
       {
@@ -15538,6 +15781,15 @@ packages:
     engines: { node: ">=0.10.0" }
     dev: true
 
+  /normalize-svg-path@1.1.0:
+    resolution:
+      {
+        integrity: sha512-r9KHKG2UUeB5LoTouwDzBy2VxXlHsiM6fyLQvnJa0S5hrhzqElH/CH7TUGhT1fVvIYBIKf3OpY4YJ4CK+iaqHg==,
+      }
+    dependencies:
+      svg-arc-to-cubic-bezier: 3.2.0
+    dev: false
+
   /npm-run-path@4.0.1:
     resolution:
       {
@@ -15871,7 +16123,13 @@ packages:
       {
         integrity: sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==,
       }
-    dev: true
+
+  /pako@1.0.11:
+    resolution:
+      {
+        integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==,
+      }
+    dev: false
 
   /parent-module@1.0.1:
     resolution:
@@ -15895,6 +16153,13 @@ packages:
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4
     dev: true
+
+  /parse-svg-path@0.1.2:
+    resolution:
+      {
+        integrity: sha512-JyPSBnkTJ0AI8GGJLfMXvKq42cj5c006fnLz6fXy6zfoVjJizi8BNTpu8on8ziI1cKy9d9DGNuY17Ce7wuejpQ==,
+      }
+    dev: false
 
   /parse5-htmlparser2-tree-adapter@7.0.0:
     resolution:
@@ -16277,7 +16542,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: true
 
   /propagating-hammerjs@1.5.0:
     resolution:
@@ -16384,6 +16648,15 @@ packages:
         integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==,
       }
 
+  /queue@6.0.2:
+    resolution:
+      {
+        integrity: sha512-iHZWu+q3IdFZFX36ro/lKBkSvfkztY5Y7HMiPlOUjhupPcG2JMfst2KKEpu5XndviX/3UhFbRngUPNKtgvtZiA==,
+      }
+    dependencies:
+      inherits: 2.0.4
+    dev: false
+
   /quote-stream@1.0.2:
     resolution:
       {
@@ -16486,6 +16759,19 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /react-day-picker@8.10.0(date-fns@3.6.0)(react@18.2.0):
+    resolution:
+      {
+        integrity: sha512-mz+qeyrOM7++1NCb1ARXmkjMkzWVh2GL9YiPbRjKe0zHccvekk4HE+0MPOZOrosn8r8zTHIIeOUXTmXRqmkRmg==,
+      }
+    peerDependencies:
+      date-fns: ^2.28.0 || ^3.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      date-fns: 3.6.0
+      react: 18.2.0
+    dev: false
+
   /react-dom@18.2.0(react@18.2.0):
     resolution:
       {
@@ -16550,7 +16836,6 @@ packages:
       {
         integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==,
       }
-    dev: true
 
   /react-is@17.0.2:
     resolution:
@@ -16970,7 +17255,6 @@ packages:
         integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==,
       }
     engines: { node: ">=0.10.0" }
-    dev: true
 
   /requires-port@1.0.0:
     resolution:
@@ -17077,6 +17361,13 @@ packages:
       onetime: 5.1.2
       signal-exit: 3.0.7
     dev: true
+
+  /restructure@3.0.1:
+    resolution:
+      {
+        integrity: sha512-6neDpI/yE9eogQo22qmWwKIA9wFPRyYjQleDEh6zaNAf2ZPqLJYUvNBJBWEWNoBlCeQMQkvIOe2YI/K2GOag+g==,
+      }
+    dev: false
 
   /reusify@1.0.4:
     resolution:
@@ -17206,6 +17497,16 @@ packages:
     dependencies:
       xmlchars: 2.2.0
     dev: true
+
+  /scheduler@0.17.0:
+    resolution:
+      {
+        integrity: sha512-7rro8Io3tnCPuY4la/NuI5F2yfESpnfZyT6TtkXnSWVkcu0BCDJ+8gk5ozUaFaxpIyNuWAPXrH0yFcSi28fnDA==,
+      }
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+    dev: false
 
   /scheduler@0.23.0:
     resolution:
@@ -17969,6 +18270,13 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
+  /svg-arc-to-cubic-bezier@3.2.0:
+    resolution:
+      {
+        integrity: sha512-djbJ/vZKZO+gPoSDThGNpKDO+o+bAeA4XQKovvkNCqnIS2t+S4qnLAGQhyyrulhCFRl1WWzAp0wUDV8PpTVU3g==,
+      }
+    dev: false
+
   /svg-pan-zoom@3.6.1:
     resolution:
       {
@@ -18218,7 +18526,6 @@ packages:
       {
         integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==,
       }
-    dev: true
 
   /tmp@0.0.33:
     resolution:
@@ -18758,7 +19065,6 @@ packages:
     dependencies:
       base64-js: 1.5.1
       unicode-trie: 2.0.0
-    dev: true
 
   /unicode-property-aliases-ecmascript@2.1.0:
     resolution:
@@ -18776,7 +19082,6 @@ packages:
     dependencies:
       pako: 0.2.9
       tiny-inflate: 1.0.3
-    dev: true
 
   /universalify@0.2.0:
     resolution:
@@ -18984,6 +19289,18 @@ packages:
       moment: 2.30.1
       propagating-hammerjs: 1.5.0
     dev: true
+
+  /vite-compatible-readable-stream@3.6.1:
+    resolution:
+      {
+        integrity: sha512-t20zYkrSf868+j/p31cRIGN28Phrjm3nRSLR2fyc2tiWi4cZGVdv68yNlwnIINTkMTmPoMiSlc0OadaO7DXZaQ==,
+      }
+    engines: { node: ">= 6" }
+    dependencies:
+      inherits: 2.0.4
+      string_decoder: 1.3.0
+      util-deprecate: 1.0.2
+    dev: false
 
   /w3c-xmlserializer@4.0.0:
     resolution:
@@ -19473,6 +19790,13 @@ packages:
       }
     engines: { node: ">=10" }
     dev: true
+
+  /yoga-layout@2.0.1:
+    resolution:
+      {
+        integrity: sha512-tT/oChyDXelLo2A+UVnlW9GU7CsvFMaEnd9kVFsaiCQonFAXd3xrHhkLYu+suwwosrAEQ746xBU+HvYtm1Zs2Q==,
+      }
+    dev: false
 
   /zepto@1.2.0:
     resolution:

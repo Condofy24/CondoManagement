@@ -37,8 +37,10 @@ export default function UnitSection({ unit }: UnitSectionProps) {
       />
       <div
         className={cn(
-          "rounded-lg p-1 font-semibold text-center mt-4",
-          unit.isOccupiedByRenter ? "bg-red-400" : "bg-green-400",
+          "rounded-lg p-1 font-semibold text-center text-black/80 dark:text-black/90 mt-4",
+          unit.isOccupiedByRenter
+            ? "bg-red-300 dark:bg-red-500"
+            : "bg-green-300 dark:bg-green-500",
         )}
       >
         {unit.isOccupiedByRenter ? "Occupied By Renter" : "Available To Rent"}

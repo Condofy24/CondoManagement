@@ -84,6 +84,17 @@ export class FacilityService {
   public async deleteFacility(facilityId: string) {
     try {
       await this.facilityModel.findByIdAndDelete(facilityId);
+      const connectedReservations = await this.reservationModel.find({
+        facilityId,
+      });
+      connectedReservations?.length &&
+        connectedReservations.forEach(async (reservation) => {
+          if (reservation.status === ReservationStatus.ACTIVE) {
+            await this.updateReservationStatus(reservation.id, {
+              status: ReservationStatus.CANCELED_BY_COMPANY,
+            });
+          }
+        });
     } catch (e) {
       throw new BadRequestException({
         message: 'Facility could not be deleted',
@@ -297,7 +308,7 @@ export class FacilityService {
       throw new NotFoundException({ message: 'Reservation not found' });
     if (
       updatedFields.status === ReservationStatus.CANCELED ||
-      updatedFields.status === ReservationStatus.CanceledByCompany
+      updatedFields.status === ReservationStatus.CANCELED_BY_COMPANY
     ) {
       const availabilityExist = await this.facilityAvailabilityModel.findById(
         updatedReservation.availabilityId,

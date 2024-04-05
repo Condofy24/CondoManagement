@@ -44,3 +44,22 @@ export async function fetchAssociatedProperties(userId: string, token: string) {
     throw new Error(message);
   }
 }
+
+export async function fetchUnitPayments(unitId: string, token: string) {
+  try {
+    const result = await axios.get(`${API_URL}/unit/payments/${unitId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while fetching property payments.";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}

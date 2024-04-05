@@ -79,6 +79,7 @@ describe('FacilityService', () => {
       status: 'available',
     },
   ];
+
   const reservationFindMockResponse = {
     id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
     facilityId: new ObjectId('65ff57c1f2e0bc27cede0b91'),
@@ -159,11 +160,27 @@ describe('FacilityService', () => {
     it('delete facility successfully', async () => {
       //Arrange
       const id = new ObjectId();
+      mockingoose(ReservationModel).toReturn(
+        [reservationFindMockResponse],
+        'find',
+      );
+      mockingoose(ReservationModel).toReturn(
+        reservationFindMockResponse,
+        'findOneAndUpdate',
+      );
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        availabilityFindMockResponse[0],
+        'findOne',
+      );
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        availabilityFindMockResponse[0],
+        'findOneAndUpdate',
+      );
 
       //Assert
       await expect(
         service.deleteFacility(id.toString()),
-      ).resolves.toBeUndefined(); // possible update needed
+      ).resolves.toBeUndefined();
     });
   });
 

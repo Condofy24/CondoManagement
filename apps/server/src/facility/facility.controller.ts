@@ -22,10 +22,6 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityModel } from './models/availability.model';
 import { ReservationModel } from './models/reservation.model';
-import {
-  ReservationEntity,
-  ReservationStatus,
-} from './entities/reservation.entity';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 
 /**
