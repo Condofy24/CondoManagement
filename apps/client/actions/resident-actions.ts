@@ -105,3 +105,28 @@ export async function fetchBuildingFacilities(
     throw new Error(message);
   }
 }
+
+export async function fetchFacilityAvailabilities(
+  facilityId: string,
+  token: string,
+) {
+  try {
+    const result = await axios.get(
+      `${API_URL}/facility/availability/${facilityId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured when fetching facility availabilities";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}

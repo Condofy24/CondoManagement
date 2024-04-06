@@ -8,21 +8,21 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { useAppSelector } from "@/redux/store";
-import { Facility, Unit } from "@/types";
+import { Facility } from "@/types";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import AvailabilityViewer from "./availability-viewer";
 
 type FacilityAvailabilitiesProps = {
   buildingId: string;
 };
 
-export default function FacilityAvailabilities({
+export default function FacilitySelector({
   buildingId,
 }: FacilityAvailabilitiesProps) {
-  const { user, token } = useAppSelector((state) => state.auth.value);
+  const { token } = useAppSelector((state) => state.auth.value);
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -42,7 +42,8 @@ export default function FacilityAvailabilities({
       }
     }
     fetchFacilities();
-  }, [token, user?.id]);
+  }, [token, buildingId]);
+
   return (
     <div className="grow">
       {isLoading ? (
@@ -50,22 +51,27 @@ export default function FacilityAvailabilities({
       ) : facilities.length == 0 ? (
         <h1 className="text-xl font-semibold">Building has no facility</h1>
       ) : (
-        <Select onValueChange={(value) => setSelectedFacility(value)}>
-          <SelectTrigger className="mx-8 grow w-[180px] bg-white dark:bg-white/80 text-black font-semibold mb-8">
-            <SelectValue placeholder="Select a facility" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-white/90">
-            {facilities.map((facility: Facility) => (
-              <SelectItem
-                key={facility.id}
-                value={facility.id}
-                className="text-black font-medium"
-              >
-                {facility.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div>
+          <Select onValueChange={(value) => setSelectedFacility(value)}>
+            <SelectTrigger className="mx-4 grow w-[300px] bg-white dark:bg-white/80 text-black font-semibold mb-8">
+              <SelectValue placeholder="Select a facility" />
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-white/90">
+              {facilities.map((facility: Facility) => (
+                <SelectItem
+                  key={facility.id}
+                  value={facility.id}
+                  className="text-black font-medium"
+                >
+                  {facility.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {selectedFacility && (
+            <AvailabilityViewer facilityId={selectedFacility} />
+          )}
+        </div>
       )}
     </div>
   );

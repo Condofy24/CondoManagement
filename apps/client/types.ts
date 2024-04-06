@@ -109,6 +109,16 @@ export type Facility = {
   }>;
 };
 
+export type FacilityAvailabilityStatus = "available" | "reserved";
+
+export type FacilityAvailability = {
+  id: string;
+  facilityId: string;
+  startDate: Date;
+  endDate: Date;
+  status: FacilityAvailabilityStatus;
+};
+
 export type Asset = Unit | BuildingResource;
 
 export type BuildingResource = Parking | Storage | Facility;

@@ -19,25 +19,27 @@ import { Unit } from "@/types";
 import toast from "react-hot-toast";
 import { useAppSelector } from "@/redux/store";
 import LoadingSpinner from "@/app/components/loading-spinner";
-import FacilityAvailabilities from "./facility-availabilities";
+import FacilitySelector from "./facility-selector";
+import {
+  PageHeader,
+  PageHeaderHeading,
+  PageHeaderDescription,
+} from "@/app/components/page-header";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/app/components/ui/carousel";
 
-type CreateReservationModalProps = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-};
-
-export default function CreateReservationModal({
-  open,
-  setOpen,
-}: CreateReservationModalProps) {
+export default function CreateReservationPage() {
   const { user, token } = useAppSelector((state) => state.auth.value);
 
   const [properties, setProperties] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [selectedBuilding, setSelectedBuilding] = useState<
-    string | undefined
-  >();
+  const [selectedBuilding, setSelectedBuilding] = useState<string | null>();
 
   useEffect(() => {
     async function fetchProperties() {
@@ -69,18 +71,28 @@ export default function CreateReservationModal({
   }, [token, user?.id]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent className="w-[350px] md:w-[700px] flex flex-col">
-        <SheetHeader>
-          <SheetTitle>Facility Reservation</SheetTitle>
-          <SheetDescription></SheetDescription>
-        </SheetHeader>
+    <>
+      <PageHeader className="mx-8 items-start max-w-[initial]">
+        <PageHeaderHeading className="grow text-left text-2xl">
+          Facility Reservation
+        </PageHeaderHeading>
+        <PageHeaderDescription className="grow text-left text-wrap">
+          Welcome to our streamlined Facility Reservation Platform! Quickly find
+          and book the amenities in your property with ease. Check availability
+          and secure your spot in just a few clicks, ensuring a hassle-free
+          experience as you enjoy all your property has to offer.{" "}
+        </PageHeaderDescription>
+      </PageHeader>
+      <section className="">
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <div className="flex flex-col items-center justify-start mt-4 z-10">
-            <Select onValueChange={(value) => setSelectedBuilding(value)}>
-              <SelectTrigger className="mx-4 grow w-[180px] bg-white dark:bg-white/80 text-black font-semibold mb-8">
+          <div className="mx-8 flex flex-col items-start justify-start z-10">
+            <Select
+              onValueChange={(value) => setSelectedBuilding(value)}
+              defaultValue={undefined}
+            >
+              <SelectTrigger className="mx-4 grow w-[300px] bg-white dark:bg-white/80 text-black font-semibold mb-4">
                 <SelectValue placeholder="Select property" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-white/90">
@@ -102,12 +114,12 @@ export default function CreateReservationModal({
               </div>
             ) : (
               !!selectedBuilding && (
-                <FacilityAvailabilities buildingId={selectedBuilding} />
+                <FacilitySelector buildingId={selectedBuilding} />
               )
             )}
           </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </section>
+    </>
   );
 }

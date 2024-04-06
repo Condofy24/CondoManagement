@@ -1,15 +1,13 @@
 "use client";
 import { useAppSelector } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LoadingSpinner from "@/app/components/loading-spinner";
-import CreateReservationModal from "./create-reservation";
 import { Button } from "@/app/components/ui/button";
+import Link from "next/link";
 
 export default function OwnerPropertiesDashboardPage() {
   const { user, token } = useAppSelector((state) => state.auth.value);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [openReservations, setOpenReservations] = useState(false);
 
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-10">
@@ -19,15 +17,9 @@ export default function OwnerPropertiesDashboardPage() {
             Facility Reservations
           </h2>
         </div>
-        <div>
-          <Button variant="outline" onClick={() => setOpenReservations(true)}>
-            Make Reservation
-          </Button>
-        </div>
-        <CreateReservationModal
-          open={openReservations}
-          setOpen={setOpenReservations}
-        />
+        <Button variant="outline">
+          <Link href="/reservations/new">Make New Reservation</Link>
+        </Button>
       </div>
       <div className="flex flex-row flex-wrap gap-4 justify-center md:justify-start">
         {isLoading && <LoadingSpinner />}
