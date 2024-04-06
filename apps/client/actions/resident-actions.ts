@@ -82,3 +82,26 @@ export async function fetchOwnerInfo(unitId: string, token: string) {
     throw new Error(message);
   }
 }
+
+/**** Facility & Reservation ***/
+export async function fetchBuildingFacilities(
+  buildingId: string,
+  token: string,
+) {
+  try {
+    const result = await axios.get(`${API_URL}/facility/${buildingId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured when fetching facilities";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
