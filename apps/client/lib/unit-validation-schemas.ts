@@ -50,7 +50,7 @@ export const assetSchema = object({
 export type TAssetSchema = TypeOf<typeof assetSchema>;
 
 const workingTimesSchema = object({
-  weekDay: z.enum(Object.keys(WeekDay) as any),
+  weekDay: z.enum(Object.keys(WeekDay) as any).optional(),
   openingTime: z
     .string({ required_error: "Opening hours is required" })
     .regex(

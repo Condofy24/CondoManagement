@@ -31,10 +31,9 @@ export default function FacilityForm() {
   const assetSortedTimes = {
     ...formattedAsset(),
     operationTimes: sortOpeningTimes(
-      (formattedAsset() as Facility).operationTimes as TWorkingTimesSchema[],
+      (formattedAsset() as Facility)?.operationTimes as TWorkingTimesSchema[],
     ),
   };
-
   const { register, handleSubmit, errors, onSubmit, isDirty, form } =
     useFacilityForm(assetSortedTimes as TFacilitySchema);
   return (
@@ -102,7 +101,7 @@ export default function FacilityForm() {
 
 function sortOpeningTimes(openingTimes: TWorkingTimesSchema[]) {
   const sortedArray = new Array(7); // Create an array of size 7
-  openingTimes.forEach((operationTimes) => {
+  openingTimes?.forEach((operationTimes) => {
     switch ((operationTimes?.weekDay as unknown as string).toLowerCase()) {
       case "monday":
         sortedArray[0] = { ...operationTimes };
