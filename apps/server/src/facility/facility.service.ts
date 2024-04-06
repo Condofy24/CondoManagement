@@ -326,6 +326,34 @@ export class FacilityService {
 
     return updatedReservation;
   }
+  /**
+   * Update reservations/availabilities status of the expired ones
+   */
+  public async handleExpiredReservations() {
+    const completedAvailabilities = await this.facilityAvailabilityModel.find({
+      endDate: {
+        $lt: new Date(),
+      },
+      status: { $in: ['available', 'reserved'] },
+    });
+    for (const availability of completedAvailabilities) {
+      await this.facilityAvailabilityModel.findByIdAndUpdate(availability._id, {
+        status: 'passed',
+      });
+
+      const activeReservations = await this.reservationModel.find({
+        availabilityId: availability._id,
+        status: ReservationStatus.ACTIVE,
+      });
+
+      for (const reservation of activeReservations) {
+        await this.reservationModel.findByIdAndUpdate(reservation._id, {
+          status: ReservationStatus.COMPLETE,
+        });
+      }
+    }
+  }
+
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   /**
    * Handles the cron job for generating 4 week availabilities
@@ -333,5 +361,13 @@ export class FacilityService {
    */
   async handleCron() {
     await this.generateAvailabilities();
+  }
+
+  @Cron(CronExpression.EVERY_30_MINUTES)
+  /**
+   * Handles the cron job for  updating reservation status
+   */
+  async handleCronReservations() {
+    await this.handleExpiredReservations();
   }
 }
