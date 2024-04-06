@@ -86,16 +86,6 @@ const requestInfoTestData2 = {
   companyId: new ObjectId(),
 };
 
-const mongoUniqueIndexException: MongoServerError = {
-  addErrorLabel: (_) => { },
-  hasErrorLabel: (_) => false,
-  name: 'test',
-  message: 'etst',
-  errmsg: 'duplicate ID',
-  errorLabels: [],
-  code: 110000,
-};
-
 describe('RequestService', () => {
   let service: RequestService;
 
