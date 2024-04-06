@@ -334,7 +334,13 @@ export class FacilityService {
       endDate: {
         $lt: new Date(),
       },
-      status: { $in: ['available', 'reserved'] },
+      status: { $in: ['reserved'] },
+    });
+    const expiredAvailabilities = await this.facilityAvailabilityModel.find({
+      endDate: {
+        $lt: new Date(),
+      },
+      status: { $in: ['available'] },
     });
     for (const availability of completedAvailabilities) {
       await this.facilityAvailabilityModel.findByIdAndUpdate(availability._id, {
@@ -351,6 +357,9 @@ export class FacilityService {
           status: ReservationStatus.COMPLETE,
         });
       }
+    }
+    for (const availability of expiredAvailabilities) {
+      await this.facilityAvailabilityModel.findByIdAndDelete(availability._id);
     }
   }
 
