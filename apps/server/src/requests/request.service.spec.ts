@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { MongoServerError, ObjectId } from 'mongodb';
-import { HttpException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { UnitService } from '../unit/unit.service';
 import { RequestService } from './request.service';
 import { RequestModel, RequestStatus } from './entities/request.entity';
@@ -52,6 +52,7 @@ const requestInfoTestData2 = {
   status: RequestStatus.IN_PROGRESS,
   owner: new ObjectId(),
   unit: new ObjectId(),
+  companyId: new ObjectId(),
 };
 
 const mongoUniqueIndexException: MongoServerError = {
