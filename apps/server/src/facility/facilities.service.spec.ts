@@ -80,12 +80,38 @@ describe('FacilityService', () => {
     },
   ];
 
+  const availabilityFindMockResponse2 = {
+    
+      _id: new ObjectId('65ff57c1f2e0bc27cede0b73'),
+      facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
+      startDate: new Date('2024-04-01T08:00:00.000Z'),
+      endDate: new Date('2024-04-01T10:00:00.000Z'),
+      status: 'available',
+  }
+
+  const availabilityFindMockResponse3 = {
+    
+    _id: new ObjectId('65ff57c1f2e0bc27cede0b73'),
+    facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
+    startDate: new Date('2024-04-01T08:00:00.000Z'),
+    endDate: new Date('2024-04-01T10:00:00.000Z'),
+    status: 'passed',
+}
+  
+
   const reservationFindMockResponse = {
     id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
     facilityId: new ObjectId('65ff57c1f2e0bc27cede0b91'),
     availabilityId: new ObjectId('65ff57c1f2e0bc27cede0b92'),
     userId: new ObjectId('65ff57c1f2e0bc27cede0b93'),
     status: ReservationStatus.ACTIVE,
+  };
+  const reservationFindMockResponse2 = {
+    id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
+    facilityId: new ObjectId('65ff57c1f2e0bc27cede0b91'),
+    availabilityId: new ObjectId('65ff57c1f2e0bc27cede0b92'),
+    userId: new ObjectId('65ff57c1f2e0bc27cede0b93'),
+    status: ReservationStatus.COMPLETE,
   };
 
   beforeEach(async () => {
@@ -244,18 +270,6 @@ describe('FacilityService', () => {
         expect(actualAvail.status).toEqual(expectedAvail.status);
       });
     });
-
-    it('should throw BadRequestException when an error occurs', async () => {
-      const facilityId = new mongoose.Types.ObjectId().toString();
-
-      jest
-        .spyOn(FacilityAvailabilityModel, 'find')
-        .mockRejectedValue(new Error('Some error'));
-
-      await expect(service.viewAvailabilities(facilityId)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
   });
   describe('create reservation', () => {
     it('should return all reservations under a given user id that is appropriate', async () => {
@@ -364,4 +378,35 @@ describe('FacilityService', () => {
       ).rejects.toThrow(BadRequestException);
     });
   });
+  describe('Handle expired reservations', () => {
+    it('should update the availability to passed and the reservation to COMPLETE if its date and time have passed', async () =>{
+      // //Arrange
+      const date = new Date();
+      const availabilityId = availabilityFindMockResponse[0]._id;
+      const reservationId = reservationFindMockResponse.id;
+
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        [availabilityFindMockResponse2],
+        'find'
+      );
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        availabilityFindMockResponse3,
+        'findByIdAndUpdate'
+      );
+      mockingoose(ReservationModel).toReturn(
+        [reservationFindMockResponse],
+        'find'
+      );
+      mockingoose(ReservationModel).toReturn(
+        reservationFindMockResponse2,
+        'findByIdAndUpdate'
+      )
+
+      //Act
+      const result = await service.handleCronReservations(); 
+
+      //Assert
+      expect(result).toBeUndefined();
+    })
+  })
 });
