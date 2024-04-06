@@ -14,7 +14,6 @@ import { UnitService } from '../unit/unit.service';
 import { UserService } from '../user/user.service';
 import { UserRoles } from '../user/user.model';
 import { BuildingService } from '../building/building.service';
-import { log } from 'console';
 
 @Injectable()
 export class RequestService {
@@ -41,7 +40,6 @@ export class RequestService {
     ownerId: string,
   ): Promise<RequestEntity> {
     const unit = await this.unitService.findUnitById(unitId);
-    console.log("Here")
     if (!unit)
       throw new NotFoundException({ message: 'Storage does not exist' });
     if (unit.ownerId.toString() !== ownerId)
