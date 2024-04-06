@@ -64,7 +64,7 @@ export default function StorageSection({ storages }: { storages: Storage[] }) {
         <CollapsibleContent className="space-y-2 mt-4">
           <Separator orientation="horizontal" />
           {storages.length === 0 ? (
-            <div className="flex justify-center font-semibold text-lg">
+            <div className="flex justify-center font-semibold text-lg py-4 px-2">
               No associated storages found
             </div>
           ) : (

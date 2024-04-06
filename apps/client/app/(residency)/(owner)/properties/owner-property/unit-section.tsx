@@ -11,7 +11,7 @@ type UnitInfoProps = {
   value: string | number;
 };
 
-const PropertyInfo = ({ title, value }: UnitInfoProps) => (
+export const PropertyInfo = ({ title, value }: UnitInfoProps) => (
   <div className="flex flex-row justify-between mx-1">
     <span className="text-muted-foreground">{title}</span>
     <span className="font-bold">{value}</span>

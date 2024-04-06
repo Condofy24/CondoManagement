@@ -129,3 +129,9 @@ export enum WeekDay {
   Saturday = 5,
   Sunday = 6,
 }
+
+export type OwnerInformation = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+};
