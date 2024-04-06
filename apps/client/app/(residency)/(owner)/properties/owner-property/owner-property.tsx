@@ -7,7 +7,7 @@ import {
 } from "@/app/components/ui/card";
 import { Separator } from "@/app/components/ui/separator";
 import { Unit } from "@/types";
-import BalanceReport from "./balance-report-section";
+import BalanceReport from "./finances/balance-report-section";
 import UnitSection from "./unit-section";
 import { Button } from "@/app/components/ui/button";
 import { useState } from "react";

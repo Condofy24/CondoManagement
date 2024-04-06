@@ -12,7 +12,7 @@ import {
 } from "@/actions/management-actions";
 import { useAppSelector } from "@/redux/store";
 import { useParams } from "next/navigation";
-import UseAssets from "../manage-building-assets-hook";
+import UseAssets from "../../manage-building-assets-hook";
 
 const defaultValues = (
   mode: Mode,
@@ -44,8 +44,6 @@ export default function useAssetForm(type: BuildingAsset, asset: Asset | null) {
   const { fetchAssets } = UseAssets();
 
   const buildingId = useParams().id;
-
-  console.log(currentAssets);
 
   const {
     register,

@@ -7,6 +7,8 @@ import { HttpStatus } from '@nestjs/common';
 import { UnitEntity } from './entities/unit.entity';
 import { UnitModel } from './models/unit.model';
 import { JwtService } from '@nestjs/jwt';
+import { UserRoles } from '../user/user.model';
+import { UserService } from '../user/user.service';
 
 const createUnitDto: CreateUnitDto = {
   unitNumber: 4,
@@ -24,6 +26,8 @@ const unitServiceMock = {
   makeNewPayment: jest.fn(),
   getUnitPayments: jest.fn(),
   claimOwnerUnit: jest.fn().mockResolvedValue(null),
+  processMonthlyUnitFees: jest.fn(),
+  getOwnerInformation: jest.fn(),
 };
 
 const buildingInfoTestData2 = {
@@ -83,6 +87,10 @@ const paymentsTestData = {
   ],
 };
 
+const userServiceMock = {
+  findUserById: jest.fn().mockResolvedValue({ role: UserRoles.MANAGER }),
+};
+
 describe('UnitController', () => {
   let controller: UnitController;
 
@@ -97,6 +105,10 @@ describe('UnitController', () => {
         {
           provide: JwtService,
           useValue: {},
+        },
+        {
+          provide: UserService,
+          useValue: userServiceMock,
         },
       ],
     }).compile();
@@ -207,7 +219,33 @@ describe('UnitController', () => {
       const result = await controller.getPayments('test-id');
 
       //Assert
-      expect(result?.record?.[0]?.amount).toBe(100);
+      expect(result[0]?.amount).toBe(100);
+    });
+  });
+
+  describe('processMonthlyUnitFees', () => {
+    it('should forward call to unit service', async () => {
+      //Arrange
+      const req = { user: { sub: userInfoTestData._id } };
+
+      //Act
+      await controller.processMonthlyUnitFees(req);
+
+      //Assert
+      expect(unitServiceMock.processMonthlyUnitFees).toHaveBeenCalled();
+    });
+  });
+
+  describe('retrieveOwnerInformation', () => {
+    it('should forward call to unit service', async () => {
+      // Arrange
+      unitServiceMock.getOwnerInformation.mockResolvedValue(userInfoTestData);
+
+      // Act
+      await controller.retrieveOwnerInformation('test');
+
+      // Assert
+      expect(unitServiceMock.getOwnerInformation).toHaveBeenCalled();
     });
   });
 });

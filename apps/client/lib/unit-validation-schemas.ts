@@ -1,4 +1,5 @@
-import z, { object, TypeOf, number } from "zod";
+import { WeekDay } from "@/types";
+import z, { object, TypeOf, number, ZodArray } from "zod";
 
 export const unitSchema = object({
   unitNumber: z.coerce
@@ -9,7 +10,7 @@ export const unitSchema = object({
     .positive({ message: "Unit number must be a positive number" }),
   isOccupiedByRenter: z
     .enum(["yes", "no"])
-    .transform((value) => value === "yes"),
+    .transform((value: any) => value === "yes"),
   fees: number({ required_error: "Unit fees is required" }).min(0, {
     message: "Fees must be at above 0",
   }),
@@ -47,3 +48,37 @@ export const assetSchema = object({
 });
 
 export type TAssetSchema = TypeOf<typeof assetSchema>;
+
+const workingTimesSchema = object({
+  weekDay: z.enum(Object.keys(WeekDay) as any).optional(),
+  openingTime: z
+    .string({ required_error: "Opening hours is required" })
+    .regex(
+      new RegExp("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"),
+      "Time format invalid use HH:MM",
+    ),
+  closingTime: z
+    .string({ required_error: "Closing hours is required" })
+    .regex(
+      new RegExp("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"),
+      "Time format invalid use HH:MM",
+    ),
+}).optional();
+
+export type TWorkingTimesSchema = TypeOf<typeof workingTimesSchema>;
+
+export const facilitySchema = object({
+  name: z.string({ required_error: "Facility name is required" }),
+  fees: number({
+    required_error: "Facility fees is required",
+    invalid_type_error: "Facility fees must be a number",
+  }).min(0, {
+    message: "Fees must be at above 0",
+  }),
+  duration: number({ required_error: "Duration is required" }).min(0, {
+    message: "Duration must be at least 0",
+  }),
+  operationTimes: z.array(workingTimesSchema).min(1),
+});
+
+export type TFacilitySchema = TypeOf<typeof facilitySchema>;

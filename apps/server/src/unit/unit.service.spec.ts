@@ -18,6 +18,7 @@ import RegistationKeyModel, {
 import UnitModel, { UnitEntity } from './entities/unit.entity';
 import { UnitService } from './unit.service';
 import { StorageService } from '../storage/storage.service';
+import { NotificationService } from '../notification/notification.service';
 
 const mockingoose = require('mockingoose');
 
@@ -63,6 +64,7 @@ const unitInfoTestData: Partial<UnitEntity> = {
   size: 4,
   isOccupiedByRenter: false,
   fees: 4,
+  ownerId: new ObjectId(),
 };
 
 const unitInfoTestData2 = {
@@ -163,6 +165,10 @@ const userServiceMock = {
   findUserById: jest.fn().mockResolvedValue(userInfoTestData),
 };
 
+const notificationServiceMock = {
+  dispatchNotification: jest.fn().mockResolvedValue(null),
+};
+
 const mongoUniqueIndexException: MongoServerError = {
   addErrorLabel: (_) => {},
   hasErrorLabel: (_) => false,
@@ -201,6 +207,10 @@ describe('UnitService', () => {
         {
           provide: UserService,
           useValue: userServiceMock,
+        },
+        {
+          provide: NotificationService,
+          useValue: notificationServiceMock,
         },
       ],
     }).compile();
@@ -424,6 +434,11 @@ describe('UnitService', () => {
       ).rejects.toThrow(HttpException);
     });
     it('should make new payment successfully (no overdue)', async () => {
+      buildingServiceMock.findBuildingById.mockResolvedValue(
+        buildingInfoTestData,
+      );
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
+
       mockingoose(UnitModel)
         .toReturn(unitInfoTestData3, 'findOne')
         .toReturn((_: any) => {}, 'save');
@@ -439,6 +454,7 @@ describe('UnitService', () => {
       );
 
       expect(result.statusCode).toBe(HttpStatus.NO_CONTENT);
+      expect(notificationServiceMock.dispatchNotification).toHaveBeenCalled();
     });
     it('should make new payment successfully (with overdue)', async () => {
       mockingoose(UnitModel)
@@ -465,10 +481,48 @@ describe('UnitService', () => {
       expect(result?.record?.[0]?.amount).toBe(100);
     });
   });
+
+  describe('getOwnerInformation', () => {
+    it('should return owner information', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn(unitInfoTestData, 'findOne');
+      userServiceMock.findUserById.mockResolvedValue(userInfoTestData);
+
+      //Act
+      const result = await service.getOwnerInformation(
+        new ObjectId().toString(),
+      );
+
+      //Assert
+      expect(result).toBeDefined();
+    });
+
+    it('should throw an exception if owner not found', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn(unitInfoTestData, 'findOne');
+      userServiceMock.findUserById.mockResolvedValue(null);
+
+      //Act
+      expect(
+        service.getOwnerInformation(new ObjectId().toString()),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw an exception if unit not found', async () => {
+      //Arrange
+      mockingoose(UnitModel).toReturn(null, 'findOne');
+
+      //Act
+      expect(
+        service.getOwnerInformation(new ObjectId().toString()),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
   describe('scheduled task', () => {
     it('scheduled fees adjustment should run', async () => {
       mockingoose(UnitModel).toReturn([inDebtedUnitInfoTestData], 'find');
-      service.handleCron();
+      service.processMonthlyUnitFees();
     });
   });
 });

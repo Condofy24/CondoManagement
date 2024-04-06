@@ -7,6 +7,7 @@ import {
   Storage,
   IFinancialStatus,
   BuildingAsset,
+  Facility,
 } from "@/types";
 import UseAssets from "./manage-building-assets-hook";
 import { unitColumns } from "./table-columns/unit-columns";
@@ -15,14 +16,14 @@ import CreateUpdateAssetModal from "./create-update-asset-modal";
 import { DataTable } from "@/app/components/table/data-table";
 import AddPaymentModal from "./make-payment-modal";
 import LoadingSpinner from "@/app/components/loading-spinner";
+import { facilityColumns } from "./table-columns/facility-columns";
 
 export default function AssetsDashboard() {
   const { assetPage, setAssetPage, assets, isFetching } = UseAssets();
-
   return (
     <div className="flex flex-1 flex-col p-4 space-y-5 md:p-16 mb-10">
       <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
-        {`${assetPage.charAt(0).toUpperCase() + assetPage.slice(1)}s`}
+        {getAssetPageTitle(assetPage)}
       </p>
       <div className="w-fit">
         <ManagerOptions setAssetPage={setAssetPage} />
@@ -42,26 +43,24 @@ export default function AssetsDashboard() {
   );
 }
 
+const getAssetPageTitle = (assetPage: string) => {
+  const assetPageTitle = assetPage.charAt(0).toUpperCase() + assetPage.slice(1);
+
+  return assetPageTitle === BuildingAsset.facility
+    ? "Facilities"
+    : assetPageTitle;
+};
+
 const getTable = (
   assetPage: BuildingAsset,
-  assets: Unit[] | Parking[] | Storage[],
+  assets: Unit[] | Parking[] | Storage[] | Facility[],
 ) => {
   switch (assetPage) {
     case BuildingAsset.unit: {
-      const mappedAssets = (assets as Unit[]).map((asset: Unit) => ({
-        ...asset,
-        availability: asset.ownerKey?.isClaimed || asset.renterKey?.isClaimed,
-        financialStatus: (asset.overdueFees && asset.overdueFees > 0
-          ? `Overdue Fees: ${asset.overdueFees}`
-          : asset.remainingMonthlyBalance && asset.remainingMonthlyBalance > 0
-            ? `Monthly Fees Due: ${asset.remainingMonthlyBalance}`
-            : `Paid: $ ${asset.remainingMonthlyBalance} balance`) as IFinancialStatus,
-      }));
-
       return (
         <DataTable
           columns={unitColumns}
-          data={mappedAssets}
+          data={assets as Unit[]}
           filter={{
             title: "unit number",
             key: "unitNumber",
@@ -69,6 +68,7 @@ const getTable = (
         />
       );
     }
+
     case BuildingAsset.parking:
       return (
         <DataTable
@@ -89,6 +89,18 @@ const getTable = (
           filter={{
             title: "storage number",
             key: "storageNumber",
+          }}
+        />
+      );
+
+    case BuildingAsset.facility:
+      return (
+        <DataTable
+          columns={facilityColumns}
+          data={assets as Facility[]}
+          filter={{
+            title: "facility name",
+            key: "name",
           }}
         />
       );

@@ -64,7 +64,7 @@ export default function ParkingsSection({ parkings }: { parkings: Parking[] }) {
         <CollapsibleContent className="space-y-2 mt-4">
           <Separator orientation="horizontal" />
           {parkings.length === 0 ? (
-            <div className="flex justify-center font-semibold text-lg">
+            <div className="flex justify-center font-semibold text-lg py-4 px-2">
               No associated parkings found
             </div>
           ) : (

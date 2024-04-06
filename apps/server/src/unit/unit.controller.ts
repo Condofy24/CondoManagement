@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUnitDto } from './dto/create-unit.dto';
 import { UnitService } from './unit.service';
@@ -22,6 +23,10 @@ import {
 import { MakeNewPaymentDto } from './dto/make-new-payment.dto';
 import { UnitModel } from './models/unit.model';
 import { AuthGuard } from '../auth/auth.guard';
+import { PaymentModel } from './models/payment-model';
+import { UserService } from '../user/user.service';
+import { UserRoles } from '../user/user.model';
+import { OwnerInformationModel } from './models/owner-information.model';
 
 @ApiTags('Unit')
 @ApiBearerAuth()
@@ -30,7 +35,31 @@ import { AuthGuard } from '../auth/auth.guard';
  * Controller class for managing units.
  */
 export class UnitController {
-  constructor(private readonly unitService: UnitService) {}
+  constructor(
+    private readonly unitService: UnitService,
+    private readonly userService: UserService,
+  ) {}
+
+  @Post('/processUnitFees')
+  /**
+   * Manually trigger processing unit fees and resetting monthly balance, overdue fees
+   *
+   *  *** Only the manager can call this route ***
+   */
+  @UseGuards(AuthGuard)
+  async processMonthlyUnitFees(
+    @Request()
+    req: any,
+  ) {
+    const user = await this.userService.findUserById(req.user.sub);
+
+    if (!user || user.role != UserRoles.MANAGER)
+      throw new UnauthorizedException({
+        message: 'Only company manager can trigger processing unit fees',
+      });
+
+    this.unitService.processMonthlyUnitFees();
+  }
 
   @Post(':buildingId')
   @ApiCreatedResponse({ description: 'Unit created', type: UnitModel })
@@ -132,7 +161,23 @@ export class UnitController {
    * @param unitId - The ID of the unit.
    * @returns An array of payments for the unit.
    */
-  getPayments(@Param('unitId') unitId: string) {
-    return this.unitService.getUnitPayments(unitId);
+  async getPayments(@Param('unitId') unitId: string) {
+    const paymentsEntity = await this.unitService.getUnitPayments(unitId);
+
+    if (!paymentsEntity) return [];
+
+    return paymentsEntity.record.map((payment) => new PaymentModel(payment));
+  }
+
+  @Get('/owner/:unitId')
+  /**
+   * Gets the owner information of the unit
+   * @param unitId - The ID of the unit.
+   * @returns The information of the unit owner
+   */
+  async retrieveOwnerInformation(@Param('unitId') unitId: string) {
+    return new OwnerInformationModel(
+      await this.unitService.getOwnerInformation(unitId),
+    );
   }
 }

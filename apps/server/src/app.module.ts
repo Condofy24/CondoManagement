@@ -18,6 +18,10 @@ import { StorageModule } from './storage/storage.module';
 import { StorageController } from './storage/storage.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
+import { FacilityController } from './facility/facility.controller';
+import { FacilityModule } from './facility/facility.module';
+import { RequestModule } from './requests/request.module';
+import { RequestController } from './requests/request.controller';
 
 @Module({
   imports: [
@@ -33,14 +37,17 @@ import { ConfigModule } from '@nestjs/config';
     CloudinaryModule,
     BuildingModule,
     UnitModule,
+    FacilityModule,
     ParkingModule,
     StorageModule,
+    RequestModule,
   ],
   controllers: [
     AppController,
     UserController,
     AuthController,
     BuildingController,
+    FacilityController,
     UnitController,
     ParkingController,
     StorageController,

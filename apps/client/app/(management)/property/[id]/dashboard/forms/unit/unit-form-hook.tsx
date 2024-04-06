@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import UseAssets from "../manage-building-assets-hook";
+import UseAssets from "../../manage-building-assets-hook";
 
 const defaultValues = (mode: Mode, asset: Asset | null) => {
   if (!asset || mode === "create")

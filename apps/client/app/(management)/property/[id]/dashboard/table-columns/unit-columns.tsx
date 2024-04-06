@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
 } from "@/app/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Badge, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Badge, Copy, MoreHorizontal } from "lucide-react";
 import StatusCell from "@/app/components/table/data-table-status-cell";
 import { useAssetManagement } from "@/context/asset-management-context";
 import {
@@ -60,18 +60,19 @@ const RegistrationKeysPopover = ({
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    ownerKey?.isClaimed ? "bg-red-400" : "bg-green-400",
+                    ownerKey?.isClaimed
+                      ? "bg-red-300 dark:bg-red-500 text-black/80 dark:text-white"
+                      : "bg-green-300 dark:bg-green-500 text-black/80 dark:text-white",
                   )}
                 >
                   {ownerKey?.isClaimed ? "Claimed" : "Available"}
                 </div>
                 <Button
-                  variant="outline"
                   onClick={() => {
                     navigator.clipboard.writeText(ownerKey?.key);
                   }}
                 >
-                  Copy
+                  <Copy className="h-4 w-4">Copy</Copy>
                 </Button>
               </div>
               <div className="flex items-center gap-4">
@@ -85,18 +86,19 @@ const RegistrationKeysPopover = ({
                 <div
                   className={cn(
                     "p-2 h-10 rounded-xl text-black",
-                    renterKey?.isClaimed ? "bg-red-400" : "bg-green-400",
+                    renterKey?.isClaimed
+                      ? "bg-red-300 dark:bg-red-500 text-black/80 dark:text-white"
+                      : "bg-green-300 dark:bg-green-500 text-black/80 dark:text-white",
                   )}
                 >
                   {renterKey?.isClaimed ? "Claimed" : "Available"}
                 </div>
                 <Button
-                  variant="outline"
                   onClick={() => {
                     navigator.clipboard.writeText(renterKey?.key);
                   }}
                 >
-                  Copy
+                  <Copy className="h-4 w-4">Copy</Copy>
                 </Button>
               </div>
             </div>
@@ -171,9 +173,56 @@ export const unitColumns: ColumnDef<UnitCol>[] = [
   {
     accessorKey: "financialStatus",
     header: "Financial Status",
+    cell: ({ row }) => {
+      const unit: Unit = row.original;
+
+      const hasOverDue = unit.overdueFees && unit.overdueFees > 0;
+
+      const hasMonthlyBalance =
+        unit.remainingMonthlyBalance && unit.remainingMonthlyBalance > 0;
+
+      const hasFeesDue = hasOverDue || hasMonthlyBalance;
+
+      return (
+        <Card className="p-2 lg:p-3 dark:bg-white/5 lg:w-3/4">
+          {!hasFeesDue ? (
+            <div className="text-xs lg:text-base font-semibold lg:font-bold flex justify-center">
+              {!(unit.ownerKey?.isClaimed || unit.renterKey?.isClaimed)
+                ? "Not Available "
+                : "Monthly fees paid"}
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <div className="flex flex-col justify-between gap-2 md:basis-3/4">
+                {!!hasOverDue && (
+                  <span className="text-xs md:text-base font-bold">
+                    Overdue <span className="hidden md:inline">fees:</span>
+                  </span>
+                )}
+                {!!hasMonthlyBalance && (
+                  <span className="text-xs md:text-base font-bold">
+                    Monthly <span className="hidden md:inline">fees:</span>
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col justify-between">
+                {!!hasOverDue && (
+                  <div className="space-x-4">{unit.overdueFees}$</div>
+                )}
+                {!!hasMonthlyBalance && (
+                  <div className="space-x-4">
+                    {unit.remainingMonthlyBalance}$
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </Card>
+      );
+    },
   },
   {
-    accessorKey: "availability",
+    accessorKey: "isOccupiedByRenter",
     header: "Availability",
     cell: StatusCell,
   },
