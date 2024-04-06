@@ -1,13 +1,19 @@
+import { cn } from "@/lib/utils";
+
 type SectionHeaderProps = {
   title: string;
+  className?: string;
 };
 
-export function SectionHeader({ title }: SectionHeaderProps) {
+export function SectionHeader({ title, className }: SectionHeaderProps) {
   return (
-    <div className="space-y-1 flex justify-center">
-      <h1 className="text-2xl leading-none font-semibold tracking-tighter">
-        {title}{" "}
-      </h1>
-    </div>
+    <h1
+      className={cn(
+        "flex justify-center text-2xl leading-none font-semibold tracking-tighter",
+        className,
+      )}
+    >
+      {title}{" "}
+    </h1>
   );
 }

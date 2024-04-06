@@ -11,18 +11,19 @@ import { useAppSelector } from "@/redux/store";
 import { Facility } from "@/types";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import AvailabilityViewer from "./availability-viewer";
+import { SectionHeader } from "../../(owner)/properties/owner-property/section-header";
 
-type FacilityAvailabilitiesProps = {
-  buildingId: string;
+type FacilitySelectorProps = {
+  selectedBuilding: string | null;
+  setSelectedFacility: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export default function FacilitySelector({
-  buildingId,
-}: FacilityAvailabilitiesProps) {
+  selectedBuilding,
+  setSelectedFacility,
+}: FacilitySelectorProps) {
   const { token } = useAppSelector((state) => state.auth.value);
-  const [facilities, setFacilities] = useState<Facility[]>([]);
-  const [selectedFacility, setSelectedFacility] = useState<string | null>(null);
+  const [facilities, setFacilities] = useState<Facility[]>();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function FacilitySelector({
       setIsLoading(true);
       try {
         const facilities = await fetchBuildingFacilities(
-          buildingId as string,
+          selectedBuilding as string,
           token as string,
         );
 
@@ -42,37 +43,31 @@ export default function FacilitySelector({
       }
     }
     fetchFacilities();
-  }, [token, buildingId]);
+  }, [token, selectedBuilding]);
 
-  return (
-    <div className="grow">
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : facilities.length == 0 ? (
-        <h1 className="text-xl font-semibold">Building has no facility</h1>
-      ) : (
-        <div>
-          <Select onValueChange={(value) => setSelectedFacility(value)}>
-            <SelectTrigger className="mx-4 grow w-[300px] bg-white dark:bg-white/80 text-black font-semibold mb-8">
-              <SelectValue placeholder="Select a facility" />
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-white/90">
-              {facilities.map((facility: Facility) => (
-                <SelectItem
-                  key={facility.id}
-                  value={facility.id}
-                  className="text-black font-medium"
-                >
-                  {facility.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {selectedFacility && (
-            <AvailabilityViewer facilityId={selectedFacility} />
-          )}
-        </div>
-      )}
-    </div>
+  return !selectedBuilding ? null : isLoading ? (
+    <LoadingSpinner />
+  ) : facilities?.length == 0 ? (
+    <h1 className="text-xl font-semibold">Building has no facility</h1>
+  ) : (
+    <>
+      <SectionHeader title="Facility" className="text-2xl text-center" />
+      <Select onValueChange={(value) => setSelectedFacility(value)}>
+        <SelectTrigger className="mx-4 w-[300px] bg-white dark:bg-white/80 text-black font-semibold mb-8">
+          <SelectValue placeholder="Select ..." />
+        </SelectTrigger>
+        <SelectContent className="bg-white dark:bg-white/90">
+          {facilities?.map((facility: Facility) => (
+            <SelectItem
+              key={facility.id}
+              value={facility.id}
+              className="text-black font-medium"
+            >
+              {facility.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </>
   );
 }
