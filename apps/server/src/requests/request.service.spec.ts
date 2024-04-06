@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { MongoServerError, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { UnitService } from '../unit/unit.service';
 import { RequestService } from './request.service';
