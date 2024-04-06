@@ -81,23 +81,20 @@ describe('FacilityService', () => {
   ];
 
   const availabilityFindMockResponse2 = {
-    
-      _id: new ObjectId('65ff57c1f2e0bc27cede0b73'),
-      facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
-      startDate: new Date('2024-04-01T08:00:00.000Z'),
-      endDate: new Date('2024-04-01T10:00:00.000Z'),
-      status: 'available',
-  }
+    _id: new ObjectId('65ff57c1f2e0bc27cede0b73'),
+    facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
+    startDate: new Date('2024-04-01T08:00:00.000Z'),
+    endDate: new Date('2024-04-01T10:00:00.000Z'),
+    status: 'available',
+  };
 
   const availabilityFindMockResponse3 = {
-    
     _id: new ObjectId('65ff57c1f2e0bc27cede0b73'),
     facilityId: new ObjectId('65ff57c1f2e0bc27cede0b61'),
     startDate: new Date('2024-04-01T08:00:00.000Z'),
     endDate: new Date('2024-04-01T10:00:00.000Z'),
     status: 'passed',
-}
-  
+  };
 
   const reservationFindMockResponse = {
     id: new ObjectId('65ff57c1f2e0bc27cede0b63'),
@@ -379,7 +376,7 @@ describe('FacilityService', () => {
     });
   });
   describe('Handle expired reservations', () => {
-    it('should update the availability to passed and the reservation to COMPLETE if its date and time have passed', async () =>{
+    it('should update the availability to passed and the reservation to COMPLETE if its date and time have passed', async () => {
       // //Arrange
       const date = new Date();
       const availabilityId = availabilityFindMockResponse[0]._id;
@@ -387,26 +384,26 @@ describe('FacilityService', () => {
 
       mockingoose(FacilityAvailabilityModel).toReturn(
         [availabilityFindMockResponse2],
-        'find'
+        'find',
       );
       mockingoose(FacilityAvailabilityModel).toReturn(
         availabilityFindMockResponse3,
-        'findByIdAndUpdate'
+        'findByIdAndUpdate',
       );
       mockingoose(ReservationModel).toReturn(
         [reservationFindMockResponse],
-        'find'
+        'find',
       );
       mockingoose(ReservationModel).toReturn(
         reservationFindMockResponse2,
-        'findByIdAndUpdate'
-      )
+        'findByIdAndUpdate',
+      );
 
       //Act
-      const result = await service.handleCronReservations(); 
+      const result = await service.handleCronReservations();
 
       //Assert
       expect(result).toBeUndefined();
-    })
-  })
+    });
+  });
 });
