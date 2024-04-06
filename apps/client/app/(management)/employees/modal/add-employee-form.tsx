@@ -49,7 +49,7 @@ export default function AddEmployeeForm() {
       }
       closeModalHandler();
     },
-    [admin, token]
+    [admin, token],
   );
 
   return (

@@ -1,4 +1,5 @@
 import { API_URL } from "@/global";
+import { TRequestSchema } from "@/lib/unit-validation-schemas";
 import { TUnitKeySchema } from "@/lib/validation-schemas";
 import axios from "axios";
 
@@ -75,6 +76,47 @@ export async function fetchOwnerInfo(unitId: string, token: string) {
     return result.data;
   } catch (error: any) {
     let message = "An error occured while fetching owner information";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function createRequest(
+  unitId: string,
+  data: TRequestSchema,
+  token: string,
+) {
+  try {
+    const result = await axios.post(`${API_URL}/requests/${unitId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while creating request";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function fetchRequests(ownerId: string, token: string) {
+  try {
+    const result = await axios.get(`${API_URL}/requests/${ownerId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while fetching requests";
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;

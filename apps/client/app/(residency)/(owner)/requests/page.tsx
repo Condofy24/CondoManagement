@@ -1,36 +1,32 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Property } from "@/types";
 import { useAppSelector } from "@/redux/store";
 import { columns } from "./columns";
 import { DataTable } from "@/app/components/table/data-table";
-import { fetchProperties } from "@/actions/management-actions";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { Button } from "@/app/components/ui/button";
 import CreateRequestForm from "./create-request-form";
+import { fetchRequests } from "@/actions/resident-actions";
 
 export default function Requests() {
   const [requests, setRequests] = useState([]);
   const { token, user } = useAppSelector((state) => state.auth.value);
-  const router = useRouter();
 
-//   useEffect(() => {
-//     const loadBuilding = async () => {
-//       try {
-//         const properties = await fetchProperties(
-//           admin?.companyId as string,
-//           token as string
-//         );
+  useEffect(() => {
+    const loadRequests = async () => {
+      try {
+        const requests = await fetchRequests(
+          user.id as string,
+          token as string,
+        );
 
-//         setProperties(properties);
-//       } catch (error) {
-//         toast.error((error as Error).message);
-//       }
-//     };
+        setRequests(requests);
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    };
 
-//     loadBuilding();
-//   }, [admin?.companyId, token]);
+    loadRequests();
+  }, [token, user.id]);
 
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">
@@ -42,14 +38,10 @@ export default function Requests() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <CreateRequestForm/>
+          <CreateRequestForm />
         </div>
       </div>
-      {/* <DataTable
-        columns={columns}
-        data={properties}
-        redirectPath="/property/id/dashboard"
-      /> */}
+      <DataTable columns={columns} data={requests} />
     </div>
   );
 }

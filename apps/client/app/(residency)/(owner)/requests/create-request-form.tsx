@@ -18,14 +18,17 @@ import {
 import { Button } from "@/app/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux/store";
-import { Unit } from "@/types";
+import { RequestType, Unit } from "@/types";
 import toast from "react-hot-toast";
 import { fetchAssociatedProperties } from "@/actions/resident-actions";
+import { Textarea } from "@/app/components/ui/textarea";
+import useRequest from "./request-hook";
 
 function CreateRequestForm() {
   const { user, token } = useAppSelector((state) => state.auth.value);
   const [properties, setProperties] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { register, handleSubmit, onSubmit, errors, setValue } = useRequest();
 
   useEffect(() => {
     async function fetchProperties() {
@@ -33,9 +36,8 @@ function CreateRequestForm() {
       try {
         const properties = await fetchAssociatedProperties(
           user.id as string,
-          token as string
+          token as string,
         );
-        console.log(properties);
         setProperties(properties);
       } catch (error) {
         toast.error((error as Error).message);
@@ -57,13 +59,16 @@ function CreateRequestForm() {
           <DialogHeader>
             <DialogTitle>Create Request</DialogTitle>
           </DialogHeader>
-          <form className="p-4" /*onSubmit={handleSubmit(onSubmit)}*/>
+          <form className="p-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-2" htmlFor="amount">
+              <label
+                className="block text-sm font-bold mb-2"
+                htmlFor="unitNumber"
+              >
                 Unit number
               </label>
               <Select
-              // onValueChange={(value: string) => setValue("role", value)}
+                onValueChange={(value: string) => setValue("unitNumber", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select unit number" />
@@ -78,7 +83,7 @@ function CreateRequestForm() {
                   })}
                 </SelectContent>
               </Select>
-              {/* <FormFieldError fieldError={errors.role} /> */}
+              <FormFieldError fieldError={errors.unitNumber} />
             </div>
             <div className="mb-4">
               <label className="block text-sm font-bold mb-2" htmlFor="title">
@@ -86,30 +91,36 @@ function CreateRequestForm() {
               </label>
               <Input
                 id="title"
-                // {...register("email")}
+                {...register("title")}
                 placeholder="Request Title"
                 className="dark:bg-white dark:text-black"
                 type="text"
               />
-              {/* <FormFieldError fieldError={errors.email} /> */}
+              <FormFieldError fieldError={errors.title} />
             </div>
             <div className="mb-4">
               <label className="block text-sm font-bold mb-2" htmlFor="amount">
                 Type
               </label>
               <Select
-              // onValueChange={(value: string) => setValue("role", value)}
+                onValueChange={(value: string) => setValue("type", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select request type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">Manager</SelectItem>
-                  <SelectItem value="1">Staff</SelectItem>
-                  <SelectItem value="2">Accountant</SelectItem>
+                  <SelectItem value={RequestType.ADMIN}>
+                    {RequestType.ADMIN}
+                  </SelectItem>
+                  <SelectItem value={RequestType.FINANCIAL}>
+                    {RequestType.FINANCIAL}
+                  </SelectItem>
+                  <SelectItem value={RequestType.STAFF}>
+                    {RequestType.STAFF}
+                  </SelectItem>
                 </SelectContent>
               </Select>
-              {/* <FormFieldError fieldError={errors.role} /> */}
+              <FormFieldError fieldError={errors.type} />
             </div>
             <div className="mb-4">
               <label
@@ -118,13 +129,13 @@ function CreateRequestForm() {
               >
                 Description
               </label>
-              <textarea
-                id="phoneNumber"
+              <Textarea
+                id="description"
                 placeholder="describe the issue here..."
-                className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus-visible:ring-slate-300 dark:bg-white dark:text-black"
-                //{...register("description")}
+                className="border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus-visible:ring-slate-300 dark:bg-white dark:text-black"
+                {...register("description")}
               />
-              {/* <FormFieldError fieldError={errors.phoneNumber} /> */}
+              <FormFieldError fieldError={errors.description} />
             </div>
             <div className="flex flex-row justify-center gap-10">
               <Button type="button">Cancel</Button>

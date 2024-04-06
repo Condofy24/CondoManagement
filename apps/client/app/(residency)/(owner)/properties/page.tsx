@@ -19,7 +19,7 @@ export default function OwnerPropertiesDashboardPage() {
       try {
         const properties = await fetchAssociatedProperties(
           user.id as string,
-          token as string
+          token as string,
         );
 
         setProperties(properties);
