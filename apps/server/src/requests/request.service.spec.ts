@@ -7,6 +7,8 @@ import { RequestService } from './request.service';
 import { RequestModel, RequestStatus } from './entities/request.entity';
 import { CreateRequestDto, RequestType } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
+import { UserService } from '../user/user.service';
+import { BuildingService } from '../building/building.service';
 
 const mockingoose = require('mockingoose');
 
@@ -33,10 +35,39 @@ const occupiedUnitInfoTestData = {
   isOccupiedByRenter: true,
   fees: 500,
 };
+const userInfoTestData = {
+  _id: new ObjectId(),
+  email: 'user@example.com',
+  name: 'Test User',
+  role: 4,
+  phoneNumber: '1234567890',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+};
+const buildingInfoTestData = {
+  _id: new ObjectId(),
+  companyId: new ObjectId(),
+  name: 'PEWPEWWW',
+  address: '2240PewPew',
+  unitCount: 43,
+  parkingCount: 23,
+  storageCount: 6,
+  fileUrl: 'https://example.com/image.jpg',
+  filePublicId: 'image123',
+  fileAssetId: 'Image212344124',
+};
 
 const unitServiceMock = {
   findUnitById: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
 };
+
+const userServiceMock = {
+  findUserById: jest.fn().mockResolvedValue(userInfoTestData),
+};
+const buildingServiceMock = {
+  findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
+};
+
 
 const createRequestDto: CreateRequestDto = {
   title: 'Building 2 problem',
@@ -56,7 +87,7 @@ const requestInfoTestData2 = {
 };
 
 const mongoUniqueIndexException: MongoServerError = {
-  addErrorLabel: (_) => {},
+  addErrorLabel: (_) => { },
   hasErrorLabel: (_) => false,
   name: 'test',
   message: 'etst',
@@ -79,6 +110,14 @@ describe('RequestService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
+        },
+        {
+          provide: UserService,
+          useValue: userServiceMock,
+        },
+        {
+          provide: BuildingService,
+          useValue: buildingServiceMock,
         },
       ],
     }).compile();
