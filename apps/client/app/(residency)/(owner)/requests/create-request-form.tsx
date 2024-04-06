@@ -16,8 +16,36 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { Button } from "@/app/components/ui/button";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/store";
+import { Unit } from "@/types";
+import toast from "react-hot-toast";
+import { fetchAssociatedProperties } from "@/actions/resident-actions";
 
 function CreateRequestForm() {
+  const { user, token } = useAppSelector((state) => state.auth.value);
+  const [properties, setProperties] = useState<Unit[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProperties() {
+      setIsLoading(true);
+      try {
+        const properties = await fetchAssociatedProperties(
+          user.id as string,
+          token as string
+        );
+        console.log(properties);
+        setProperties(properties);
+      } catch (error) {
+        toast.error((error as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProperties();
+  }, [token, user?.id]);
+
   return (
     <div className="mb-1 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 bg-slate-900 text-slate-50 hover:bg-slate-900/90 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90 h-10 px-4 py-2">
       <Dialog>
@@ -31,20 +59,26 @@ function CreateRequestForm() {
           </DialogHeader>
           <form className="p-4" /*onSubmit={handleSubmit(onSubmit)}*/>
             <div className="mb-4">
-              <label
-                className="block text-sm font-bold mb-2"
-                htmlFor="unitNumber"
-              >
-                Unit Number
+              <label className="block text-sm font-bold mb-2" htmlFor="amount">
+                Unit number
               </label>
-              <Input
-                id="unitNumber"
-                // {...register("name")}
-                placeholder="1"
-                className="dark:bg-white dark:text-black"
-                type="number"
-              />
-              {/* <FormFieldError fieldError={errors.name} /> */}
+              <Select
+              // onValueChange={(value: string) => setValue("role", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select unit number" />
+                </SelectTrigger>
+                <SelectContent>
+                  {properties?.map((property) => {
+                    return (
+                      <SelectItem key={property.id} value={property.id}>
+                        {property.unitNumber}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              {/* <FormFieldError fieldError={errors.role} /> */}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-bold mb-2" htmlFor="title">
