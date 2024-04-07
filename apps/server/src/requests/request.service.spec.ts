@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
-import { NotFoundException } from '@nestjs/common';
+import { MongoServerError, ObjectId } from 'mongodb';
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UnitService } from '../unit/unit.service';
 import { RequestService } from './request.service';
 import { RequestModel, RequestStatus } from './entities/request.entity';
@@ -177,14 +181,14 @@ describe('RequestService', () => {
       expect(updatedRequest).toHaveProperty('title', updateData.title);
     });
 
-    it('should throw NotFoundException if the request does not exist', async () => {
+    it('should throw BadRequestException if the request is bad', async () => {
       const updateData: UpdateRequestDto = { title: 'Non-existent Title' };
       const nonExistentId = new ObjectId().toString();
 
       mockingoose(RequestModel).toReturn(null, 'findOneAndUpdate');
 
       await expect(service.update(nonExistentId, updateData)).rejects.toThrow(
-        NotFoundException,
+        BadRequestException,
       );
     });
     describe('create', () => {
