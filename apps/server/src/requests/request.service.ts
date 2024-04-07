@@ -8,12 +8,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { CreateRequestDto } from './dto/create-request.dto';
-import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestEntity } from './entities/request.entity';
 import { UnitService } from '../unit/unit.service';
 import { UserService } from '../user/user.service';
 import { UserRoles } from '../user/user.model';
 import { BuildingService } from '../building/building.service';
+import { RequestType } from './dto/create-request.dto';
 
 @Injectable()
 export class RequestService {

@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { MongoServerError, ObjectId } from 'mongodb';
+import {  ObjectId } from 'mongodb';
 import {
   BadRequestException,
-  HttpException,
   NotFoundException,
 } from '@nestjs/common';
 import { UnitService } from '../unit/unit.service';
