@@ -48,26 +48,6 @@ const userInfoTestData = {
   imageId: 'image123',
   companyId: new ObjectId()
 };
-const userInfoTestData1 = {
-  _id: new ObjectId(),
-  email: 'user@example.com',
-  name: 'Test User',
-  role: 1,
-  phoneNumber: '1234567890',
-  imageUrl: 'https://example.com/image.jpg',
-  imageId: 'image123',
-  companyId: new ObjectId()
-};
-const userInfoTestData2 = {
-  _id: new ObjectId(),
-  email: 'user@example.com',
-  name: 'Test User',
-  role: 2,
-  phoneNumber: '1234567890',
-  imageUrl: 'https://example.com/image.jpg',
-  imageId: 'image123',
-  companyId: new ObjectId()
-};
 const buildingInfoTestData = {
   _id: new ObjectId(),
   companyId: new ObjectId(),
