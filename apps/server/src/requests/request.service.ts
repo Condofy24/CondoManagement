@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestEntity } from './entities/request.entity';
@@ -39,7 +39,7 @@ export class RequestService {
       throw new NotFoundException({ message: 'Storage does not exist' });
     if (unit.ownerId.toString() !== ownerId)
       throw new BadRequestException({
-        message: 'You are not the owner of this unit',
+        message: 'Must be an owner to submit a request for this unit',
       });
     const createdRequest = new this.requestModel({
       ...createRequestDto,
@@ -61,26 +61,43 @@ export class RequestService {
   }
 
   /**
-   * Updates a request by its ID and owner ID.
-   *
-   * @param ownerId - The ID of the owner.
-   * @param id - The ID of the request to update.
-   * @param updateRequestDto - The data transfer object for request updating.
-   * @returns A promise resolved with the updated request entity.
+   * Updates a request with the specified id using the provided updatedFields.
+   * @param id - The ID of the request to be updated.
+   * @param updatedFields - The fields to be updated in the request.
+   * @returns A promise that resolves to the updated request.
+   * @throws NotFoundException if the request with the specified id is not found.
+   * @throws BadRequestException if there is an error updating the request.
    */
   async update(
     id: string,
-    updateRequestDto: UpdateRequestDto,
+    updatedFields: Partial<RequestEntity>,
   ): Promise<RequestEntity> {
-    const updatedRequest = await this.requestModel
-      .findOneAndUpdate({ _id: id }, updateRequestDto, {
-        new: true,
-      })
-      .exec();
-    if (!updatedRequest) {
-      throw new NotFoundException(`Request with ID "${id}" not found.`);
+    try {
+      const updatedRequest = await this.requestModel
+        .findByIdAndUpdate({ _id: id }, { $set: updatedFields }, { new: true })
+        .exec();
+
+      if (!updatedRequest) {
+        throw new NotFoundException({ message: 'Request not found' });
+      }
+
+      return updatedRequest;
+    } catch (error) {
+      let errorDescription = 'Request could not be updated';
+
+      if (
+        error instanceof mongoose.Error.VersionError ||
+        error.code === 11000
+      ) {
+        errorDescription =
+          'A request with the same identifier already exists for this unit.';
+      }
+
+      throw new BadRequestException({
+        error: error?.message,
+        message: errorDescription,
+      });
     }
-    return updatedRequest;
   }
 
   /**
