@@ -79,13 +79,4 @@ export class RequestController {
       throw new HttpException(error.message, HttpStatus.FORBIDDEN);
     }
   }
-  @Post('by-user')
-  public async getAllRequestsForByUser(@Body() body: { userId: string }): Promise<RequestEntity[]> {
-    try {
-      return await this.requestService.findAllRequestsForUser(body.userId);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.FORBIDDEN);
-    }
-  }
-
 }

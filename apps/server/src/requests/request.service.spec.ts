@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import {  ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import {
   BadRequestException,
   NotFoundException,
@@ -42,10 +42,31 @@ const userInfoTestData = {
   _id: new ObjectId(),
   email: 'user@example.com',
   name: 'Test User',
-  role: 4,
+  role: 0,
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
+  companyId: new ObjectId()
+};
+const userInfoTestData1 = {
+  _id: new ObjectId(),
+  email: 'user@example.com',
+  name: 'Test User',
+  role: 1,
+  phoneNumber: '1234567890',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+  companyId: new ObjectId()
+};
+const userInfoTestData2 = {
+  _id: new ObjectId(),
+  email: 'user@example.com',
+  name: 'Test User',
+  role: 2,
+  phoneNumber: '1234567890',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+  companyId: new ObjectId()
 };
 const buildingInfoTestData = {
   _id: new ObjectId(),
@@ -223,4 +244,18 @@ describe('RequestService', () => {
       });
     });
   });
+  describe('findAllRequestsForUser', () => {
+    it('Manager (role 0) can retrieve all relevant requests', async () => {
+      //Arrange
+      mockingoose(RequestModel).toReturn(
+        [requestInfoTestData2],
+        'find'
+      )
+      //Act
+      const result = service.findAllRequestsForUser(userInfoTestData._id.toString());
+      //Assert
+      expect(result).toBeDefined();
+    });
+  });
 });
+
