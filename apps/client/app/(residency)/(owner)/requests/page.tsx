@@ -1,32 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useAppSelector } from "@/redux/store";
 import { columns } from "./columns";
 import { DataTable } from "@/app/components/table/data-table";
-import toast from "react-hot-toast";
 import CreateRequestForm from "./create-request-form";
-import { fetchRequests } from "@/actions/resident-actions";
+import useRequest from "./request-hook";
 
 export default function Requests() {
-  const [requests, setRequests] = useState([]);
-  const { token, user } = useAppSelector((state) => state.auth.value);
-
-  useEffect(() => {
-    const loadRequests = async () => {
-      try {
-        const requests = await fetchRequests(
-          user.id as string,
-          token as string,
-        );
-
-        setRequests(requests);
-      } catch (error) {
-        toast.error((error as Error).message);
-      }
-    };
-
-    loadRequests();
-  }, [token, user.id]);
+  const { user, requests } = useRequest();
 
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-16 mb-10">

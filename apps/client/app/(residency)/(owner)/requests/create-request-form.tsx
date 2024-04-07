@@ -1,7 +1,9 @@
 import { IoDocumentText } from "react-icons/io5";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -28,7 +30,14 @@ function CreateRequestForm() {
   const { user, token } = useAppSelector((state) => state.auth.value);
   const [properties, setProperties] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { register, handleSubmit, onSubmit, errors, setValue } = useRequest();
+  const {
+    register,
+    handleSubmit,
+    onSubmit,
+    errors,
+    setValue,
+    reset,
+  } = useRequest();
 
   useEffect(() => {
     async function fetchProperties() {
@@ -36,7 +45,7 @@ function CreateRequestForm() {
       try {
         const properties = await fetchAssociatedProperties(
           user.id as string,
-          token as string,
+          token as string
         );
         setProperties(properties);
       } catch (error) {
@@ -137,9 +146,23 @@ function CreateRequestForm() {
               />
               <FormFieldError fieldError={errors.description} />
             </div>
-            <div className="flex flex-row justify-center gap-10">
-              <Button type="button">Cancel</Button>
-              <Button type="submit">Submit</Button>
+            <div className="flex flex-row justify-center">
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      reset();
+                    }}
+                  >
+                    Close
+                  </Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button type="submit">Submit</Button>
+                </DialogClose>
+              </DialogFooter>
             </div>
           </form>
         </DialogContent>
