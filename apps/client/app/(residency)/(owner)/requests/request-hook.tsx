@@ -38,7 +38,6 @@ export default function useRequest() {
   }, [token, user?.id, setRequests]);
 
   useEffect(() => {
-    console.log("effect");
     fetchProperties();
   }, [fetchProperties, token, user.id]);
 

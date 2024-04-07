@@ -24,20 +24,25 @@ import { RequestType, Unit } from "@/types";
 import toast from "react-hot-toast";
 import { fetchAssociatedProperties } from "@/actions/resident-actions";
 import { Textarea } from "@/app/components/ui/textarea";
-import useRequest from "./request-hook";
 
-function CreateRequestForm() {
+function CreateRequestForm({
+  onSubmit,
+  handleSubmit,
+  errors,
+  setValue,
+  reset,
+  register,
+}: {
+  onSubmit: any;
+  handleSubmit: any;
+  errors: any;
+  setValue: any;
+  reset: any;
+  register: any;
+}) {
   const { user, token } = useAppSelector((state) => state.auth.value);
   const [properties, setProperties] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const {
-    register,
-    handleSubmit,
-    onSubmit,
-    errors,
-    setValue,
-    reset,
-  } = useRequest();
 
   useEffect(() => {
     async function fetchProperties() {
@@ -45,7 +50,7 @@ function CreateRequestForm() {
       try {
         const properties = await fetchAssociatedProperties(
           user.id as string,
-          token as string
+          token as string,
         );
         setProperties(properties);
       } catch (error) {
