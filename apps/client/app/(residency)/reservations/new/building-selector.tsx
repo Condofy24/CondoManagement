@@ -53,11 +53,11 @@ export default function BuildingSelector({
     fetchProperties();
   }, [token, user?.id]);
 
-  return isLoading ? (
-    <LoadingSpinner />
-  ) : (
-    <div className="flex flex-col items-center justify-start z-10 mx-4">
-      {properties.length == 0 ? (
+  return (
+    <div className="flex flex-col items-center justify-start z-10 mx-4 mt-20">
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : properties.length == 0 ? (
         <div className="text-center font-bold text-2xl">No buildings found</div>
       ) : (
         <>
