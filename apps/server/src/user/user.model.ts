@@ -4,7 +4,7 @@
 export enum UserRoles {
   MANAGER = 0, // gets all requests Admin get all requests by building ID
   STAFF = 1, // general
-  ACCOUNTANT = 2,//only finanicial
+  ACCOUNTANT = 2, //only finanicial
   OWNER = 3, // done
   RENTER = 4, // done
 }

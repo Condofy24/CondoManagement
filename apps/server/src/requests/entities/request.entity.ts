@@ -22,7 +22,7 @@ export interface RequestEntity extends mongoose.Document {
   resolutionTime?: Date;
   owner: mongoose.Schema.Types.ObjectId;
   unit: mongoose.Schema.Types.ObjectId;
-  companyId:mongoose.Schema.Types.ObjectId;
+  companyId: mongoose.Schema.Types.ObjectId;
 }
 
 interface RequestModel extends mongoose.Model<RequestEntity> {}

@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import {
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UnitService } from '../unit/unit.service';
 import { RequestService } from './request.service';
 import { RequestModel, RequestStatus } from './entities/request.entity';
@@ -46,7 +43,7 @@ const userInfoTestData = {
   phoneNumber: '1234567890',
   imageUrl: 'https://example.com/image.jpg',
   imageId: 'image123',
-  companyId: new ObjectId()
+  companyId: new ObjectId(),
 };
 const buildingInfoTestData = {
   _id: new ObjectId(),
@@ -71,7 +68,6 @@ const userServiceMock = {
 const buildingServiceMock = {
   findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
-
 
 const createRequestDto: CreateRequestDto = {
   title: 'Building 2 problem',
@@ -227,15 +223,13 @@ describe('RequestService', () => {
   describe('findAllRequestsForUser', () => {
     it('Manager (role 0) can retrieve all relevant requests', async () => {
       //Arrange
-      mockingoose(RequestModel).toReturn(
-        [requestInfoTestData2],
-        'find'
-      )
+      mockingoose(RequestModel).toReturn([requestInfoTestData2], 'find');
       //Act
-      const result = service.findAllRequestsForUser(userInfoTestData._id.toString());
+      const result = service.findAllRequestsForUser(
+        userInfoTestData._id.toString(),
+      );
       //Assert
       expect(result).toBeDefined();
     });
   });
 });
-

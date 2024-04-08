@@ -23,7 +23,7 @@ export class RequestService {
     private readonly unitService: UnitService,
     private userService: UserService,
     private buildingService: BuildingService,
-  ) { }
+  ) {}
 
   /**
    * Creates a new request.
@@ -47,7 +47,9 @@ export class RequestService {
         message: 'Must be an owner to submit a request for this unit',
       });
 
-    const building = await this.buildingService.findBuildingById(unit.buildingId.toString());
+    const building = await this.buildingService.findBuildingById(
+      unit.buildingId.toString(),
+    );
     if (!building)
       throw new NotFoundException({ message: 'Building does not exist' });
     const createdRequest = new this.requestModel({
@@ -124,7 +126,9 @@ export class RequestService {
     }
   }
 
-  public async findAllRequestsForUser(userId: string): Promise<RequestEntity[]> {
+  public async findAllRequestsForUser(
+    userId: string,
+  ): Promise<RequestEntity[]> {
     const user = await this.userService.findUserById(userId);
     if (!user) throw new Error('User not found');
 
@@ -134,16 +138,21 @@ export class RequestService {
 
     // Initial fetch based on role
     if (role === UserRoles.MANAGER) {
-      requests = await this.requestModel.find({ companyId: userCompanyId }).exec();
+      requests = await this.requestModel
+        .find({ companyId: userCompanyId })
+        .exec();
     } else if (role === UserRoles.ACCOUNTANT) {
-      requests = await this.requestModel.find({ type: RequestType.FINANCIAL, companyId: userCompanyId }).exec();
+      requests = await this.requestModel
+        .find({ type: RequestType.FINANCIAL, companyId: userCompanyId })
+        .exec();
     } else if (role === UserRoles.STAFF) {
-      requests = await this.requestModel.find({ type: RequestType.STAFF, companyId: userCompanyId }).exec();
+      requests = await this.requestModel
+        .find({ type: RequestType.STAFF, companyId: userCompanyId })
+        .exec();
     } else {
       throw new Error('Unauthorized access or invalid role');
     }
 
     return requests;
   }
-
 }

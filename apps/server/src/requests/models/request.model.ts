@@ -6,7 +6,20 @@ import {
 } from '../entities/request.entity';
 
 export class RequestModel {
-  static aggregate(query: ({ $lookup: { from: string; localField: string; foreignField: string; as: string; }; } | { $unwind: string; } | { $match: { 'unit.building.companyId': string; }; })[]) {
+  static aggregate(
+    query: (
+      | {
+          $lookup: {
+            from: string;
+            localField: string;
+            foreignField: string;
+            as: string;
+          };
+        }
+      | { $unwind: string }
+      | { $match: { 'unit.building.companyId': string } }
+    )[],
+  ) {
     throw new Error('Method not implemented.');
   }
   @ApiProperty()

@@ -28,7 +28,7 @@ import { UserRoles } from './user.model';
  * @remarks
  * This service handles user creation, retrieval, update, and deletion.
  */
-export class UserService { 
+export class UserService {
   /**
    * Constructs a new instance of the UserService class.
    * @param userModel The User model.
@@ -238,7 +238,7 @@ export class UserService {
    * @param image The optional image file for the user.
    * @returns The updated user.
    * @throws HttpException if there is an error updating the user.
-   */ 
+   */
   public async updateUser(
     id: string,
     updateUserDto: UpdateUserDto,
