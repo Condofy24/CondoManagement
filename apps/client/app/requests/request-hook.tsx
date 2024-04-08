@@ -63,5 +63,6 @@ export default function useRequest() {
     requests,
     user,
     fetchProperties,
+    token,
   };
 }

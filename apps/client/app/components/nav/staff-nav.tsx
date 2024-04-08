@@ -19,7 +19,7 @@ export function StaffNav() {
             "navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname.includes("dashboard")
               ? "text-foreground"
-              : "text-foreground/60",
+              : "text-foreground/60"
           )}
         >
           Property <span className="hidden md:inline">Dashboard</span>
@@ -31,19 +31,19 @@ export function StaffNav() {
               "navItem transition-all hover:text-foreground/80 hover:scale-105",
               pathname.includes("dashboard")
                 ? "text-foreground"
-                : "text-foreground/60",
+                : "text-foreground/60"
             )}
           >
             <span className="hidden md:inline">Manage</span> Employees
           </Link>
         )}
         <Link
-          href="/"
+          href="/requests"
           className={cn(
             "navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname?.startsWith("/requests")
               ? "text-foreground"
-              : "text-foreground/60",
+              : "text-foreground/60"
           )}
         >
           Requests

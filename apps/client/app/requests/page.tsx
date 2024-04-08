@@ -3,10 +3,12 @@ import { columns } from "./columns";
 import { DataTable } from "@/app/components/table/data-table";
 import CreateRequestForm from "./create-request-form";
 import useRequest from "./request-hook";
+import { UserRoles } from "@/types";
 
 export default function Requests() {
   const {
     user,
+    token,
     requests,
     register,
     handleSubmit,
@@ -25,16 +27,20 @@ export default function Requests() {
             Your Requests and their status
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-          <CreateRequestForm
-            register={register}
-            handleSubmit={handleSubmit}
-            onSubmit={onSubmit}
-            errors={errors}
-            setValue={setValue}
-            reset={reset}
-          />
-        </div>
+        {user?.role === UserRoles.OWNER && (
+          <div className="flex items-center space-x-2">
+            <CreateRequestForm
+              register={register}
+              handleSubmit={handleSubmit}
+              onSubmit={onSubmit}
+              errors={errors}
+              setValue={setValue}
+              reset={reset}
+              user={user}
+              token={token}
+            />
+          </div>
+        )}
       </div>
       <DataTable columns={columns} data={requests} />
     </div>

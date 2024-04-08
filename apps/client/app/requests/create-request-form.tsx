@@ -20,7 +20,7 @@ import {
 import { Button } from "@/app/components/ui/button";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "@/redux/store";
-import { RequestType, Unit } from "@/types";
+import { RequestType, Unit, User } from "@/types";
 import toast from "react-hot-toast";
 import { fetchAssociatedProperties } from "@/actions/resident-actions";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -32,6 +32,8 @@ function CreateRequestForm({
   setValue,
   reset,
   register,
+  user,
+  token,
 }: {
   onSubmit: any;
   handleSubmit: any;
@@ -39,8 +41,9 @@ function CreateRequestForm({
   setValue: any;
   reset: any;
   register: any;
+  user: User;
+  token: string | null;
 }) {
-  const { user, token } = useAppSelector((state) => state.auth.value);
   const [properties, setProperties] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
