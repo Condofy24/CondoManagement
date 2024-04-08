@@ -41,9 +41,8 @@ export default function OwnerPropertiesDashboardPage() {
             Here are the properties you own!
           </p>
         </div>
-        <div className="flex items-center md:mr-16">
-          <ClaimUnitForm />
-        </div>
+
+        <ClaimUnitForm />
       </div>
       <div className="flex flex-row flex-wrap gap-4 justify-center md:justify-start">
         {isLoading && <LoadingSpinner />}
