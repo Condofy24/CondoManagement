@@ -50,7 +50,7 @@ export function ResidentNav() {
           Reservations
         </Link>
         <Link
-          href="/"
+          href="/requests"
           className={cn(
             "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname?.includes("/requests")

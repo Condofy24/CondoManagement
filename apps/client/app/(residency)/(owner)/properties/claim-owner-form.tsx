@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { IoHome } from "react-icons/io5";
 
 export default function ClaimUnitForm() {
   const { token } = useAppSelector((state) => state.auth.value);
@@ -44,8 +45,10 @@ export default function ClaimUnitForm() {
   return (
     <Card>
       <Popover>
-        <PopoverTrigger>
-          <Button>Claim Property</Button>
+        <PopoverTrigger style={{ width: "100%" }}>
+          <Button style={{ width: "100%" }}>
+            <IoHome className="mr-1" /> Claim Property
+          </Button>
         </PopoverTrigger>
         <PopoverContent>
           <form

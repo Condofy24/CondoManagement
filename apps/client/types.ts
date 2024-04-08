@@ -30,6 +30,13 @@ export type Property = {
   fileAssetId: string;
 };
 
+export type Request = {
+  title: string;
+  type: RequestType;
+  description: string;
+  status: RequestStatus;
+};
+
 export type FetchedEmployee = {
   name: string;
   email: string;
@@ -145,3 +152,15 @@ export type OwnerInformation = {
   email: string;
   phoneNumber: string;
 };
+
+export enum RequestStatus {
+  SUBMITTED = "Submitted",
+  IN_PROGRESS = "In Progress",
+  RESOLVED = "Resolved",
+}
+
+export enum RequestType {
+  FINANCIAL = "Financial issue",
+  STAFF = "Staff (general)",
+  ADMIN = "Admin",
+}

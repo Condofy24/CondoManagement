@@ -1,5 +1,5 @@
 import { WeekDay } from "@/types";
-import z, { object, TypeOf, number, ZodArray } from "zod";
+import z, { object, TypeOf, number, string } from "zod";
 
 export const unitSchema = object({
   unitNumber: z.coerce
@@ -82,3 +82,12 @@ export const facilitySchema = object({
 });
 
 export type TFacilitySchema = TypeOf<typeof facilitySchema>;
+
+export const requestSchema = object({
+  unitNumber: string({ required_error: "Unit number is required" }),
+  title: string({ required_error: "Title is required" }),
+  type: string({ required_error: "Type is required" }),
+  description: string({ required_error: "Description is required" }),
+});
+
+export type TRequestSchema = TypeOf<typeof requestSchema>;

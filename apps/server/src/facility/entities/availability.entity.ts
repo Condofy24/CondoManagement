@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 
-export type FacilityAvailabilityStatus = 'available' | 'reserved';
+export type FacilityAvailabilityStatus = 'available' | 'reserved' | 'passed';
 
 export interface FacilityAvailabilityEntity extends Document {
   _id: mongoose.Types.ObjectId;
