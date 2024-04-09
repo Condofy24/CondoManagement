@@ -15,6 +15,6 @@ import { BuildingModule } from '../building/building.module';
   ],
   controllers: [RequestController],
   providers: [RequestService],
-  exports: [RequestService, RequestModule],
+  exports: [RequestService],
 })
 export class RequestModule {}

@@ -29,7 +29,7 @@ import { RequestEntity } from './entities/request.entity';
 @ApiBearerAuth()
 @Controller('requests')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) {}
+  constructor(private readonly requestService: RequestService) { }
 
   @Post(':unitId')
   @UseGuards(AuthGuard)
@@ -75,10 +75,7 @@ export class RequestController {
   async getAllRequestsForUser(
     @Param('userId') userId: string,
   ): Promise<RequestEntity[]> {
-    try {
-      return await this.requestService.findAllRequestsForUser(userId);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.FORBIDDEN);
-    }
+    return await this.requestService.findAllRequestsForUser(userId);
+
   }
 }

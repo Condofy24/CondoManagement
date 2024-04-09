@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
   forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -150,7 +151,7 @@ export class RequestService {
         .find({ type: RequestType.STAFF, companyId: userCompanyId })
         .exec();
     } else {
-      throw new Error('Unauthorized access or invalid role');
+      throw new UnauthorizedException({message:'invalid role'});
     }
 
     return requests;
