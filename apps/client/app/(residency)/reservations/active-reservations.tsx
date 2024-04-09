@@ -81,7 +81,12 @@ export default function ActiveReservations({ activeReservations }: Props) {
   return (
     <Card>
       <CardContent className="m-1 p-3 border-none dark:bg-slate-800/80">
-        <DataTable columns={columns} data={reservations} />
+        <DataTable
+          columns={columns}
+          data={reservations}
+          showColumnVisibility={false}
+          showRowsPerPage={false}
+        />
       </CardContent>
     </Card>
   );

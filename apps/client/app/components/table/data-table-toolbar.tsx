@@ -9,11 +9,13 @@ import { Table } from "@tanstack/react-table";
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   filter?: { title: string; key: string };
+  showColumnVisibility?: boolean;
 }
 
 export default function PropertiesTableToolbar<TData>({
   table,
   filter,
+  showColumnVisibility = true,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table ? table.getState().columnFilters.length > 0 : null;
   return (
@@ -43,7 +45,7 @@ export default function PropertiesTableToolbar<TData>({
             </Button>
           )}
         </div>
-        <DataTableViewOptions table={table} />
+        {showColumnVisibility && <DataTableViewOptions table={table} />}
       </div>
     )
   );
