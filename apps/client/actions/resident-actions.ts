@@ -1,6 +1,7 @@
 import { API_URL } from "@/global";
 import { TRequestSchema } from "@/lib/unit-validation-schemas";
 import { TUnitKeySchema } from "@/lib/validation-schemas";
+import { ReservationStatus } from "@/types";
 import axios from "axios";
 
 export async function claimOwnerUnit(data: TUnitKeySchema, token: string) {
@@ -107,6 +108,52 @@ export async function fetchBuildingFacilities(
   }
 }
 
+export async function fetchResidentReservations(userId: string, token: string) {
+  try {
+    const result = await axios.get(
+      `${API_URL}/facility/reservations/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured when fetching reservations";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+export async function createReservation(
+  availabilityId: string,
+  userId: string,
+  token: string,
+) {
+  try {
+    const result = await axios.post(
+      `${API_URL}/facility/reservation/${availabilityId}/${userId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured when creating your reservation";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
 export async function fetchFacilityAvailabilities(
   facilityId: string,
   token: string,
@@ -124,6 +171,31 @@ export async function fetchFacilityAvailabilities(
     return result.data;
   } catch (error: any) {
     let message = "An error occured when fetching facility availabilities";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function cancelReservation(reservationId: string, token: string) {
+  try {
+    const result = await axios.patch(
+      `${API_URL}/facility/update/${reservationId}`,
+      {
+        status: ReservationStatus.CANCELED,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured when canceling your reservation";
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;

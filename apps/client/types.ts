@@ -126,6 +126,25 @@ export type FacilityAvailability = {
   status: FacilityAvailabilityStatus;
 };
 
+// Reservation types
+export enum ReservationStatus {
+  CANCELED = "Canceled",
+  ACTIVE = "Active",
+  CANCELED_BY_COMPANY = "Canceled by company",
+  COMPLETE = "Complete",
+}
+
+export type Reservation = {
+  id: string;
+  facilityId: string;
+  availabilityId: string;
+  userId: string;
+  status: ReservationStatus;
+  facilityName?: string;
+  buildngName?: string;
+  date?: Date[];
+};
+
 export type Asset = Unit | BuildingResource;
 
 export type BuildingResource = Parking | Storage | Facility;

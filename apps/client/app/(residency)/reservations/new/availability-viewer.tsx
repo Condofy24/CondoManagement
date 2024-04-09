@@ -1,4 +1,7 @@
-import { fetchFacilityAvailabilities } from "@/actions/resident-actions";
+import {
+  createReservation,
+  fetchFacilityAvailabilities,
+} from "@/actions/resident-actions";
 import { useAppSelector } from "@/redux/store";
 import { FacilityAvailability } from "@/types";
 import { useState, useEffect } from "react";
@@ -8,10 +11,17 @@ import { ScrollArea, ScrollBar } from "@/app/components/ui/scroll-area";
 import { SectionHeader } from "../../(owner)/properties/owner-property/section-header";
 import { Button } from "@/app/components/ui/button";
 
+type AvailabilityViewerProps = {
+  facility: string;
+  date: Date;
+};
+
 const Availability = ({
   availability,
+  onReserve,
 }: {
   availability: FacilityAvailability;
+  onReserve: (availabilityId: string, date: Date) => Promise<void>;
 }) => (
   <div className="flex justify-between items-center bg-teal-300/70 dark:bg-teal-500/80 py-2 px-2 text-md rounded-md hover:scale-105 transition-all hover-bg-teal space-x-4">
     <span className="text-black text-lg font-medium ">
@@ -20,49 +30,52 @@ const Availability = ({
     <Button
       variant="secondary"
       className="font-medium text-md text-white bg-black/60 dark:bg-opacity-70"
+      onClick={async () => {
+        await onReserve(availability.id, new Date(availability.startDate));
+      }}
     >
       Reserve
     </Button>
   </div>
 );
 
-type AvailabilityViewerProps = {
-  facility: string;
-  date: Date;
-};
-
 export default function AvailabilityViewer({
   facility,
   date,
 }: AvailabilityViewerProps) {
-  const { token } = useAppSelector((state) => state.auth.value);
+  const { token, user } = useAppSelector((state) => state.auth.value);
   const [availabilities, setAvailabilities] = useState<FacilityAvailability[]>(
     [],
   );
-  const [selectedMonthAvailabilities, setSelectedMonthAvailabilities] =
-    useState<FacilityAvailability[]>();
+  const [monthlyAvailabilities, setMonthlyAvailabilities] = useState<
+    FacilityAvailability[]
+  >([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchAvailabilities() {
-      try {
-        const availabilities = await fetchFacilityAvailabilities(
-          facility as string,
-          token as string,
-        );
+  async function fetchAvailabilities() {
+    setIsLoading(true);
+    try {
+      const availabilities = await fetchFacilityAvailabilities(
+        facility as string,
+        token as string,
+      );
 
-        setAvailabilities(availabilities);
-      } catch (error) {
-        toast.error((error as Error).message);
-      }
+      setAvailabilities(availabilities);
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setIsLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchAvailabilities();
   }, [token, facility]);
 
   useEffect(() => {
     if (!date) return;
-    setSelectedMonthAvailabilities(
+    setMonthlyAvailabilities(
       availabilities.filter((avl) => {
         const avlDate = new Date(avl.startDate);
 
@@ -75,10 +88,29 @@ export default function AvailabilityViewer({
     );
   }, [date]);
 
+  const reserveAvailability = async (availabilityId: string, date: Date) => {
+    try {
+      await createReservation(
+        availabilityId,
+        user?.id as string,
+        token as string,
+      );
+
+      setMonthlyAvailabilities((prev) =>
+        prev.filter((av) => av.id != availabilityId),
+      );
+
+      toast.success(
+        `Reservation confirmed for ${date.toLocaleDateString("en-US")}`,
+      );
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      {selectedMonthAvailabilities &&
-      selectedMonthAvailabilities?.length != 0 ? (
+      {monthlyAvailabilities && monthlyAvailabilities?.length != 0 ? (
         <>
           <SectionHeader
             title="Availabilities"
@@ -86,9 +118,13 @@ export default function AvailabilityViewer({
           />
           <ScrollArea className="my-4 h-auto mx-8 rounded-md border">
             <div className="p-4 space-y-4">
-              {selectedMonthAvailabilities.map(
+              {monthlyAvailabilities.map(
                 (availability: FacilityAvailability) => (
-                  <Availability availability={availability} />
+                  <Availability
+                    key={availability.id}
+                    availability={availability}
+                    onReserve={reserveAvailability}
+                  />
                 ),
               )}
             </div>
