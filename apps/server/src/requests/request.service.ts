@@ -151,7 +151,7 @@ export class RequestService {
         .find({ type: RequestType.STAFF, companyId: userCompanyId })
         .exec();
     } else {
-      throw new UnauthorizedException({message:'invalid role'});
+      throw new UnauthorizedException({ message: 'invalid role' });
     }
 
     return requests;

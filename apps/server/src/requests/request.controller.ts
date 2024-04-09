@@ -29,7 +29,7 @@ import { RequestEntity } from './entities/request.entity';
 @ApiBearerAuth()
 @Controller('requests')
 export class RequestController {
-  constructor(private readonly requestService: RequestService) { }
+  constructor(private readonly requestService: RequestService) {}
 
   @Post(':unitId')
   @UseGuards(AuthGuard)
@@ -76,6 +76,5 @@ export class RequestController {
     @Param('userId') userId: string,
   ): Promise<RequestEntity[]> {
     return await this.requestService.findAllRequestsForUser(userId);
-
   }
 }

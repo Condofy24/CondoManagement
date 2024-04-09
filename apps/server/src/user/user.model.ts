@@ -4,9 +4,9 @@
 export enum UserRoles {
   MANAGER = 0,
   STAFF = 1,
-  ACCOUNTANT = 2, 
-  OWNER = 3, 
-  RENTER = 4, 
+  ACCOUNTANT = 2,
+  OWNER = 3,
+  RENTER = 4,
 }
 
 /**
