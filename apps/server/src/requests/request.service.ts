@@ -3,14 +3,18 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
   forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { CreateRequestDto } from './dto/create-request.dto';
-import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestEntity } from './entities/request.entity';
 import { UnitService } from '../unit/unit.service';
+import { UserService } from '../user/user.service';
+import { UserRoles } from '../user/user.model';
+import { BuildingService } from '../building/building.service';
+import { RequestType } from './dto/create-request.dto';
 
 @Injectable()
 export class RequestService {
@@ -18,6 +22,8 @@ export class RequestService {
     @InjectModel('Request') private readonly requestModel: Model<RequestEntity>,
     @Inject(forwardRef(() => UnitService))
     private readonly unitService: UnitService,
+    private userService: UserService,
+    private buildingService: BuildingService,
   ) {}
 
   /**
@@ -41,11 +47,18 @@ export class RequestService {
       throw new BadRequestException({
         message: 'Must be an owner to submit a request for this unit',
       });
+
+    const building = await this.buildingService.findBuildingById(
+      unit.buildingId.toString(),
+    );
+    if (!building)
+      throw new NotFoundException({ message: 'Building does not exist' });
     const createdRequest = new this.requestModel({
       ...createRequestDto,
       unit: unitId,
       owner: ownerId,
       status: 'Submitted',
+      companyId: building?.companyId,
     });
     return createdRequest.save();
   }
@@ -68,7 +81,7 @@ export class RequestService {
    * @throws NotFoundException if the request with the specified id is not found.
    * @throws BadRequestException if there is an error updating the request.
    */
-  async update(
+  public async update(
     id: string,
     updatedFields: Partial<RequestEntity>,
   ): Promise<RequestEntity> {
@@ -112,5 +125,35 @@ export class RequestService {
     if (!result) {
       throw new NotFoundException(`Request with ID "${id}" not found.`);
     }
+  }
+
+  public async findAllRequestsForUser(
+    userId: string,
+  ): Promise<RequestEntity[]> {
+    const user = await this.userService.findUserById(userId);
+    if (!user) throw new Error('User not found');
+
+    const role = user.role;
+    const userCompanyId = user.companyId;
+    let requests = [];
+
+    // Initial fetch based on role
+    if (role === UserRoles.MANAGER) {
+      requests = await this.requestModel
+        .find({ companyId: userCompanyId })
+        .exec();
+    } else if (role === UserRoles.ACCOUNTANT) {
+      requests = await this.requestModel
+        .find({ type: RequestType.FINANCIAL, companyId: userCompanyId })
+        .exec();
+    } else if (role === UserRoles.STAFF) {
+      requests = await this.requestModel
+        .find({ type: RequestType.STAFF, companyId: userCompanyId })
+        .exec();
+    } else {
+      throw new UnauthorizedException({ message: 'invalid role' });
+    }
+
+    return requests;
   }
 }

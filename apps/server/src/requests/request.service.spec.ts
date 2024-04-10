@@ -1,16 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
-import { MongoServerError, ObjectId } from 'mongodb';
-import {
-  BadRequestException,
-  HttpException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ObjectId } from 'mongodb';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UnitService } from '../unit/unit.service';
 import { RequestService } from './request.service';
 import { RequestModel, RequestStatus } from './entities/request.entity';
 import { CreateRequestDto, RequestType } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
+import { UserService } from '../user/user.service';
+import { BuildingService } from '../building/building.service';
 
 const mockingoose = require('mockingoose');
 
@@ -37,9 +35,38 @@ const occupiedUnitInfoTestData = {
   isOccupiedByRenter: true,
   fees: 500,
 };
+const userInfoTestData = {
+  _id: new ObjectId(),
+  email: 'user@example.com',
+  name: 'Test User',
+  role: 0,
+  phoneNumber: '1234567890',
+  imageUrl: 'https://example.com/image.jpg',
+  imageId: 'image123',
+  companyId: new ObjectId(),
+};
+const buildingInfoTestData = {
+  _id: new ObjectId(),
+  companyId: new ObjectId(),
+  name: 'PEWPEWWW',
+  address: '2240PewPew',
+  unitCount: 43,
+  parkingCount: 23,
+  storageCount: 6,
+  fileUrl: 'https://example.com/image.jpg',
+  filePublicId: 'image123',
+  fileAssetId: 'Image212344124',
+};
 
 const unitServiceMock = {
   findUnitById: jest.fn().mockResolvedValue(occupiedUnitInfoTestData),
+};
+
+const userServiceMock = {
+  findUserById: jest.fn().mockResolvedValue(userInfoTestData),
+};
+const buildingServiceMock = {
+  findBuildingById: jest.fn().mockResolvedValue(buildingInfoTestData),
 };
 
 const createRequestDto: CreateRequestDto = {
@@ -56,16 +83,7 @@ const requestInfoTestData2 = {
   status: RequestStatus.IN_PROGRESS,
   owner: new ObjectId(),
   unit: new ObjectId(),
-};
-
-const mongoUniqueIndexException: MongoServerError = {
-  addErrorLabel: (_) => {},
-  hasErrorLabel: (_) => false,
-  name: 'test',
-  message: 'etst',
-  errmsg: 'duplicate ID',
-  errorLabels: [],
-  code: 110000,
+  companyId: new ObjectId(),
 };
 
 describe('RequestService', () => {
@@ -82,6 +100,14 @@ describe('RequestService', () => {
         {
           provide: UnitService,
           useValue: unitServiceMock,
+        },
+        {
+          provide: UserService,
+          useValue: userServiceMock,
+        },
+        {
+          provide: BuildingService,
+          useValue: buildingServiceMock,
         },
       ],
     }).compile();
@@ -192,6 +218,18 @@ describe('RequestService', () => {
         expect(createdRequest.title).toBe(createRequestDto.title);
         expect(createdRequest.status).toBe('Submitted');
       });
+    });
+  });
+  describe('findAllRequestsForUser', () => {
+    it('Manager (role 0) can retrieve all relevant requests', async () => {
+      //Arrange
+      mockingoose(RequestModel).toReturn([requestInfoTestData2], 'find');
+      //Act
+      const result = service.findAllRequestsForUser(
+        userInfoTestData._id.toString(),
+      );
+      //Assert
+      expect(result).toBeDefined();
     });
   });
 });
