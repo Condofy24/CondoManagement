@@ -102,6 +102,27 @@ export async function createRequest(
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function fetchRequests(ownerId: string, token: string) {
+  try {
+    const result = await axios.get(`${API_URL}/requests/${ownerId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while fetching requests";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
   }
 }
 
