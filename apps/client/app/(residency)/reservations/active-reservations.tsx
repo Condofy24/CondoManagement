@@ -14,6 +14,8 @@ type Props = {
 };
 
 export default function ActiveReservations({ activeReservations }: Props) {
+  const { token } = useAppSelector((state) => state.auth.value);
+
   const [reservations, setReservations] = useState<Reservation[]>([
     ...activeReservations,
   ]);
@@ -54,8 +56,6 @@ export default function ActiveReservations({ activeReservations }: Props) {
       id: "cancel",
       cell: ({ row }) => {
         const reservation = row.original;
-
-        const { token } = useAppSelector((state) => state.auth.value);
 
         return (
           <Button
