@@ -1,6 +1,7 @@
 import { API_URL } from "@/global";
 import { TRequestSchema } from "@/lib/unit-validation-schemas";
 import { TUnitKeySchema } from "@/lib/validation-schemas";
+import { UserRoles } from "@/types";
 import axios from "axios";
 
 export async function claimOwnerUnit(data: TUnitKeySchema, token: string) {
@@ -106,9 +107,16 @@ export async function createRequest(
   }
 }
 
-export async function fetchRequests(ownerId: string, token: string) {
+export async function fetchRequests(
+  id: string,
+  token: string,
+  userRole: UserRoles,
+) {
   try {
-    const result = await axios.get(`${API_URL}/requests/${ownerId}`, {
+    const endpoint =
+      userRole === UserRoles.OWNER ? `requests/${id}` : `requests/user/${id}`;
+
+    const result = await axios.get(`${API_URL}/${endpoint}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

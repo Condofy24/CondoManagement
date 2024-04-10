@@ -28,14 +28,18 @@ export default function useRequest() {
   const fetchProperties = useCallback(async () => {
     setIsLoading(true);
     try {
-      const requests = await fetchRequests(user.id as string, token as string);
+      const requests = await fetchRequests(
+        user.id as string,
+        token as string,
+        user.role,
+      );
       setRequests(requests);
     } catch (error) {
       toast.error((error as Error).message);
     } finally {
       setIsLoading(false);
     }
-  }, [token, user?.id, setRequests]);
+  }, [user.id, user.role, token]);
 
   useEffect(() => {
     fetchProperties();
