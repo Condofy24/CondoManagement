@@ -44,49 +44,38 @@ export default function AvailabilityViewer({
   date,
 }: AvailabilityViewerProps) {
   const { token, user } = useAppSelector((state) => state.auth.value);
-  const [availabilities, setAvailabilities] = useState<FacilityAvailability[]>(
-    [],
-  );
+
   const [monthlyAvailabilities, setMonthlyAvailabilities] = useState<
     FacilityAvailability[]
   >([]);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  async function fetchAvailabilities() {
-    setIsLoading(true);
-    try {
-      const availabilities = await fetchFacilityAvailabilities(
-        facility as string,
-        token as string,
-      );
-
-      setAvailabilities(availabilities);
-    } catch (error) {
-      toast.error((error as Error).message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   useEffect(() => {
-    fetchAvailabilities();
-  }, [token, facility]);
-
-  useEffect(() => {
-    if (!date) return;
-    setMonthlyAvailabilities(
-      availabilities.filter((avl) => {
-        const avlDate = new Date(avl.startDate);
-
-        return (
-          date.getFullYear() == avlDate.getFullYear() &&
-          date.getMonth() == avlDate.getMonth() &&
-          date.getDate() == avlDate.getDate()
+    async function fetchAvailabilities() {
+      if (!date) return;
+      try {
+        const availabilities = await fetchFacilityAvailabilities(
+          facility as string,
+          token as string,
         );
-      }),
-    );
-  }, [date]);
+
+        setMonthlyAvailabilities(
+          availabilities.filter((avl: FacilityAvailability) => {
+            const avlDate = new Date(avl.startDate);
+
+            return (
+              date.getFullYear() == avlDate.getFullYear() &&
+              date.getMonth() == avlDate.getMonth() &&
+              date.getDate() == avlDate.getDate()
+            );
+          }),
+        );
+      } catch (error) {
+        toast.error((error as Error).message);
+      }
+    }
+
+    fetchAvailabilities();
+  }, [token, facility, date]);
 
   const reserveAvailability = async (availabilityId: string, date: Date) => {
     try {
@@ -113,7 +102,12 @@ export default function AvailabilityViewer({
       {monthlyAvailabilities && monthlyAvailabilities?.length != 0 ? (
         <>
           <SectionHeader
-            title="Availabilities"
+            title={`${date.toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}`}
             className="text-2xl mt-8 text-center grow"
           />
           <ScrollArea className="my-4 h-auto mx-8 rounded-md border">

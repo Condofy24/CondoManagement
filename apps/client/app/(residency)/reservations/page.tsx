@@ -14,6 +14,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ActiveReservations from "./active-reservations";
+import PastReservations from "./past-reservations";
+import CanceledReservations from "./canceled-reservations";
 
 export default function OwnerPropertiesDashboardPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -43,6 +45,16 @@ export default function OwnerPropertiesDashboardPage() {
     (res) => res.status == ReservationStatus.ACTIVE,
   );
 
+  const pastReservations = reservations.filter(
+    (res) => res.status == ReservationStatus.COMPLETE,
+  );
+
+  const canceledReservations = reservations.filter(
+    (res) =>
+      res.status == ReservationStatus.CANCELED ||
+      res.status == ReservationStatus.CANCELED_BY_COMPANY,
+  );
+
   return (
     <div className="flex flex-1 flex-col p-4 space-y-8 md:p-10">
       <div className="flex items-center justify-end space-y-2">
@@ -62,7 +74,7 @@ export default function OwnerPropertiesDashboardPage() {
           ) : reservations.length == 0 ? (
             <h1>No Reservations found</h1>
           ) : (
-            <Tabs defaultValue="active" className="w-2/3">
+            <Tabs defaultValue="active" className="w-full md:w-2/3">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="active">Active</TabsTrigger>
                 <TabsTrigger value="past">Past</TabsTrigger>
@@ -71,8 +83,12 @@ export default function OwnerPropertiesDashboardPage() {
               <TabsContent value="active">
                 <ActiveReservations activeReservations={activeReservations} />
               </TabsContent>
-              <TabsContent value="past"></TabsContent>
-              <TabsContent value="canceled"></TabsContent>
+              <TabsContent value="past">
+                <PastReservations reservations={pastReservations} />
+              </TabsContent>
+              <TabsContent value="canceled">
+                <CanceledReservations reservations={canceledReservations} />
+              </TabsContent>
             </Tabs>
           )}
         </div>

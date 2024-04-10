@@ -7,14 +7,10 @@ import { getModelToken } from '@nestjs/mongoose';
 import { UserService } from '../user/user.service';
 import { BuildingService } from '../building/building.service';
 import { ObjectId } from 'mongodb';
-import {
-  BadRequestException,
-  HttpException,
-  NotFoundException,
-} from '@nestjs/common';
-import mongoose from 'mongoose';
+import { BadRequestException } from '@nestjs/common';
 import ReservationModel from './entities/reservation.entity';
 import { ReservationStatus } from './entities/reservation.entity';
+import facilitiesEntity from './entities/facilities.entity';
 
 describe('FacilityService', () => {
   let service: FacilityService;
@@ -109,6 +105,28 @@ describe('FacilityService', () => {
     availabilityId: new ObjectId('65ff57c1f2e0bc27cede0b92'),
     userId: new ObjectId('65ff57c1f2e0bc27cede0b93'),
     status: ReservationStatus.COMPLETE,
+  };
+
+  const buildingInfoTestData = {
+    _id: new ObjectId(),
+    companyId: new ObjectId(),
+    name: 'PEWPEWWW',
+    address: '2240PewPew',
+    unitCount: 43,
+    parkingCount: 23,
+    storageCount: 6,
+    fileUrl: 'https://example.com/image.jpg',
+    filePublicId: 'image123',
+    fileAssetId: 'Image212344124',
+  };
+
+  const facilityTestData = {
+    _id: new ObjectId(),
+    buildingId: new ObjectId(),
+    name: 'test',
+    fees: 123,
+    operationTimes: [],
+    duration: 123,
   };
 
   beforeEach(async () => {
@@ -306,9 +324,24 @@ describe('FacilityService', () => {
       //Arrange
       const userid = reservationFindMockResponse.id;
 
+      mockingoose(FacilityModel).toReturn(facilityTestData, 'findOne');
       mockingoose(ReservationModel).toReturn(
         [reservationFindMockResponse],
-        'find',
+        'findOne',
+      );
+      mockingoose(FacilityAvailabilityModel).toReturn(
+        {
+          _id: new ObjectId(),
+          facilityId: new ObjectId(),
+          startDate: new Date(),
+          endDate: new Date(),
+          status: 'Complete',
+        },
+        'findOne',
+      );
+
+      buildingServiceMock.findBuildingById.mockResolvedValue(
+        buildingInfoTestData,
       );
 
       //Act
