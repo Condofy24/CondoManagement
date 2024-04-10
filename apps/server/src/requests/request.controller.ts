@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Request,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -21,6 +23,7 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestModel } from './models/request.model';
 import { AuthGuard } from '../auth/auth.guard';
+import { RequestEntity } from './entities/request.entity';
 
 @ApiTags('Request')
 @ApiBearerAuth()
@@ -66,5 +69,12 @@ export class RequestController {
   async remove(@Param('id') id: string) {
     await this.requestService.remove(id);
     return { statusCode: 200, message: 'Request removed successfully.' };
+  }
+
+  @Get('user/:userId')
+  async getAllRequestsForUser(
+    @Param('userId') userId: string,
+  ): Promise<RequestEntity[]> {
+    return await this.requestService.findAllRequestsForUser(userId);
   }
 }
