@@ -85,6 +85,26 @@ export async function fetchOwnerInfo(unitId: string, token: string) {
   }
 }
 
+export async function createRequest(
+  unitId: string,
+  data: TRequestSchema,
+  token: string,
+) {
+  try {
+    const result = await axios.post(`${API_URL}/requests/${unitId}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return result.data;
+  } catch (error: any) {
+    let message = "An error occured while creating request";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+  }
+}
+
 /**** Facility & Reservation ***/
 export async function fetchBuildingFacilities(
   buildingId: string,
