@@ -52,6 +52,19 @@ export class FacilityController {
   }
 
   /**
+   * Get all facilities for a building
+   * @param buildingId - The ID of the building.
+   */
+  @Get(':buildingId')
+  @ApiOkResponse({
+    description: 'All facilities in a building',
+    type: [FacilityModel],
+  })
+  async getFacilities(@Param('buildingId') buildingId: string) {
+    return await this.facilityService.getFacilities(buildingId);
+  }
+
+  /**
    * View all availabilites under a given facility id
    * @param facilityId - The ID of the facility.
    * Role needs to be added
@@ -79,20 +92,6 @@ export class FacilityController {
     return await this.facilityService.deleteFacility(facilityId);
   }
 
-  /**
-   * Get all facilities for a building
-   * @param buildingId - The ID of the building.
-   */
-  @Get(':buildingId')
-  @UseGuards(PrivilegeGuard)
-  @Roles(0)
-  @ApiOkResponse({
-    description: 'All facilities in a building',
-    type: [FacilityModel],
-  })
-  async getFacilities(@Param('buildingId') buildingId: string) {
-    return await this.facilityService.getFacilities(buildingId);
-  }
   /**
    * Make a reservation for an availability.
    * @param availabilityId - The ID of the availability

@@ -39,10 +39,10 @@ export function ResidentNav() {
           </Link>
         )}
         <Link
-          href="/"
+          href="/reservations"
           className={cn(
             "text-xs navItem transition-all hover:text-foreground/80 hover:scale-105",
-            pathname?.includes("/reservation")
+            pathname?.includes("/reservations")
               ? "text-foreground"
               : "text-foreground/60",
           )}
