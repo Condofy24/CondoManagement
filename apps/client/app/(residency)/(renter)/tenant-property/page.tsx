@@ -53,7 +53,6 @@ export default function RenterUnitPage() {
           property?.id as string,
           token as string,
         );
-        console.log(owner);
 
         setOwner(owner);
       } catch (_) {}

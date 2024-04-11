@@ -20,11 +20,28 @@ export class ReservationModel {
   @ApiProperty()
   status: ReservationStatus;
 
-  constructor(entity: ReservationEntity) {
+  @ApiProperty()
+  buildingName?: string;
+
+  @ApiProperty()
+  facilityName?: string;
+
+  @ApiProperty()
+  date?: Date[];
+
+  constructor(
+    entity: ReservationEntity,
+    buildingName?: string,
+    facilityName?: string,
+    date?: Date[],
+  ) {
     this.id = entity._id.toString();
     this.facilityId = entity.facilityId.toString();
     this.availabilityId = entity.availabilityId.toString();
     this.userId = entity.userId.toString();
     this.status = entity.status;
+    this.buildingName = buildingName;
+    this.facilityName = facilityName;
+    this.date = date;
   }
 }

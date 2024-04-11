@@ -18,11 +18,12 @@ import { FacilityModel } from './models/facility.model';
 import { FacilityAvailabilityEntity } from './entities/availability.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { FacilityAvailabilityModel } from './models/availability.model';
-import {
+import reservationEntity, {
   ReservationEntity,
   ReservationStatus,
 } from './entities/reservation.entity';
 import { ReservationModel } from './models/reservation.model';
+import { BuildingEntity } from 'src/building/entities/building.entity';
 
 /**
  * Service class for managing buildings.
@@ -254,20 +255,33 @@ export class FacilityService {
     return new ReservationModel(entity as ReservationEntity);
   }
 
-  public async getReservations(userId: string) {
-    try {
-      const reservations = await this.reservationModel.find({ userId });
-      return (
-        reservations?.map((reservation) => new ReservationModel(reservation)) ||
-        []
-      );
-    } catch (e) {
-      throw new BadRequestException({
-        message: 'Reservations could not be fetched',
-        error: e?.message,
-      });
-    }
+  public async getReservations(userId: string): Promise<ReservationModel[]> {
+    const reservations = await this.reservationModel.find({ userId });
+
+    return Promise.all(
+      reservations.map(async (res: ReservationEntity) => {
+        const facility = await this.facilityModel.findById(res.facilityId);
+        const building = await this.buildingService.findBuildingById(
+          (facility as FacilityEntity).buildingId.toString(),
+        );
+
+        const availability = await this.facilityAvailabilityModel.findById(
+          res.availabilityId,
+        );
+
+        return new ReservationModel(
+          res,
+          (facility as FacilityEntity).name,
+          (building as BuildingEntity).name,
+          [
+            (availability as FacilityAvailabilityEntity).startDate,
+            (availability as FacilityAvailabilityEntity).endDate,
+          ],
+        );
+      }),
+    );
   }
+
   public async getFacilityReservations(facilityId: string) {
     try {
       const reservations = await this.reservationModel.find({ facilityId });

@@ -33,7 +33,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   redirectPath?: string;
   filter?: { title: string; key: string };
-
+  showColumnVisibility?: boolean;
   showRowsPerPage?: boolean;
 }
 
@@ -43,6 +43,7 @@ export function DataTable<TData, TValue>({
   redirectPath,
   filter,
   showRowsPerPage = true,
+  showColumnVisibility = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -82,7 +83,11 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {/* @ts-ignore */}
-      <DataTableToolbar table={table} filter={filter} />
+      <DataTableToolbar
+        table={table}
+        filter={filter}
+        showColumnVisibility={showColumnVisibility}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -119,7 +124,7 @@ export function DataTable<TData, TValue>({
                   className="relative h-[3rem]"
                 >
                   {redirectPath && (
-                    <TableCell onClick={() => console.log("test")}>
+                    <TableCell>
                       <Link
                         className="absolute top-0 left-0 w-full h-[3rem]"
                         href={redirectPath.replace(
