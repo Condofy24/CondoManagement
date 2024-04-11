@@ -31,6 +31,9 @@ export type Property = {
 };
 
 export type Request = {
+  companyId: string;
+  owner: string;
+  _id: string;
   title: string;
   type: RequestType;
   description: string;
