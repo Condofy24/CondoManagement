@@ -38,7 +38,7 @@ export function StaffNav() {
           </Link>
         )}
         <Link
-          href="/"
+          href="/requests"
           className={cn(
             "navItem transition-all hover:text-foreground/80 hover:scale-105",
             pathname?.startsWith("/requests")

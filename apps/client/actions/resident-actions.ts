@@ -2,6 +2,7 @@ import { API_URL } from "@/global";
 import { TRequestSchema } from "@/lib/unit-validation-schemas";
 import { TUnitKeySchema } from "@/lib/validation-schemas";
 import { ReservationStatus } from "@/types";
+import { RequestStatus, UserRoles } from "@/types";
 import axios from "axios";
 
 export async function claimOwnerUnit(data: TUnitKeySchema, token: string) {
@@ -107,9 +108,16 @@ export async function createRequest(
   }
 }
 
-export async function fetchRequests(ownerId: string, token: string) {
+export async function fetchRequests(
+  id: string,
+  token: string,
+  userRole: UserRoles,
+) {
   try {
-    const result = await axios.get(`${API_URL}/requests/${ownerId}`, {
+    const endpoint =
+      userRole === UserRoles.OWNER ? `requests/${id}` : `requests/user/${id}`;
+
+    const result = await axios.get(`${API_URL}/${endpoint}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -237,6 +245,54 @@ export async function cancelReservation(reservationId: string, token: string) {
     return result.data;
   } catch (error: any) {
     let message = "An error occured when canceling your reservation";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function removeRequest(id: string, token: string) {
+  try {
+    const result = await axios.delete(`${API_URL}/requests/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.status;
+  } catch (error: any) {
+    let message = "An error occured while removing requests";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export type RequestUpdateData = {
+  id: string;
+  status: string;
+  resolutionContent: string;
+};
+
+export async function respondToRequest(
+  id: string,
+  data: RequestUpdateData,
+  token: string,
+) {
+  try {
+    const result = await axios.patch(`${API_URL}/requests/${id}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return result.status;
+  } catch (error: any) {
+    let message = "An error occured while updating requests";
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;
