@@ -2,6 +2,26 @@
 
 ### Deployed App: https://condo-management-client.vercel.app/
 
+#### Credentials to login
+
+Manager:
+
+Email: manager@email.com
+
+Password: Password1! (capital P)
+
+Employee:
+
+Email: employee@company.com
+
+Password: employee_5432187690
+
+Owner:
+
+Email: owner@email.com
+
+Password: Password1! (capital P)
+
 #### ** This project uses pnpm, which can be installed using npm: npm install -g pnpm **
 
 #### ** Use pnpm as if its npm **
