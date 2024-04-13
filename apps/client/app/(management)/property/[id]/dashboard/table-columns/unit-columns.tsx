@@ -28,6 +28,7 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
+import SelectParkingStorageModal from "../link-amentities-modal";
 
 type UnitActionsMenuProps = {
   unit: Unit;
@@ -110,7 +111,7 @@ const RegistrationKeysPopover = ({
 };
 
 const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
-  const { setAsset, setMode, setShowPaymentDialog, setShowDialog } =
+  const { setAsset, setMode, setShowPaymentDialog, setShowDialog, setShowAmenityDialog } =
     useAssetManagement();
 
   return (
@@ -140,6 +141,14 @@ const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
           }}
         >
           Add Payment
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            setAsset(unit);
+            setShowAmenityDialog(true);
+          }}
+        >
+          Link amenity
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

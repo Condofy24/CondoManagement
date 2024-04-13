@@ -13,8 +13,10 @@ export type Mode = "create" | "edit";
 type AssetManagementContextType = {
   showDialog: boolean;
   showPaymentDialog: boolean;
+  showAmenityDialog: boolean;
   setShowDialog: Dispatch<SetStateAction<boolean>>;
   setShowPaymentDialog: Dispatch<SetStateAction<boolean>>;
+  setShowAmenityDialog: Dispatch<SetStateAction<boolean>>;
   mode: Mode;
   setMode: Dispatch<SetStateAction<Mode>>;
   asset: Asset | null;
@@ -40,6 +42,7 @@ export default function AssetManagementContextProvider({
 }: AssetManagementContextProviderProps) {
   const [showDialog, setShowDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showAmenityDialog, setShowAmenityDialog] = useState(false);
   const [asset, setAsset] = useState<Asset | null>(null);
   const [currentAssets, setCurrentAssets] = useState<AssetTypes>([]);
   const [mode, setMode] = useState<Mode>("create");
@@ -58,6 +61,8 @@ export default function AssetManagementContextProvider({
         setCurrentAssets,
         showPaymentDialog,
         setShowPaymentDialog,
+        showAmenityDialog,
+        setShowAmenityDialog,
         setAsset,
         assetPage,
         setAssetPage,

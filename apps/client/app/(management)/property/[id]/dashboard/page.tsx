@@ -17,6 +17,7 @@ import { DataTable } from "@/app/components/table/data-table";
 import AddPaymentModal from "./make-payment-modal";
 import LoadingSpinner from "@/app/components/loading-spinner";
 import { facilityColumns } from "./table-columns/facility-columns";
+import SelectParkingStorageModal from "./link-amentities-modal";
 
 export default function AssetsDashboard() {
   const { assetPage, setAssetPage, assets, isFetching } = useAssets();
@@ -32,6 +33,7 @@ export default function AssetsDashboard() {
         <CreateUpdateAssetModal assetName={assetPage} />
       </div>
       <AddPaymentModal />
+      <SelectParkingStorageModal />
       {isFetching ? (
         <div className="flex justify-center items-center">
           <LoadingSpinner />
