@@ -36,7 +36,10 @@ import { assetsColumns } from "./table-columns/assets-columns";
 import { DataTable } from "@/app/components/table/data-table";
 import CreateUpdateAssetModal from "./create-update-asset-modal";
 import { ManagerOptions } from "./manager-options";
-import { fetchBuildingParkings, fetchBuildingStorages } from "@/actions/management-actions";
+import {
+  fetchBuildingParkings,
+  fetchBuildingStorages,
+} from "@/actions/management-actions";
 import { useParams } from "next/navigation";
 import { useAppSelector } from "@/redux/store";
 import { use, useEffect, useState } from "react";
@@ -48,9 +51,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue
-  
-} from "@/app/components/ui/select"
+  SelectValue,
+} from "@/app/components/ui/select";
 
 export default function SelectParkingStorageModal() {
   const { token } = useAppSelector((state) => state.auth.value);
@@ -66,16 +68,14 @@ export default function SelectParkingStorageModal() {
     fetchBuildingStorages(buildingId as string, token as string).then(
       (storage) => {
         setStorage(storage);
-      }
+      },
     );
     fetchBuildingParkings(buildingId as string, token as string).then(
       (parkings) => {
         setParking(parkings);
-      }
+      },
     );
   }, []);
-
-
 
   return (
     <Dialog open={showAmenityDialog} onOpenChange={setShowAmenityDialog}>
@@ -99,21 +99,23 @@ export default function SelectParkingStorageModal() {
                     <LoadingSpinner />
                   </div>
                 ) : (
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a parking number" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {parking.map((asset) => (
-                              <SelectItem key={asset.parkingNumber} value={asset.parkingNumber as unknown as string}>
-                                {asset.parkingNumber}
-                              </SelectItem>
-                            ))}
-
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                  <Select>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select a parking number" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {parking.map((asset) => (
+                          <SelectItem
+                            key={asset.parkingNumber}
+                            value={asset.parkingNumber as unknown as string}
+                          >
+                            {asset.parkingNumber}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
                   // getTable(BuildingAsset.parking, parking)
                 )}
@@ -144,12 +146,14 @@ export default function SelectParkingStorageModal() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                      {storage.map((asset) => (
-                        <SelectItem key={asset.storageNumber} value={asset.storageNumber as unknown as string}>
-                        {asset.storageNumber}
-                      </SelectItem>
-                      ))}
-
+                        {storage.map((asset) => (
+                          <SelectItem
+                            key={asset.storageNumber}
+                            value={asset.storageNumber as unknown as string}
+                          >
+                            {asset.storageNumber}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
