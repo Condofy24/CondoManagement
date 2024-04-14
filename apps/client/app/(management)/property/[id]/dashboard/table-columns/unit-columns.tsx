@@ -111,8 +111,13 @@ const RegistrationKeysPopover = ({
 };
 
 const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
-  const { setAsset, setMode, setShowPaymentDialog, setShowDialog, setShowAmenityDialog } =
-    useAssetManagement();
+  const {
+    setAsset,
+    setMode,
+    setShowPaymentDialog,
+    setShowDialog,
+    setShowAmenityDialog,
+  } = useAssetManagement();
 
   return (
     <DropdownMenu>
