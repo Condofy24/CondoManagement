@@ -37,7 +37,11 @@ export default function FacilityForm() {
   const { register, handleSubmit, errors, onSubmit, isDirty, form } =
     useFacilityForm(assetSortedTimes as TFacilitySchema);
   return (
-    <form className="p-4 overflow-y-auto" style={{maxHeight: "80vh"}} onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="p-4 overflow-y-auto"
+      style={{ maxHeight: "80vh" }}
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="mb-4">
         <label className="block text-sm font-bold mb-2" htmlFor="fees">
           {`Facility Name`}
