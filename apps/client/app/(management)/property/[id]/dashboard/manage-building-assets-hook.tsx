@@ -7,6 +7,7 @@ import {
 import { useAssetManagement } from "@/context/asset-management-context";
 import { useAppSelector } from "@/redux/store";
 import { BuildingAsset, Facility, Parking, Storage, Unit } from "@/types";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -20,7 +21,7 @@ const assetFetchAction = (asset: BuildingAsset) => {
   return fetchBuildingUnits;
 };
 
-export default function useBuildingAsset(buildingId?: string) {
+export default function useBuildingAsset() {
   const {
     assetPage,
     setAssetPage,
@@ -30,6 +31,7 @@ export default function useBuildingAsset(buildingId?: string) {
     setIsFetching,
   } = useAssetManagement();
   const { token } = useAppSelector((state) => state.auth.value);
+  const { id: buildingId } = useParams();
 
   const fetchAssets = useCallback(async () => {
     setIsFetching(true);
