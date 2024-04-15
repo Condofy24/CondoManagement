@@ -1,5 +1,3 @@
-"use client";
-
 import { ManagerOptions } from "./manager-options";
 import { Parking, Unit, Storage, BuildingAsset, Facility } from "@/types";
 import useAssets from "./manage-building-assets-hook";
@@ -11,7 +9,7 @@ import AddPaymentModal from "./make-payment-modal";
 import LoadingSpinner from "@/app/components/loading-spinner";
 import { facilityColumns } from "./table-columns/facility-columns";
 
-export default function AssetsDashboard({
+export default async function AssetsDashboard({
   params,
 }: {
   params: { id: string };
