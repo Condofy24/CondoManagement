@@ -1,3 +1,4 @@
+"use client";
 import { ManagerOptions } from "./manager-options";
 import { Parking, Unit, Storage, BuildingAsset, Facility } from "@/types";
 import useAssets from "./manage-building-assets-hook";
@@ -10,7 +11,7 @@ import LoadingSpinner from "@/app/components/loading-spinner";
 import { facilityColumns } from "./table-columns/facility-columns";
 
 export default async function AssetsDashboard() {
-  const { assetPage, setAssetPage, assets, isFetching } = useAssets(params.id);
+  const { assetPage, setAssetPage, assets, isFetching } = useAssets();
   return (
     <div className="flex flex-1 flex-col p-4 space-y-5 md:p-16 mb-10">
       <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
