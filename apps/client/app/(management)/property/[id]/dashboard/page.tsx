@@ -11,8 +11,12 @@ import AddPaymentModal from "./make-payment-modal";
 import LoadingSpinner from "@/app/components/loading-spinner";
 import { facilityColumns } from "./table-columns/facility-columns";
 
-export default function AssetsDashboard() {
-  const { assetPage, setAssetPage, assets, isFetching } = useAssets();
+export default function AssetsDashboard({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const { assetPage, setAssetPage, assets, isFetching } = useAssets(params.id);
   return (
     <div className="flex flex-1 flex-col p-4 space-y-5 md:p-16 mb-10">
       <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
