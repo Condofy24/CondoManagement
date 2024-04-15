@@ -1,0 +1,30 @@
+# services:
+#   condofy:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "3000:3000"
+#       - "4000:4000"
+#     environment:
+#       - PORT=3000
+#       - PORT=4000
+#       - NODE_ENV=development
+#     volumes:
+#       - ./src:usr/src/app/src
+version: '3'
+
+services:
+  condofy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+    environment:
+      - PORT_FRONTEND=3000
+      - PORT_BACKEND=4000
+      - NODE_ENV=production
+    volumes:
+      - ./src:/usr/src/app/src
