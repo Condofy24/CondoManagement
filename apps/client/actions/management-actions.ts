@@ -299,6 +299,32 @@ export async function updateParking(
   }
 }
 
+export async function linkParkingToUnit(
+  unitId: string,
+  parkingId: string,
+  token: string,
+) {
+  try {
+    const res = await axios.patch(
+      `${API_URL}/parking/link/${unitId}/${parkingId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while updating parking";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
 /*********************
  *       Storages
  ********************/
@@ -372,6 +398,32 @@ export async function updateStorage(
     return res.status;
   } catch (error: any) {
     let message = "An error occurred while updating storage";
+
+    if (error.response && error.response.data.message)
+      message = error.response.data.message;
+
+    throw new Error(message);
+  }
+}
+
+export async function linkStorageToUnit(
+  unitId: string,
+  StorageId: string,
+  token: string,
+) {
+  try {
+    const res = await axios.patch(
+      `${API_URL}/storage/link/${unitId}/${StorageId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return res.status;
+  } catch (error: any) {
+    let message = "An error occurred while updating parking";
 
     if (error.response && error.response.data.message)
       message = error.response.data.message;
