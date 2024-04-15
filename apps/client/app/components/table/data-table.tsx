@@ -124,7 +124,7 @@ export function DataTable<TData, TValue>({
                   className="relative h-[3rem]"
                 >
                   {redirectPath && (
-                    <TableCell}>
+                    <TableCell>
                       <Link
                         className="absolute top-0 left-0 w-full h-[3rem]"
                         href={redirectPath.replace(
