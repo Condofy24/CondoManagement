@@ -16,26 +16,32 @@ export default function AssetsDashboard({
 }: {
   params: { id: string };
 }) {
-  const { assetPage, setAssetPage, assets, isFetching } = useAssets(params.id);
+  // const { assetPage, setAssetPage, assets, isFetching } = useAssets(params.id);
   return (
     <div className="flex flex-1 flex-col p-4 space-y-5 md:p-16 mb-10">
-      <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
-        {getAssetPageTitle(assetPage)}
-      </p>
-      <div className="w-fit">
-        <ManagerOptions setAssetPage={setAssetPage} />
-      </div>
-      <div className="inline-flex items-center justify-end whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
-        <CreateUpdateAssetModal assetName={assetPage} />
-      </div>
-      <AddPaymentModal />
-      {isFetching ? (
-        <div className="flex justify-center items-center">
-          <LoadingSpinner />
-        </div>
-      ) : (
-        getTable(assetPage, assets)
-      )}
+      <div>hello</div>)
+      {
+        // return (
+        //   <>
+        //   <p className="flex items-center justify-center text-muted-foreground font-bold text-3xl">
+        //   {getAssetPageTitle(assetPage)}
+        // </p>
+        // <div className="w-fit">
+        //   <ManagerOptions setAssetPage={setAssetPage} />
+        // </div>
+        // <div className="inline-flex items-center justify-end whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-10 px-4 py-2 w-fit">
+        //   <CreateUpdateAssetModal assetName={assetPage} />
+        // </div>
+        // <AddPaymentModal />
+        // {isFetching ? (
+        //   <div className="flex justify-center items-center">
+        //     <LoadingSpinner />
+        //   </div>
+        // ) : (
+        //   getTable(assetPage, assets)
+        // )}
+        //   </>
+      }
     </div>
   );
 }
