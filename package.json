@@ -6,8 +6,8 @@
     "prettier:check:ci": "prettier --check \"**/*.{ts,tsx,js,md,mdx,css,yaml}\""
   },
   "devDependencies": {
-    "prettier": "^3.0.0",
-    "turbo": "^1.8.3"
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.2"
   },
   "packageManager": "pnpm@8.15.3"
 }
