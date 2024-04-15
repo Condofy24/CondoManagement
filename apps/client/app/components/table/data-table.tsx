@@ -27,6 +27,7 @@ import {
 } from "@/app/components/ui/table";
 import DataTableToolbar from "./data-table-toolbar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,6 +53,8 @@ export function DataTable<TData, TValue>({
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -124,15 +127,13 @@ export function DataTable<TData, TValue>({
                   className="relative h-[3rem]"
                 >
                   {redirectPath && (
-                    <TableCell>
-                      <Link
-                        className="absolute top-0 left-0 w-full h-[3rem]"
-                        href={redirectPath.replace(
-                          "id",
-                          (row.original as any).id,
-                        )}
-                      ></Link>
-                    </TableCell>
+                    <TableCell
+                      onClick={() => {
+                        router.push(
+                          redirectPath.replace("id", (row.original as any).id),
+                        );
+                      }}
+                    ></TableCell>
                   )}
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

@@ -1,14 +1,7 @@
 "use client";
 
 import { ManagerOptions } from "./manager-options";
-import {
-  Parking,
-  Unit,
-  Storage,
-  IFinancialStatus,
-  BuildingAsset,
-  Facility,
-} from "@/types";
+import { Parking, Unit, Storage, BuildingAsset, Facility } from "@/types";
 import useAssets from "./manage-building-assets-hook";
 import { unitColumns } from "./table-columns/unit-columns";
 import { assetsColumns } from "./table-columns/assets-columns";
