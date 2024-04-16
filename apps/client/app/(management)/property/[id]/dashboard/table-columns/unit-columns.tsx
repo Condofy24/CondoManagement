@@ -75,6 +75,15 @@ const RegistrationKeysPopover = ({
                 >
                   <Copy className="h-4 w-4">Copy</Copy>
                 </Button>
+                <Button
+                  onClick={() => {
+                    window.open(
+                      `mailto:email@example.com?subject=Your%registeration%key&body=${ownerKey?.key}`,
+                    );
+                  }}
+                >
+                  Email
+                </Button>
               </div>
               <div className="flex items-center gap-4">
                 <Label>Renter</Label>
@@ -100,6 +109,15 @@ const RegistrationKeysPopover = ({
                   }}
                 >
                   <Copy className="h-4 w-4">Copy</Copy>
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.open(
+                      `mailto:email@example.com?subject=Your%registeration%key&body=${renterKey?.key}`,
+                    );
+                  }}
+                >
+                  Email
                 </Button>
               </div>
             </div>

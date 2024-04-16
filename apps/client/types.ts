@@ -75,6 +75,7 @@ export type Unit = {
   totalMonthlyFees: number;
   parkings: Parking[];
   storages: Storage[];
+  fileUrl?: string;
 };
 
 export type Payment = {

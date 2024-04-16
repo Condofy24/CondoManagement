@@ -70,6 +70,9 @@ export class UnitModel {
   @ApiProperty()
   storages: StorageModel[];
 
+  @ApiProperty()
+  fileUrl: string;
+
   constructor({
     entity,
     building,
@@ -105,6 +108,7 @@ export class UnitModel {
     if (building) {
       this.buildingName = building.name;
       this.buildingAddress = building.address;
+      this.fileUrl = building.fileUrl;
     }
 
     if (ownerKey) this.ownerKey = new RegistrationKeyModel(ownerKey);

@@ -45,6 +45,15 @@ export default function OwnerProperty({ property }: OwnerPropertyProps) {
 
         <Separator className="my-3" orientation="horizontal" />
         <BalanceReport property={property} />
+        <Separator className="my-3" orientation="horizontal" />
+        <Button
+          variant="outline"
+          onClick={() =>
+            window.open(property.fileUrl, "_blank", "noopener,noreferrer")
+          }
+        >
+          Download Condo File
+        </Button>
       </CardContent>
     </Card>
   );
