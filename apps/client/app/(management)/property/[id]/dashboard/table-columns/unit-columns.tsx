@@ -62,7 +62,7 @@ const RegistrationKeysPopover = ({
                     "p-2 h-10 rounded-xl text-black",
                     ownerKey?.isClaimed
                       ? "bg-red-300 dark:bg-red-500 text-black/80 dark:text-white"
-                      : "bg-green-300 dark:bg-green-500 text-black/80 dark:text-white",
+                      : "bg-green-300 dark:bg-green-500 text-black/80 dark:text-white"
                   )}
                 >
                   {ownerKey?.isClaimed ? "Claimed" : "Available"}
@@ -73,6 +73,15 @@ const RegistrationKeysPopover = ({
                   }}
                 >
                   <Copy className="h-4 w-4">Copy</Copy>
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.open(
+                      `mailto:email@example.com?subject=Your%registeration%key&body=${ownerKey?.key}`
+                    );
+                  }}
+                >
+                  Email
                 </Button>
               </div>
               <div className="flex items-center gap-4">
@@ -88,7 +97,7 @@ const RegistrationKeysPopover = ({
                     "p-2 h-10 rounded-xl text-black",
                     renterKey?.isClaimed
                       ? "bg-red-300 dark:bg-red-500 text-black/80 dark:text-white"
-                      : "bg-green-300 dark:bg-green-500 text-black/80 dark:text-white",
+                      : "bg-green-300 dark:bg-green-500 text-black/80 dark:text-white"
                   )}
                 >
                   {renterKey?.isClaimed ? "Claimed" : "Available"}
@@ -99,6 +108,15 @@ const RegistrationKeysPopover = ({
                   }}
                 >
                   <Copy className="h-4 w-4">Copy</Copy>
+                </Button>
+                <Button
+                  onClick={() => {
+                    window.open(
+                      `mailto:email@example.com?subject=Your%registeration%key&body=${renterKey?.key}`
+                    );
+                  }}
+                >
+                  Email
                 </Button>
               </div>
             </div>
