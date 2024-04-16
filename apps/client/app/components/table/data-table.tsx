@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
                         className="absolute top-0 left-0 w-[80%] h-[3rem]"
                         href={redirectPath.replace(
                           "id",
-                          "6619c766437767a7e96bde60",
+                          (row.original as any).id,
                         )}
                       ></Link>
                     </TableCell>
