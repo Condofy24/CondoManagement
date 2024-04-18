@@ -57,6 +57,15 @@ export const reqCols = ({
         </div>
       ),
     },
+    {
+      accessorKey: "resolutionContent",
+      header: "Company Reply",
+      cell: ({ row }) => (
+        <div className="italic">
+          <p>{row.getValue("resolutionContent")}</p>
+        </div>
+      ),
+    },
   ];
 
   // Check the user's role and conditionally add the "actions" column
