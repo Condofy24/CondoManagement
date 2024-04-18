@@ -69,11 +69,7 @@ export const reqCols = ({
   ];
 
   // Check the user's role and conditionally add the "actions" column
-  if (
-    user.role !== UserRoles.OWNER &&
-    user.role !== UserRoles.MANAGER &&
-    user.role !== UserRoles.RENTER
-  ) {
+  if (user.role !== UserRoles.OWNER && user.role !== UserRoles.RENTER) {
     columns.push({
       id: "actions",
       header: () => <div className="text-center">Manage Requests</div>,
