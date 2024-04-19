@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/app/components/ui/button";
-import { RegistrationKey, Unit, UnitCol } from "@/types";
+import { RegistrationKey, Unit, UnitCol, User } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -28,7 +28,20 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/utils";
-import SelectParkingStorageModal from "../link-amentities-modal";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/app/components/ui/dialog";
+import { PropertyInfo } from "@/app/(residency)/(owner)/properties/owner-property/unit-section";
+import { useEffect, useState } from "react";
+import { fetchOwnerInfo } from "@/actions/resident-actions";
+import { useAppSelector } from "@/redux/store";
 
 type UnitActionsMenuProps = {
   unit: Unit;
@@ -137,44 +150,88 @@ const UnitActionsMenu = ({ unit }: UnitActionsMenuProps) => {
     setShowAmenityDialog,
   } = useAssetManagement();
 
+  const { token } = useAppSelector((state) => state.auth.value);
+  const [owner, setOwner] = useState<User | null>(null);
+
+  const [showOwnerInfo, setShowOwnerInfo] = useState<boolean>(false);
+
+  useEffect(() => {
+    async function fetchOwnerInformation() {
+      if (!unit.ownerId) return;
+      try {
+        const owner = await fetchOwnerInfo(unit?.id as string, token as string);
+
+        setOwner(owner);
+      } catch (_) {}
+    }
+    fetchOwnerInformation();
+  }, [unit.ownerId, token]);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => {
-            setShowDialog(true);
-            setAsset(unit);
-            setMode("edit");
-          }}
-        >
-          Edit Unit details
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setAsset(unit);
-            setShowPaymentDialog(true);
-          }}
-        >
-          Add Payment
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => {
-            setAsset(unit);
-            setShowAmenityDialog(true);
-          }}
-        >
-          Link amenity
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              setShowDialog(true);
+              setAsset(unit);
+              setMode("edit");
+            }}
+          >
+            Edit Unit details
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setAsset(unit);
+              setShowPaymentDialog(true);
+            }}
+          >
+            Add Payment
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setAsset(unit);
+              setShowAmenityDialog(true);
+            }}
+          >
+            Link amenity
+          </DropdownMenuItem>
+          {unit.ownerId && (
+            <DropdownMenuItem
+              onClick={() => {
+                setShowOwnerInfo(true);
+              }}
+            >
+              Owner Information
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {!!owner && (
+        <Dialog open={showOwnerInfo} onOpenChange={setShowOwnerInfo}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Owner Information</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="flex flex-col gap-3">
+                <PropertyInfo title="Name" value={owner.name} />
+                <PropertyInfo title="Email" value={owner.email} />
+                <PropertyInfo title="Phone Number" value={owner.phoneNumber} />
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 
