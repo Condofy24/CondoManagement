@@ -1,6 +1,8 @@
 # CondoManagement
 
-### Deployed App: https://condo-management-client.vercel.app/
+### [Deployed Web App](https://condo-management-client.vercel.app/)
+
+### [Archive of deliverables](https://drive.google.com/drive/folders/1nVRWLRyY5bMqxpUznKn_3eXUY_VClf0z?usp=sharing)
 
 #### Credentials to login
 
@@ -41,11 +43,3 @@ pnpm command --filter = directory
 - All tests (if avail) should pass
 - Branch name: CN-'number'-description
 - Use [conventional atomic commits](https://www.conventionalcommits.org/en/v1.0.0/)
-
-## Frontend Standards
-
-To be specified
-
-## Backend Standards
-
-To be specified
