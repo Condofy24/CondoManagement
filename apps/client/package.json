@@ -38,7 +38,7 @@
     "embla-carousel-react": "^8.0.2",
     "jsondiffpatch": "^0.6.0",
     "lucide-react": "^0.316.0",
-    "next": "14.1.0",
+    "next": "14.1.1",
     "next-redux-wrapper": "^8.1.0",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
